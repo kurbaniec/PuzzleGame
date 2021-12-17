@@ -4,14 +4,15 @@ project(Puzzle_Game)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-add_executable(${PROJECT_NAME} src/main.cpp src/utils/print.h src/utils/shader.h)
+add_executable(${PROJECT_NAME} src/main.cpp src/utils/print.h src/utils/shader.h src/utils/mesh.h src/utils/model.h)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
-set(LIBS glfw3 OpenGL::GL assimp)
+set(LIBS glfw3 OpenGL::GL assimp soil2)
 find_package(GLFW3 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(ASSIMP REQUIRED)
+find_package(SOIL2 REQUIRED)
 add_library(GLAD ${CMAKE_SOURCE_DIR}/dependencies/glad/src/glad.c)
 set(LIBS ${LIBS} GLAD)
 
@@ -32,6 +33,10 @@ add_custom_command(TARGET ${PROJECT_NAME}
 add_custom_command(TARGET ${PROJECT_NAME}
         PRE_LINK COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${ASSIMP_LIBRARY} ${CMAKE_BINARY_DIR})
+
+add_custom_command(TARGET ${PROJECT_NAME}
+        PRE_LINK COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${SOIL2_LIBRARY} ${CMAKE_BINARY_DIR})
 
 # Copy shaders to output directory
 set(SHADER_DIR ${PROJECT_SOURCE_DIR}/src/shader)
