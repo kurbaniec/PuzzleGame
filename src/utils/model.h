@@ -212,7 +212,7 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
     string filename = string(path);
     filename = directory + '/' + filename;
 
-    unsigned int textureID;
+    /*unsigned int textureID;
     glGenTextures(1, &textureID);
 
     int width, height, nrComponents;
@@ -243,7 +243,13 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
     {
         std::cout << "Texture failed to load at path: " << path << std::endl;
         SOIL_free_image_data(data);
-    }
+    }*/
+    // See: https://github.com/SpartanJ/SOIL2
+    // And: https://github.com/alelievr/SOIL2/blob/master/incs/SOIL2.h
+    unsigned int textureID = SOIL_load_OGL_texture(
+            filename.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
+            SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
+    );
 
     return textureID;
 }
