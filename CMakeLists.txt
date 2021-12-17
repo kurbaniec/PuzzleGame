@@ -9,7 +9,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 #target_link_libraries(${PROJECT_NAME} glfw)
 #find_package(glfw3 3.3 REQUIRED)
 
-add_executable(${PROJECT_NAME} src/main.cpp)
+add_executable(${PROJECT_NAME} src/main.cpp src/utils/print.h)
 
 #set(GLFW3_LIBRARY ${PROJECT_SOURCE_DIR}/dependencies/glfw/lib-vc2022/glfw3.lib)
 #set(GLFW3_INCLUDE_PATH ${PROJECT_SOURCE_DIR}/dependencies/glfw/include/GLFW)
