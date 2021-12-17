@@ -8,21 +8,30 @@ add_executable(${PROJECT_NAME} src/main.cpp src/utils/print.h src/utils/shader.h
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
-set(LIBS glfw3 OpenGL::GL)
+set(LIBS glfw3 OpenGL::GL assimp)
 find_package(GLFW3 REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(ASSIMP REQUIRED)
 add_library(GLAD ${CMAKE_SOURCE_DIR}/dependencies/glad/src/glad.c)
 set(LIBS ${LIBS} GLAD)
 
 target_link_libraries(${PROJECT_NAME} ${LIBS})
 include_directories(${PROJECT_SOURCE_DIR}/dependencies/glfw/include/)
 include_directories(${PROJECT_SOURCE_DIR}/dependencies/glad/include/)
+include_directories(${PROJECT_SOURCE_DIR}/dependencies/assimp/include/)
 include_directories(${PROJECT_SOURCE_DIR}/dependencies/)
+
+#message("LIB ${GLFW3_LIBRARY}")
+#message("LIB ${ASSIMP_LIBRARY}")
 
 # Copy library binaries to output directory
 add_custom_command(TARGET ${PROJECT_NAME}
-        POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        PRE_LINK COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${GLFW3_LIBRARY} ${CMAKE_BINARY_DIR})
+
+add_custom_command(TARGET ${PROJECT_NAME}
+        PRE_LINK COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${ASSIMP_LIBRARY} ${CMAKE_BINARY_DIR})
 
 # Copy shaders to output directory
 set(SHADER_DIR ${PROJECT_SOURCE_DIR}/src/shader)

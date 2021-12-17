@@ -14,6 +14,9 @@ CTestTestfile.cmake
 _deps
 bin
 !dependencies/freeglut/bin/
+!dependencies/assimp/bin/
+dependencies/assimp/bin/assimp-vc142-mtd.pdb
+dependencies/assimp/bin/assimp-vc142-mtd.ilk
 out
 
 # IDE
