@@ -2,8 +2,8 @@
 // Source: https://learnopengl.com/Model-Loading/Model
 //
 
-#ifndef PUZZLE_GAME_MESH_H
-#define PUZZLE_GAME_MESH_H
+#ifndef PUZZLE_GAME_ENGINE_MESH_H
+#define PUZZLE_GAME_ENGINE_MESH_H
 
 #include <glad/glad.h> // holds all OpenGL type declarations
 
@@ -145,4 +145,4 @@ namespace engine {
     };
 }
 
-#endif //PUZZLE_GAME_MESH_H
+#endif //PUZZLE_GAME_ENGINE_MESH_H

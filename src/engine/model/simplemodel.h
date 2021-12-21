@@ -2,11 +2,12 @@
 // Created by kurbaniec on 21.12.2021.
 //
 
-#ifndef PUZZLE_GAME_SIMPLEMODEL_H
-#define PUZZLE_GAME_SIMPLEMODEL_H
+#ifndef PUZZLE_GAME_ENGINE_SIMPLEMODEL_H
+#define PUZZLE_GAME_ENGINE_SIMPLEMODEL_H
 
-
+#ifndef PUZZLE_GAME_ENGINE_MODEL_H
 #include "model.h"
+#endif //PUZZLE_GAME_ENGINE_MODEL_H
 
 namespace engine {
 
@@ -24,4 +25,4 @@ namespace engine {
     };
 }
 
-#endif //PUZZLE_GAME_SIMPLEMODEL_H
+#endif //PUZZLE_GAME_ENGINE_SIMPLEMODEL_H

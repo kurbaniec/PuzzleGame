@@ -2,8 +2,8 @@
 // Source: https://learnopengl.com/Model-Loading/Model
 //
 
-#ifndef PUZZLE_GAME_MESH_H
-#define PUZZLE_GAME_MESH_H
+#ifndef PUZZLE_GAME_MESHOLD_H
+#define PUZZLE_GAME_MESHOLD_H
 
 #include <glad/glad.h> // holds all OpenGL type declarations
 
@@ -40,7 +40,7 @@ struct Texture {
     std::string path;
 };
 
-class Mesh {
+class MeshOld {
 public:
     // mesh Data
     std::vector<Vertex>       vertices;
@@ -49,7 +49,7 @@ public:
     unsigned int VAO;
 
     // constructor
-    Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures)
+    MeshOld(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures)
     {
         this->vertices = vertices;
         this->indices = indices;
@@ -60,7 +60,7 @@ public:
     }
 
     // render the mesh
-    void Draw(Shader &shader)
+    void Draw(ShaderOld &shader)
     {
         // bind appropriate textures
         unsigned int diffuseNr  = 1;
@@ -146,4 +146,4 @@ private:
         glBindVertexArray(0);
     }
 };
-#endif //PUZZLE_GAME_MESH_H
+#endif //PUZZLE_GAME_MESHOLD_H

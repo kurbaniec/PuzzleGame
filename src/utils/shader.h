@@ -2,8 +2,8 @@
 // Source: https://learnopengl.com/Getting-started/Shaders
 //
 
-#ifndef PUZZLE_GAME_SHADER_H
-#define PUZZLE_GAME_SHADER_H
+#ifndef PUZZLE_GAME_SHADEROLD_H
+#define PUZZLE_GAME_SHADEROLD_H
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -13,13 +13,13 @@
 #include <sstream>
 #include <iostream>
 
-class Shader
+class ShaderOld
 {
 public:
     unsigned int ID;
     // constructor generates the shader on the fly
     // ------------------------------------------------------------------------
-    Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr)
+    ShaderOld(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr)
     {
         // 1. retrieve the vertex/fragment source code from filePath
         std::string vertexCode;
@@ -192,4 +192,4 @@ private:
         }
     }
 };
-#endif //PUZZLE_GAME_SHADER_H
+#endif //PUZZLE_GAME_SHADEROLD_H

@@ -2,8 +2,8 @@
 // Source: https://learnopengl.com/Getting-started/Shaders
 //
 
-#ifndef PUZZLE_GAME_SHADER_H
-#define PUZZLE_GAME_SHADER_H
+#ifndef PUZZLE_GAME_ENGINE_SHADER_H
+#define PUZZLE_GAME_ENGINE_SHADER_H
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -14,8 +14,6 @@
 #include <iostream>
 
 namespace engine {
-
-
     class Shader {
     public:
         unsigned int ID;
@@ -188,4 +186,4 @@ namespace engine {
     };
 }
 
-#endif //PUZZLE_GAME_SHADER_H
+#endif //PUZZLE_GAME_ENGINE_SHADER_H

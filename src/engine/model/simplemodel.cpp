@@ -2,6 +2,7 @@
 // Created by kurbaniec on 21.12.2021.
 //
 
+#include <string>
 #include "simplemodel.h"
 
 namespace engine {
@@ -14,7 +15,7 @@ namespace engine {
     }
 
     void SimpleModel::draw() {
-        shader->use();
+        //shader->use();
         for (auto& mesh: meshes)
             mesh.Draw(shader);
     }

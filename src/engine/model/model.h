@@ -2,8 +2,8 @@
 // Created by kurbaniec on 17.12.2021.
 //
 
-#ifndef PUZZLE_GAME_MODEL_H
-#define PUZZLE_GAME_MODEL_H
+#ifndef PUZZLE_GAME_ENGINE_MODEL_H
+#define PUZZLE_GAME_ENGINE_MODEL_H
 
 #include <glad/glad.h>
 
@@ -15,9 +15,6 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "mesh.h"
-#include "shader.h"
-
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -25,10 +22,12 @@
 #include <map>
 #include <utility>
 #include <vector>
+#include "shader.h"
+#include "mesh.h"
 
 namespace engine {
 
-    unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma = false);
+    //unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma = false);
 
     class Model {
     public:
@@ -218,46 +217,46 @@ namespace engine {
             }
             return textures;
         }
+
+        // See: https://stackoverflow.com/a/874160/12347616
+        bool hasEnding (std::string const &fullString, std::string const &ending) {
+            if (fullString.length() >= ending.length()) {
+                return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+            } else {
+                return false;
+            }
+        }
+
+        unsigned int TextureFromFile(const char* path, const std::string& directory) {
+            std::string filename = std::string(path);
+            filename = directory + '/' + filename;
+
+            unsigned int textureID;
+            if (hasEnding(filename, ".dds")) {
+                // Use DDS loader
+                // Notes:
+                // * Requires flipped image!
+                // * Supports only DXT1/2/3/4/5 formats (a.k.a BC1/2/3)
+                // * The rest of the (SOIL2) flags with the exception of SOIL_FLAG_TEXTURE_REPEATS will be ignored while
+                //	 loading already-compressed DDS files
+                // See: https://github.com/SpartanJ/SOIL2
+                // And: https://www.reedbeta.com/blog/understanding-bcn-texture-compression-formats/#bc2-bc3-and-bc5
+                textureID = SOIL_load_OGL_texture(
+                        filename.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_DDS_LOAD_DIRECT
+                );
+            } else {
+                // Use general image loader
+                // See: https://github.com/SpartanJ/SOIL2
+                // And: https://github.com/alelievr/SOIL2/blob/master/incs/SOIL2.h
+                textureID = SOIL_load_OGL_texture(
+                        filename.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
+                        SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
+                );
+            }
+
+            return textureID;
+        }
     };
-
-    // See: https://stackoverflow.com/a/874160/12347616
-    bool hasEnding (std::string const &fullString, std::string const &ending) {
-        if (fullString.length() >= ending.length()) {
-            return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
-        } else {
-            return false;
-        }
-    }
-
-    unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma) {
-        std::string filename = std::string(path);
-        filename = directory + '/' + filename;
-
-        unsigned int textureID;
-        if (hasEnding(filename, ".dds")) {
-            // Use DDS loader
-            // Notes:
-            // * Requires flipped image!
-            // * Supports only DXT1/2/3/4/5 formats (a.k.a BC1/2/3)
-            // * The rest of the (SOIL2) flags with the exception of SOIL_FLAG_TEXTURE_REPEATS will be ignored while
-            //	 loading already-compressed DDS files
-            // See: https://github.com/SpartanJ/SOIL2
-            // And: https://www.reedbeta.com/blog/understanding-bcn-texture-compression-formats/#bc2-bc3-and-bc5
-            textureID = SOIL_load_OGL_texture(
-                    filename.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_DDS_LOAD_DIRECT
-            );
-        } else {
-            // Use general image loader
-            // See: https://github.com/SpartanJ/SOIL2
-            // And: https://github.com/alelievr/SOIL2/blob/master/incs/SOIL2.h
-            textureID = SOIL_load_OGL_texture(
-                    filename.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
-                    SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
-            );
-        }
-
-        return textureID;
-    }
 }
 
-#endif //PUZZLE_GAME_MODEL_H
+#endif //PUZZLE_GAME_ENGINE_MODEL_H

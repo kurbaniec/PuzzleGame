@@ -7,6 +7,9 @@
 #include "utils/camera.h"
 #include "utils/model.h"
 
+#include "engine/model/simplemodel.h"
+
+
 /*
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -159,6 +162,8 @@ float lastFrame = 0.0f;
 // toggle
 bool disable = false;
 
+class ModelOld;
+
 int main()
 {
     // glfw: initialize and configure
@@ -212,14 +217,16 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader shader("shader/backpack/vertex.glsl", "shader/backpack/fragment.glsl");
+    ShaderOld shader("shader/backpack/vertex.glsl", "shader/backpack/fragment.glsl");
+    auto shaderTest = std::make_shared<engine::Shader>("shader/backpack/vertex.glsl", "shader/backpack/fragment.glsl");
 
     // load models
     // -----------
     //Model ourModel(FileSystem::getPath("resources/objects/backpack/backpack.obj"));
     //Model ourModel("resources/objects/backpack/backpack.obj");
-    Model m("resources/objects/block/transparentblock.obj");
-    Model m2("resources/objects/block/transparentblock.obj");
+    ModelOld m("resources/objects/block/transparentblock.obj");
+    ModelOld m2("resources/objects/block/transparentblock.obj");
+    engine::SimpleModel mTest("resources/objects/block/transparentblock.obj", shaderTest);
 
 
     // draw in wireframe
@@ -264,8 +271,13 @@ int main()
 
         if (!disable) {
             model = glm::translate(model, glm::vec3(0.0f, 0.0f, 5.0f));
-            shader.setMat4("model", model);
-            m2.Draw(shader);
+            /*shader.setMat4("model", model);
+            m2.Draw(shader);*/
+            shaderTest->use();
+            shaderTest->setMat4("projection", projection);
+            shaderTest->setMat4("view", view);
+            shaderTest->setMat4("model", model);
+            mTest.draw();
         }
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

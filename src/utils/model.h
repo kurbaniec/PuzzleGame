@@ -2,8 +2,8 @@
 // Created by kurbaniec on 17.12.2021.
 //
 
-#ifndef PUZZLE_GAME_MODEL_H
-#define PUZZLE_GAME_MODEL_H
+#ifndef PUZZLE_GAME_MODELOLD_H
+#define PUZZLE_GAME_MODELOLD_H
 
 #include <glad/glad.h>
 
@@ -30,21 +30,21 @@ using namespace std;
 
 unsigned int TextureFromFile(const char* path, const string& directory, bool gamma = false);
 
-class Model {
+class ModelOld {
 public:
     // model data
     vector<Texture> textures_loaded;    // stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
-    vector<Mesh> meshes;
+    vector<MeshOld> meshes;
     string directory;
     bool gammaCorrection;
 
     // constructor, expects a filepath to a 3D model.
-    Model(string const& path, bool gamma = false) : gammaCorrection(gamma) {
+    ModelOld(string const& path, bool gamma = false) : gammaCorrection(gamma) {
         loadModel(path);
     }
 
     // draws the model, and thus all its meshes
-    void Draw(Shader& shader) {
+    void Draw(ShaderOld& shader) {
         //print("Mesh size: ", meshes.size());
         for (unsigned int i = 0; i < meshes.size(); i++)
             meshes[i].Draw(shader);
@@ -86,7 +86,7 @@ private:
 
     }
 
-    Mesh processMesh(aiMesh* mesh, const aiScene* scene) {
+    MeshOld processMesh(aiMesh* mesh, const aiScene* scene) {
         // data to fill
         vector<Vertex> vertices;
         vector<unsigned int> indices;
@@ -162,7 +162,7 @@ private:
         textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
         // return a mesh object created from the extracted mesh data
-        return Mesh(vertices, indices, textures);
+        return MeshOld(vertices, indices, textures);
     }
 
     // checks all material textures of a given type and loads the textures if they're not loaded yet.
@@ -259,4 +259,4 @@ unsigned int TextureFromFile(const char* path, const string& directory, bool gam
     return textureID;
 }
 
-#endif //PUZZLE_GAME_MODEL_H
+#endif //PUZZLE_GAME_MODELOLD_H
