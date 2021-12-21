@@ -219,6 +219,7 @@ int main()
     //Model ourModel(FileSystem::getPath("resources/objects/backpack/backpack.obj"));
     //Model ourModel("resources/objects/backpack/backpack.obj");
     Model ourModel("resources/objects/block/transparentblock.obj");
+    Model ourModel2("resources/objects/block/transparentblock.obj");
 
 
     // draw in wireframe
@@ -260,6 +261,12 @@ int main()
         ourShader.setMat4("model", model);
         ourModel.Draw(ourShader);
 
+
+        if (!disable) {
+            model = glm::translate(model, glm::vec3(0.0f, 0.0f, 5.0f));
+            ourShader.setMat4("model", model);
+            ourModel2.Draw(ourShader);
+        }
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
