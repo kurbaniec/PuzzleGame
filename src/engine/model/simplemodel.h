@@ -8,18 +8,20 @@
 
 #include "model.h"
 
-class SimpleModel : public Model {
-public:
-    // model data
-    std::vector<Texture> textures_loaded;    // stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
-    std::vector<Mesh> meshes;
-    std::string directory;
+namespace engine {
 
-    // constructor, expects a filepath to a 3D model.
-    explicit SimpleModel(const std::string& path, std::shared_ptr<Shader> shader);
+    class SimpleModel : public Model {
+    public:
+        // model data
+        std::vector<Texture> textures_loaded;    // stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
+        std::vector<Mesh> meshes;
+        std::string directory;
 
-    void draw() override;
-};
+        // constructor, expects a filepath to a 3D model.
+        explicit SimpleModel(const std::string& path, std::shared_ptr<Shader> shader);
 
+        void draw() override;
+    };
+}
 
 #endif //PUZZLE_GAME_SIMPLEMODEL_H
