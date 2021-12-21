@@ -10,17 +10,15 @@
 
 class SimpleModel : public Model {
 public:
-// model data
-    vector<Texture> textures_loaded;    // stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
-    vector<Mesh> meshes;
-    string directory;
-    bool gammaCorrection;
+    // model data
+    std::vector<Texture> textures_loaded;    // stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
+    std::vector<Mesh> meshes;
+    std::string directory;
 
     // constructor, expects a filepath to a 3D model.
-    SimpleModel(const string& path1, bool gamma1, string
-    const& path, bool gamma = false) {
-        loadModel(path);
-    }
+    explicit SimpleModel(const std::string& path, std::shared_ptr<Shader> shader);
+
+    void draw() override;
 };
 
 

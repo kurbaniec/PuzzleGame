@@ -3,3 +3,16 @@
 //
 
 #include "simplemodel.h"
+
+SimpleModel::SimpleModel(
+        const std::string& path,
+        std::shared_ptr<Shader> shader
+) : Model(std::move(shader)) {
+    loadModel(path, textures_loaded, meshes);
+}
+
+void SimpleModel::draw() {
+    shader->use();
+    for (auto& mesh: meshes)
+        mesh.Draw(shader);
+}

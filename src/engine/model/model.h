@@ -24,11 +24,12 @@
 #include <sstream>
 #include <iostream>
 #include <map>
+#include <utility>
 #include <vector>
 
-using namespace std;
+//using namespace std;
 
-unsigned int TextureFromFile(const char* path, const string& directory, bool gamma = false);
+unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma = false);
 
 class Model {
 public:
@@ -36,7 +37,7 @@ public:
     /*vector<Texture> textures_loaded;    // stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
     vector<Mesh> meshes;
     string directory;*/
-
+    explicit Model(std::shared_ptr<Shader> shader): shader(std::move(shader)) {}
 
     // draws the model, and thus all its meshes
     /*void Draw(Shader& shader) {
@@ -44,10 +45,17 @@ public:
         for (unsigned int i = 0; i < meshes.size(); i++)
             meshes[i].Draw(shader);
     }*/
+    virtual void draw() = 0;
 
-private:
+protected:
+    std::shared_ptr<Shader> shader;
+
     // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
-    void loadModel(string const& path) {
+    void loadModel(
+            std::string const& path,
+            std::vector<Texture>& textures_loaded,
+            std::vector<Mesh>& meshes
+    ) {
         // read file via ASSIMP
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals |
@@ -55,37 +63,49 @@ private:
         // check for errors
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
         {
-            cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << endl;
+            std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
             return;
         }
         // retrieve the directory path of the filepath
-        directory = path.substr(0, path.find_last_of('/'));
+        auto directory = path.substr(0, path.find_last_of('/'));
 
         // process ASSIMP's root node recursively
-        processNode(scene->mRootNode, scene);
+        processNode(scene->mRootNode, scene, textures_loaded, meshes, directory);
     }
 
+private:
     // processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
-    void processNode(aiNode* node, const aiScene* scene) {
+    void processNode(
+            aiNode* node,
+            const aiScene* scene,
+            std::vector<Texture>& textures_loaded,
+            std::vector<Mesh>& meshes,
+            std::string& directory
+    ) {
         // process each mesh located at the current node
         for (unsigned int i = 0; i < node->mNumMeshes; i++) {
             // the node object only contains indices to index the actual objects in the scene.
             // the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            meshes.push_back(processMesh(mesh, scene));
+            meshes.push_back(processMesh(mesh, scene, textures_loaded, directory));
         }
         // after we've processed all of the meshes (if any) we then recursively process each of the children nodes
         for (unsigned int i = 0; i < node->mNumChildren; i++) {
-            processNode(node->mChildren[i], scene);
+            processNode(node->mChildren[i], scene, textures_loaded, meshes, directory);
         }
 
     }
 
-    Mesh processMesh(aiMesh* mesh, const aiScene* scene) {
+    Mesh processMesh(
+            aiMesh* mesh,
+            const aiScene* scene,
+            std::vector<Texture>& textures_loaded,
+            std::string& directory
+    ) {
         // data to fill
-        vector<Vertex> vertices;
-        vector<unsigned int> indices;
-        vector<Texture> textures;
+        std::vector<Vertex> vertices;
+        std::vector<unsigned int> indices;
+        std::vector<Texture> textures;
 
         // walk through each of the mesh's vertices
         for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
@@ -144,16 +164,20 @@ private:
         // normal: texture_normalN
 
         // 1. diffuse maps
-        vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+        std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse",
+                                                                textures_loaded, directory);
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
         // 2. specular maps
-        vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+        std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular",
+                                                                 textures_loaded, directory);
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
         // 3. normal maps
-        std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+        std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal",
+                                                               textures_loaded, directory);
         textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
         // 4. height maps
-        std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+        std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height",
+                                                               textures_loaded, directory);
         textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
         // return a mesh object created from the extracted mesh data
@@ -162,8 +186,14 @@ private:
 
     // checks all material textures of a given type and loads the textures if they're not loaded yet.
     // the required info is returned as a Texture struct.
-    vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName) {
-        vector<Texture> textures;
+    std::vector<Texture> loadMaterialTextures(
+            aiMaterial* mat,
+            aiTextureType type,
+            std::string typeName,
+            std::vector<Texture>& textures_loaded,
+            std::string& directory
+    ) {
+        std::vector<Texture> textures;
         for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
             aiString str;
             mat->GetTexture(type, i, &str);
@@ -178,7 +208,7 @@ private:
             }
             if (!skip) {   // if texture hasn't been loaded already, load it
                 Texture texture;
-                texture.id = TextureFromFile(str.C_Str(), this->directory);
+                texture.id = TextureFromFile(str.C_Str(), directory);
                 texture.type = typeName;
                 texture.path = str.C_Str();
                 textures.push_back(texture);
@@ -191,8 +221,8 @@ private:
 };
 
 
-unsigned int TextureFromFile(const char* path, const string& directory, bool gamma) {
-    string filename = string(path);
+unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma) {
+    std::string filename = std::string(path);
     filename = directory + '/' + filename;
 
     unsigned int textureID;
