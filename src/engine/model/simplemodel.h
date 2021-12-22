@@ -19,11 +19,20 @@ namespace engine {
         std::string directory;
 
         // constructor, expects a filepath to a 3D model.
-        explicit SimpleModel(const std::string& path, std::shared_ptr<Shader> shader);
+        explicit SimpleModel(
+            const std::string& path,
+            std::shared_ptr<Shader> shader,
+            bool transparent,
+            std::function<std::shared_ptr<Instance>
+                (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator
+        );
 
         void draw() override;
 
         glm::mat4 getModelMatrix() override;
+
+        std::shared_ptr<Instance>
+        create(std::string id, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, glm::vec3 origin) override;
     };
 }
 

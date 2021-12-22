@@ -22,10 +22,15 @@
 #include <map>
 #include <utility>
 #include <vector>
+#include <functional>
 #include "shader.h"
 #include "mesh.h"
+#include "../instance/instance.h"
 
 namespace engine {
+    // Forward declaration
+    // See: https://stackoverflow.com/a/35452830/12347616
+    class Instance;
 
     //unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma = false);
 
@@ -40,7 +45,12 @@ namespace engine {
         /*vector<Texture> textures_loaded;    // stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
         vector<Mesh> meshes;
         string directory;*/
-        explicit Model(std::shared_ptr<Shader> shader) : shader(std::move(shader)) {}
+        explicit Model(
+            std::shared_ptr<Shader> shader,
+            bool transparent,
+            std::function<std::shared_ptr<Instance>
+                (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator
+        );
 
         // draws the model, and thus all its meshes
         /*void Draw(Shader& shader) {
@@ -52,15 +62,25 @@ namespace engine {
 
         virtual glm::mat4 getModelMatrix() = 0;
 
+        virtual std::shared_ptr<Instance> create(
+            std::string id,
+            glm::vec3 position = glm::vec3(0.0f),
+            glm::vec3 rotation = glm::vec3(0.0f),
+            glm::vec3 scale = glm::vec3(1.0f),
+            glm::vec3 origin = glm::vec3(0.0f)
+        );
+
     protected:
+        bool transparent;
         glm::mat4 modelMatrix;
         std::shared_ptr<Shader> shader;
+        std::function<std::shared_ptr<Instance>(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator;
 
         // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
         void loadModel(
-                std::string const& path,
-                std::vector<Texture>& textures_loaded,
-                std::vector<Mesh>& meshes
+            std::string const& path,
+            std::vector<Texture>& textures_loaded,
+            std::vector<Mesh>& meshes
         ) {
             // read file via ASSIMP
             Assimp::Importer importer;
@@ -82,11 +102,11 @@ namespace engine {
     private:
         // processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
         void processNode(
-                aiNode* node,
-                const aiScene* scene,
-                std::vector<Texture>& textures_loaded,
-                std::vector<Mesh>& meshes,
-                std::string& directory
+            aiNode* node,
+            const aiScene* scene,
+            std::vector<Texture>& textures_loaded,
+            std::vector<Mesh>& meshes,
+            std::string& directory
         ) {
             // process each mesh located at the current node
             for (unsigned int i = 0; i < node->mNumMeshes; i++) {
@@ -103,10 +123,10 @@ namespace engine {
         }
 
         Mesh processMesh(
-                aiMesh* mesh,
-                const aiScene* scene,
-                std::vector<Texture>& textures_loaded,
-                std::string& directory
+            aiMesh* mesh,
+            const aiScene* scene,
+            std::vector<Texture>& textures_loaded,
+            std::string& directory
         ) {
             // data to fill
             std::vector<Vertex> vertices;
@@ -194,11 +214,11 @@ namespace engine {
         // checks all material textures of a given type and loads the textures if they're not loaded yet.
         // the required info is returned as a Texture struct.
         std::vector<Texture> loadMaterialTextures(
-                aiMaterial* mat,
-                aiTextureType type,
-                std::string typeName,
-                std::vector<Texture>& textures_loaded,
-                std::string& directory
+            aiMaterial* mat,
+            aiTextureType type,
+            std::string typeName,
+            std::vector<Texture>& textures_loaded,
+            std::string& directory
         ) {
             std::vector<Texture> textures;
             for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
@@ -220,16 +240,16 @@ namespace engine {
                     texture.path = str.C_Str();
                     textures.push_back(texture);
                     textures_loaded.push_back(
-                            texture);  // store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
+                        texture);  // store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
                 }
             }
             return textures;
         }
 
         // See: https://stackoverflow.com/a/874160/12347616
-        bool hasEnding (std::string const &fullString, std::string const &ending) {
+        bool hasEnding(std::string const& fullString, std::string const& ending) {
             if (fullString.length() >= ending.length()) {
-                return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+                return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
             } else {
                 return false;
             }
@@ -250,15 +270,15 @@ namespace engine {
                 // See: https://github.com/SpartanJ/SOIL2
                 // And: https://www.reedbeta.com/blog/understanding-bcn-texture-compression-formats/#bc2-bc3-and-bc5
                 textureID = SOIL_load_OGL_texture(
-                        filename.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_DDS_LOAD_DIRECT
+                    filename.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_DDS_LOAD_DIRECT
                 );
             } else {
                 // Use general image loader
                 // See: https://github.com/SpartanJ/SOIL2
                 // And: https://github.com/alelievr/SOIL2/blob/master/incs/SOIL2.h
                 textureID = SOIL_load_OGL_texture(
-                        filename.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
-                        SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
+                    filename.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
+                    SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
                 );
             }
 

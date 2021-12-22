@@ -9,6 +9,7 @@
 
 #include "engine/model/simplemodel.h"
 #include "engine/instance/instance.h"
+#include "game/BlockInstance.h"
 
 
 /*
@@ -141,9 +142,13 @@ int main() {
 // Source: https://learnopengl.com/Model-Loading/Model
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void processInput(GLFWwindow *window);
+
+void processInput(GLFWwindow* window);
+
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 // settings
@@ -165,8 +170,7 @@ bool disable = false;
 
 class ModelOld;
 
-int main()
-{
+int main() {
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
@@ -184,8 +188,7 @@ int main()
     // glfw window creation
     // --------------------
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
-    if (window == NULL)
-    {
+    if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
@@ -201,8 +204,7 @@ int main()
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
+    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
@@ -227,7 +229,13 @@ int main()
     //Model ourModel("resources/objects/backpack/backpack.obj");
     ModelOld m("resources/objects/block/transparentblock.obj");
     ModelOld m2("resources/objects/block/transparentblock.obj");
-    engine::SimpleModel mTest("resources/objects/block/transparentblock.obj", shaderTest);
+    engine::SimpleModel mTest(
+        "resources/objects/block/transparentblock.obj",
+        shaderTest, true,
+        [](auto id, auto pos, auto rot, auto scale, auto origin) -> shared_ptr<engine::Instance> {
+            return std::make_shared<BlockInstance>();
+        }
+    );
 
 
     // draw in wireframe
@@ -235,8 +243,7 @@ int main()
 
     // render loop
     // -----------
-    while (!glfwWindowShouldClose(window))
-    {
+    while (!glfwWindowShouldClose(window)) {
         // per-frame time logic
         // --------------------
         float currentFrame = glfwGetTime();
@@ -257,15 +264,17 @@ int main()
         shader.use();
 
         // view/projection transformations
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f,
+                                                100.0f);
         glm::mat4 view = camera.GetViewMatrix();
         shader.setMat4("projection", projection);
         shader.setMat4("view", view);
 
         // render the loaded model
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+        model = glm::translate(model,
+                               glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));    // it's a bit too big for our scene, so scale it down
         shader.setMat4("model", model);
         m.Draw(shader);
 
@@ -295,8 +304,7 @@ int main()
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow *window)
-{
+void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -314,8 +322,7 @@ void processInput(GLFWwindow *window)
 
 // Recommend way to handle key events
 // See: https://www.glfw.org/docs/3.3/input_guide.html
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_0 && action == GLFW_PRESS) {
         disable = !disable;
         print("Pressed Button 0", " | State: ", disable);
@@ -328,8 +335,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
@@ -337,10 +343,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
-void mouse_callback(GLFWwindow* window, double xpos, double ypos)
-{
-    if (firstMouse)
-    {
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+    if (firstMouse) {
         lastX = xpos;
         lastY = ypos;
         firstMouse = false;
@@ -357,7 +361,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-{
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
     camera.ProcessMouseScroll(yoffset);
 }

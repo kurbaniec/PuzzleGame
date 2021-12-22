@@ -10,6 +10,8 @@
 #include "../model/model.h"
 
 namespace engine {
+    class Model;
+
     class Instance {
     public:
         std::string id;
