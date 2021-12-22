@@ -9,7 +9,14 @@
 #include "../engine/instance/instance.h"
 
 class BlockInstance : public engine::Instance {
-
+public:
+    BlockInstance(
+        std::string id,
+        glm::vec3 position,
+        glm::vec3 rotation,
+        glm::vec3 scale,
+        glm::vec3 origin
+    );
 };
 
 

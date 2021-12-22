@@ -4,7 +4,7 @@ project(Puzzle_Game)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-add_executable(${PROJECT_NAME} src/main.cpp src/utils/print.h src/utils/shader.h src/utils/mesh.h src/utils/model.h src/utils/camera.h src/utils/stringutils.h src/engine/model/mesh.h src/engine/model/model.h src/engine/model/shader.h src/engine/model/simplemodel.cpp src/engine/model/simplemodel.h src/engine/instance/instance.cpp src/engine/instance/instance.h src/engine/model/model.cpp src/game/BlockInstance.cpp src/game/BlockInstance.h)
+add_executable(${PROJECT_NAME} src/main.cpp src/utils/print.h src/utils/shader.h src/utils/mesh.h src/utils/model.h src/utils/camera.h src/utils/stringutils.h src/engine/model/mesh.h src/engine/model/model.h src/engine/model/shader.h src/engine/model/simplemodel.cpp src/engine/model/simplemodel.h src/engine/instance/instance.cpp src/engine/instance/instance.h src/engine/model/model.cpp src/game/BlockInstance.cpp src/game/BlockInstance.h src/engine/factory/InstanceFactory.cpp src/engine/factory/InstanceFactory.h src/engine/state/state.cpp src/engine/state/state.h)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 

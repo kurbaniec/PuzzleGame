@@ -10,6 +10,8 @@
 #include "engine/model/simplemodel.h"
 #include "engine/instance/instance.h"
 #include "game/BlockInstance.h"
+#include "engine/state/state.h"
+#include "engine/factory/InstanceFactory.h"
 
 
 /*
@@ -218,6 +220,10 @@ int main() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+
+    auto state = std::make_shared<engine::State>();
+    auto factory = std::make_shared<engine::InstanceFactory>(state);
+
     // build and compile shaders
     // -------------------------
     ShaderOld shader("shader/backpack/vertex.glsl", "shader/backpack/fragment.glsl");
@@ -229,13 +235,31 @@ int main() {
     //Model ourModel("resources/objects/backpack/backpack.obj");
     ModelOld m("resources/objects/block/transparentblock.obj");
     ModelOld m2("resources/objects/block/transparentblock.obj");
+
+    factory->registerModel(
+        "blockModel",
+        std::make_shared<engine::SimpleModel>(
+            "blockModel",
+            "resources/objects/block/transparentblock.obj",
+            shaderTest, true,
+            [](const std::string& id, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin) -> shared_ptr<engine::Instance> {
+                return std::make_shared<BlockInstance>(id, pos, rot, scale, origin);
+            }
+        )
+    );
+    factory->createInstance("blockModel", "test");
+    auto factoryTest = state->getInstance("test");
+
     engine::SimpleModel mTest(
+        "blockModel",
         "resources/objects/block/transparentblock.obj",
         shaderTest, true,
-        [](auto id, auto pos, auto rot, auto scale, auto origin) -> shared_ptr<engine::Instance> {
-            return std::make_shared<BlockInstance>();
+        [](const std::string& id, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin) -> shared_ptr<engine::Instance> {
+            return std::make_shared<BlockInstance>(id, pos, rot, scale, origin);
         }
     );
+
+
 
 
     // draw in wireframe

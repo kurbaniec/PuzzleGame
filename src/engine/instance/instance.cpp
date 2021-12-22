@@ -3,9 +3,18 @@
 //
 
 #include "instance.h"
+
+#include <utility>
 #include "glm/ext/matrix_transform.hpp"
 
 namespace engine {
+
+    Instance::Instance(
+        std::string id, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale,
+        glm::vec3 origin) : id(std::move(id)), position(position), rotation(rotation), scale(scale), origin(origin),
+                            modelMatrix(glm::mat4(1.0f)), enabled(true) {
+
+    }
 
     glm::mat4 Instance::getModelMatrix() {
         // Build unique transformation for model

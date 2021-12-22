@@ -14,12 +14,20 @@ namespace engine {
 
     class Instance {
     public:
-        std::string id;
+        const std::string id;
         glm::vec3 position;
         glm::vec3 rotation;
         glm::vec3 scale;
         glm::vec3 origin;
         bool enabled = true;
+
+        Instance(
+            std::string id,
+            glm::vec3 position,
+            glm::vec3 rotation,
+            glm::vec3 scale,
+            glm::vec3 origin
+        );
 
         virtual glm::mat4 getModelMatrix();
 

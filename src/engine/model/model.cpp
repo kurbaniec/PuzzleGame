@@ -13,10 +13,11 @@ namespace engine {
     }
 
     Model::Model(
-            std::shared_ptr<Shader> shader,
-            bool transparent,
-            std::function<std::shared_ptr<Instance>
-                    (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator
-    ) : shader(std::move(shader)), transparent(transparent), creator(std::move(creator)) {}
+        std::string id,
+        std::shared_ptr<Shader> shader,
+        bool transparent,
+        std::function<std::shared_ptr<Instance>
+            (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator
+    ) : id(std::move(id)), shader(std::move(shader)), transparent(transparent), creator(std::move(creator)) {}
 
 }

@@ -20,6 +20,7 @@ namespace engine {
 
         // constructor, expects a filepath to a 3D model.
         explicit SimpleModel(
+            const std::string& id,
             const std::string& path,
             std::shared_ptr<Shader> shader,
             bool transparent,
@@ -30,9 +31,6 @@ namespace engine {
         void draw() override;
 
         glm::mat4 getModelMatrix() override;
-
-        std::shared_ptr<Instance>
-        create(std::string id, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, glm::vec3 origin) override;
     };
 }
 

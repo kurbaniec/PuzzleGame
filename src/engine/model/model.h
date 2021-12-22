@@ -36,6 +36,8 @@ namespace engine {
 
     class Model {
     public:
+        const std::string id;
+
         glm::vec3 position;
         glm::vec3 rotation;
         glm::vec3 scale;
@@ -46,6 +48,7 @@ namespace engine {
         vector<Mesh> meshes;
         string directory;*/
         explicit Model(
+            std::string id,
             std::shared_ptr<Shader> shader,
             bool transparent,
             std::function<std::shared_ptr<Instance>
@@ -64,10 +67,10 @@ namespace engine {
 
         virtual std::shared_ptr<Instance> create(
             std::string id,
-            glm::vec3 position = glm::vec3(0.0f),
-            glm::vec3 rotation = glm::vec3(0.0f),
-            glm::vec3 scale = glm::vec3(1.0f),
-            glm::vec3 origin = glm::vec3(0.0f)
+            glm::vec3 position,
+            glm::vec3 rotation,
+            glm::vec3 scale,
+            glm::vec3 origin
         );
 
     protected:
