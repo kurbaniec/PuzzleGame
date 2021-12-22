@@ -11,6 +11,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "shader.h"
+#include "../../utils/print.h"
 
 #include <string>
 #include <vector>
@@ -58,6 +59,8 @@ namespace engine {
 
             // now that we have all the required data, set the vertex buffers and its attribute pointers.
             setupMesh();
+            print("Vertices ", vertices.size());
+            print("Indices ", indices.size());
         }
 
         // render the mesh

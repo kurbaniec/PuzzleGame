@@ -20,4 +20,12 @@ namespace engine {
             mesh.Draw(shader);
     }
 
+    glm::mat4 SimpleModel::getModelMatrix() {
+        // Build unique transformation for model
+        // See: https://learnopengl.com/Getting-started/
+        modelMatrix = glm::mat4(1.0f);
+        // Transformations must be in reversed order!
+        return glm::mat4();
+    }
+
 }

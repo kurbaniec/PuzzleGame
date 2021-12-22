@@ -31,6 +31,11 @@ namespace engine {
 
     class Model {
     public:
+        glm::vec3 position;
+        glm::vec3 rotation;
+        glm::vec3 scale;
+        glm::vec3 origin;
+
         // model data
         /*vector<Texture> textures_loaded;    // stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
         vector<Mesh> meshes;
@@ -45,7 +50,10 @@ namespace engine {
         }*/
         virtual void draw() = 0;
 
+        virtual glm::mat4 getModelMatrix() = 0;
+
     protected:
+        glm::mat4 modelMatrix;
         std::shared_ptr<Shader> shader;
 
         // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.

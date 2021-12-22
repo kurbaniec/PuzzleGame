@@ -22,6 +22,8 @@ namespace engine {
         explicit SimpleModel(const std::string& path, std::shared_ptr<Shader> shader);
 
         void draw() override;
+
+        glm::mat4 getModelMatrix() override;
     };
 }
 

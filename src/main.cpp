@@ -268,7 +268,6 @@ int main()
         shader.setMat4("model", model);
         m.Draw(shader);
 
-
         if (!disable) {
             model = glm::translate(model, glm::vec3(0.0f, 0.0f, 5.0f));
             /*shader.setMat4("model", model);
