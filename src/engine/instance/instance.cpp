@@ -22,6 +22,7 @@ namespace engine {
         modelMatrix = glm::mat4(1.0f);
         // Transformations must be in reversed order!
         modelMatrix = glm::translate(modelMatrix, position);
+        modelMatrix = glm::translate(modelMatrix, -origin);
         modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.x), glm::vec3(0.1, 0.0, 0.0));
         modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.y), glm::vec3(0.0, 1.0, 0.0));
         modelMatrix = glm::rotate(modelMatrix, glm::radians(rotation.z), glm::vec3(0.0, 0.0, 1.0));

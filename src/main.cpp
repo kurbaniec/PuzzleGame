@@ -202,7 +202,7 @@ int main() {
     glfwSetKeyCallback(window, key_callback);
 
     // tell GLFW to capture our mouse
-    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -321,15 +321,22 @@ int main() {
             shaderTest->setMat4("projection", projection);
             shaderTest->setMat4("view", view);
             shaderTest->setMat4("model", model);*/
+
             blockInstance3->position.z += 0.0002;
             blockInstance3->rotation.y += 0.02;
-            blockInstance2->position.y += 0.0002;
+            // blockInstance3->rotation.y = 45;
+            // blockInstance3->rotation.z = 90;
+            // blockInstance3->position.z = 1;
+
+            //blockInstance2->position.y += 0.0002;
+            blockInstance2->position.y = 2;
+
             // See: https://stackoverflow.com/a/34104944/12347616
-            if (!glm::all(glm::lessThan(blockInstance3->scale, glm::vec3(0.2f)))) {
-                blockInstance->rotation.y += 0.02;
-                blockInstance->rotation.x += 0.02;
+            if (!glm::all(glm::lessThan(blockInstance->scale, glm::vec3(0.2f)))) {
                 blockInstance->scale -= 0.00002;
             }
+            blockInstance->rotation.y += 0.02;
+            blockInstance->rotation.x += 0.02;
 
             blockModel->draw(view, projection);
         }
