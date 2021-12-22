@@ -8,6 +8,7 @@
 #include "utils/model.h"
 
 #include "engine/model/simplemodel.h"
+#include "engine/instance/instance.h"
 
 
 /*
@@ -267,6 +268,7 @@ int main()
         model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
         shader.setMat4("model", model);
         m.Draw(shader);
+
 
         if (!disable) {
             model = glm::translate(model, glm::vec3(0.0f, 0.0f, 5.0f));
