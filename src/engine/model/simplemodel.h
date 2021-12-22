@@ -18,6 +18,8 @@ namespace engine {
         std::vector<Mesh> meshes;
         std::string directory;
 
+        std::vector<std::shared_ptr<Instance>> instances;
+
         // constructor, expects a filepath to a 3D model.
         explicit SimpleModel(
             const std::string& id,
@@ -28,9 +30,12 @@ namespace engine {
                 (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator
         );
 
-        void draw() override;
+        void draw(glm::mat4 view, glm::mat4 projection) override;
 
         glm::mat4 getModelMatrix() override;
+
+        std::shared_ptr<Instance>
+        create(std::string id, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, glm::vec3 origin) override;
     };
 }
 

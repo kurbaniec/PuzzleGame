@@ -18,10 +18,18 @@ namespace engine {
         loadModel(path, textures_loaded, meshes);
     }
 
-    void SimpleModel::draw() {
-        //shader->use();
-        for (auto& mesh: meshes)
-            mesh.Draw(shader);
+    void SimpleModel::draw(glm::mat4 view, glm::mat4 projection) {
+        // shader->use();
+        /*for (auto& mesh: meshes)
+            mesh.Draw(shader);*/
+        shader->use();
+        shader->setMat4("projection", projection);
+        shader->setMat4("view", view);
+        for (auto& instance: instances) {
+            shader->setMat4("model", instance->getModelMatrix());
+            for (auto& mesh: meshes)
+                mesh.Draw(shader);
+        }
     }
 
     glm::mat4 SimpleModel::getModelMatrix() {
@@ -30,6 +38,13 @@ namespace engine {
         modelMatrix = glm::mat4(1.0f);
         // Transformations must be in reversed order!
         return glm::mat4();
+    }
+
+    std::shared_ptr<Instance>
+    SimpleModel::create(std::string id, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, glm::vec3 origin) {
+        auto instance = Model::create(id, position, rotation, scale, origin);
+        instances.push_back(instance);
+        return instance;
     }
 
 }

@@ -242,28 +242,34 @@ int main() {
             "blockModel",
             "resources/objects/block/transparentblock.obj",
             shaderTest, true,
-            [](const std::string& id, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin) -> shared_ptr<engine::Instance> {
+            [](const std::string& id, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
+               glm::vec3 origin) -> shared_ptr<engine::Instance> {
                 return std::make_shared<BlockInstance>(id, pos, rot, scale, origin);
             }
         )
     );
     factory->createInstance("blockModel", "test");
-    auto factoryTest = state->getInstance("test");
-
-    engine::SimpleModel mTest(
-        "blockModel",
-        "resources/objects/block/transparentblock.obj",
-        shaderTest, true,
-        [](const std::string& id, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin) -> shared_ptr<engine::Instance> {
-            return std::make_shared<BlockInstance>(id, pos, rot, scale, origin);
-        }
-    );
+    factory->createInstance("blockModel", "test2");
+    factory->createInstance("blockModel", "test3");
 
 
+    auto blockModel = state->getModel("blockModel");
+    auto blockInstance = state->getInstance("test");
+    auto blockInstance2 = state->getInstance("test2");
+    auto blockInstance3 = state->getInstance("test3");
+
+    // engine::SimpleModel mTest(
+    //     "blockModel",
+    //     "resources/objects/block/transparentblock.obj",
+    //     shaderTest, true,
+    //     [](const std::string& id, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin) -> shared_ptr<engine::Instance> {
+    //         return std::make_shared<BlockInstance>(id, pos, rot, scale, origin);
+    //     }
+    // );
 
 
     // draw in wireframe
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // render loop
     // -----------
@@ -284,13 +290,17 @@ int main() {
         glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // don't forget to enable shader before setting uniforms
-        shader.use();
+
 
         // view/projection transformations
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f,
-                                                100.0f);
+        glm::mat4 projection = glm::perspective(
+            glm::radians(camera.Zoom), (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f
+        );
         glm::mat4 view = camera.GetViewMatrix();
+
+        // Old way from learnopengl
+        // don't forget to enable shader before setting uniforms
+        /*shader.use();
         shader.setMat4("projection", projection);
         shader.setMat4("view", view);
 
@@ -300,19 +310,30 @@ int main() {
                                glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
         model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));    // it's a bit too big for our scene, so scale it down
         shader.setMat4("model", model);
-        m.Draw(shader);
+        m.Draw(shader);*/
 
-
+        // Using own custom engine classes
         if (!disable) {
-            model = glm::translate(model, glm::vec3(0.0f, 0.0f, 5.0f));
-            /*shader.setMat4("model", model);
-            m2.Draw(shader);*/
+            /*model = glm::translate(model, glm::vec3(0.0f, 0.0f, 5.0f));
+            *//*shader.setMat4("model", model);
+            m2.Draw(shader);*//*
             shaderTest->use();
             shaderTest->setMat4("projection", projection);
             shaderTest->setMat4("view", view);
-            shaderTest->setMat4("model", model);
-            mTest.draw();
+            shaderTest->setMat4("model", model);*/
+            blockInstance3->position.z += 0.0002;
+            blockInstance3->rotation.y += 0.02;
+            blockInstance2->position.y += 0.0002;
+            // See: https://stackoverflow.com/a/34104944/12347616
+            if (!glm::all(glm::lessThan(blockInstance3->scale, glm::vec3(0.2f)))) {
+                blockInstance->rotation.y += 0.02;
+                blockInstance->rotation.x += 0.02;
+                blockInstance->scale -= 0.00002;
+            }
+
+            blockModel->draw(view, projection);
         }
+
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
