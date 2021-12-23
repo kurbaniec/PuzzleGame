@@ -81,7 +81,8 @@ namespace engine {
         void loadModel(
             std::string const& path,
             std::vector<Texture>& textures_loaded,
-            std::vector<Mesh>& meshes
+            std::vector<Mesh>& meshes,
+            std::vector<Mesh>& transparentMeshes
         );
 
     private:
@@ -91,6 +92,7 @@ namespace engine {
             const aiScene* scene,
             std::vector<Texture>& textures_loaded,
             std::vector<Mesh>& meshes,
+            std::vector<Mesh>& transparentMeshes,
             std::string& directory
         );
 

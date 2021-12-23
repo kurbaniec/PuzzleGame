@@ -14,7 +14,7 @@ namespace engine {
         std::function<std::shared_ptr<Instance>
             (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator
     ) : Model(id, std::move(shader), std::move(creator)) {
-        loadModel(path, textures_loaded, meshes);
+        loadModel(path, textures_loaded, meshes, transparentMeshes);
     }
 
     void SimpleModel::draw(glm::mat4 view, glm::mat4 projection) {
@@ -27,6 +27,12 @@ namespace engine {
         for (auto& instance: instances) {
             shader->setMat4("model", instance->getModelMatrix());
             for (auto& mesh: meshes)
+                mesh.Draw(shader);
+        }
+        // TODO: Move to transparent render
+        for (auto& instance: instances) {
+            shader->setMat4("model", instance->getModelMatrix());
+            for (auto& mesh: transparentMeshes)
                 mesh.Draw(shader);
         }
     }

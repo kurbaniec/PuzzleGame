@@ -19,7 +19,10 @@ namespace engine {
             (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator
     ) : id(std::move(id)), shader(std::move(shader)), creator(std::move(creator)) {}
 
-    void Model::loadModel(const std::string& path, std::vector<Texture>& textures_loaded, std::vector<Mesh>& meshes) {
+    void Model::loadModel(
+        const std::string& path, std::vector<Texture>& textures_loaded, std::vector<Mesh>& meshes,
+        std::vector<Mesh>& transparentMeshes
+    ) {
         // read file via ASSIMP
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals |
@@ -34,23 +37,28 @@ namespace engine {
         auto directory = path.substr(0, path.find_last_of('/'));
 
         // process ASSIMP's root node recursively
-        processNode(scene->mRootNode, scene, textures_loaded, meshes, directory);
+        processNode(scene->mRootNode, scene, textures_loaded, meshes, transparentMeshes, directory);
     }
 
     void Model::processNode(
         aiNode* node, const aiScene* scene, std::vector<Texture>& textures_loaded,
-        std::vector<Mesh>& meshes, std::string& directory
+        std::vector<Mesh>& meshes, std::vector<Mesh>& transparentMeshes, std::string& directory
     ) {
         // process each mesh located at the current node
         for (unsigned int i = 0; i < node->mNumMeshes; i++) {
             // the node object only contains indices to index the actual objects in the scene.
             // the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            meshes.push_back(processMesh(mesh, scene, textures_loaded, directory));
+            auto engineMesh = processMesh(mesh, scene, textures_loaded, directory);
+            if (!engineMesh.transparent) {
+                meshes.push_back(std::move(engineMesh));
+            } else {
+                transparentMeshes.push_back(std::move(engineMesh));
+            }
         }
         // after we've processed all of the meshes (if any) we then recursively process each of the children nodes
         for (unsigned int i = 0; i < node->mNumChildren; i++) {
-            processNode(node->mChildren[i], scene, textures_loaded, meshes, directory);
+            processNode(node->mChildren[i], scene, textures_loaded, meshes, transparentMeshes, directory);
         }
     }
 

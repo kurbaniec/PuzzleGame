@@ -16,6 +16,7 @@ namespace engine {
         // model data
         std::vector<Texture> textures_loaded;    // stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
         std::vector<Mesh> meshes;
+        std::vector<Mesh> transparentMeshes;
         std::string directory;
 
         std::vector<std::shared_ptr<Instance>> instances;
