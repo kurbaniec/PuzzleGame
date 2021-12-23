@@ -26,6 +26,10 @@ namespace engine {
         camera = std::move(new_camera);
     }
 
+    void State::setWindow(std::shared_ptr<Window> new_window) {
+        window = std::move(new_window);
+    }
+
     std::shared_ptr<Model> State::getModel(const std::string& modelName) {
         if (models.contains(modelName)) {
             return models[modelName];
@@ -42,5 +46,9 @@ namespace engine {
 
     std::shared_ptr<Camera> State::getCamera() const {
         return camera;
+    }
+
+    std::shared_ptr<Window> State::getWindow() const {
+        return window;
     }
 }

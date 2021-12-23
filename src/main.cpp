@@ -13,6 +13,7 @@
 #include "engine/state/state.h"
 #include "engine/factory/InstanceFactory.h"
 #include "engine/camera/camera.h"
+#include "engine/renderer/renderer.h"
 
 
 /*
@@ -206,7 +207,9 @@ int main() {
 
     auto state = std::make_shared<engine::State>();
     auto camera = std::make_shared<engine::Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
+    auto projection = std::make_shared<engine::Window>(1280, 720, state);
     state->setCamera(camera);
+    state->setWindow(projection);
 
     glfwMakeContextCurrent(window);
     // See: https://stackoverflow.com/a/61336206/12347616
@@ -223,7 +226,7 @@ int main() {
     // glfwSwapInterval(0);
     // Force aspect ratio
     // See: https://www.glfw.org/docs/latest/group__window.html#ga72ac8cb1ee2e312a878b55153d81b937
-    glfwSetWindowAspectRatio(window, 16, 9);
+    //glfwSetWindowAspectRatio(window, 16, 9);
 
     // tell GLFW to capture our mouse
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -244,7 +247,7 @@ int main() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-
+    auto renderer = std::make_shared<engine::Renderer>(state);
     auto factory = std::make_shared<engine::InstanceFactory>(state);
 
     // build and compile shaders
@@ -361,9 +364,10 @@ int main() {
             blockInstance->rotation.y += static_cast<float>(deltaTime) * 10.0f;
             blockInstance->rotation.x += static_cast<float>(deltaTime) * 10.0f;
 
-            blockModel->drawInstances(view, projection);
+            //blockModel->drawInstances(view, projection);
         }
 
+        renderer->draw();
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -421,6 +425,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
+    auto* state = static_cast<std::shared_ptr<engine::State>*>(glfwGetWindowUserPointer(window));
+    auto projection = (*state)->getWindow();
+    projection->width = width;
+    projection->height = height;
     glViewport(0, 0, width, height);
 }
 
