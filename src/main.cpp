@@ -164,8 +164,8 @@ float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
 
 // timing
-float deltaTime = 0.0f;
-float lastFrame = 0.0f;
+double deltaTime = 0.0f;
+double lastFrame = 0.0f;
 
 // toggle
 bool disable = false;
@@ -200,9 +200,15 @@ int main() {
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
     glfwSetKeyCallback(window, key_callback);
+    // Enable/Disable vsync
+    // See: https://www.glfw.org/docs/latest/group__context.html#ga6d4e0cdf151b5e579bd67f13202994ed
+    // glfwSwapInterval(0);
+    // Force aspect ratio
+    // See: https://www.glfw.org/docs/latest/group__window.html#ga72ac8cb1ee2e312a878b55153d81b937
+    glfwSetWindowAspectRatio(window, 16, 9);
 
     // tell GLFW to capture our mouse
-    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -276,7 +282,7 @@ int main() {
     while (!glfwWindowShouldClose(window)) {
         // per-frame time logic
         // --------------------
-        float currentFrame = glfwGetTime();
+        double currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
         // print(deltaTime);
@@ -322,8 +328,8 @@ int main() {
             shaderTest->setMat4("view", view);
             shaderTest->setMat4("model", model);*/
 
-            blockInstance3->position.z += 0.0002;
-            blockInstance3->rotation.y += 0.02;
+            blockInstance3->position.z += static_cast<float>(deltaTime) * 0.5f;
+            blockInstance3->rotation.y += static_cast<float>(deltaTime) * 10.0f;
             // blockInstance3->rotation.y = 45;
             // blockInstance3->rotation.z = 90;
             // blockInstance3->position.z = 1;
@@ -333,10 +339,10 @@ int main() {
 
             // See: https://stackoverflow.com/a/34104944/12347616
             if (!glm::all(glm::lessThan(blockInstance->scale, glm::vec3(0.2f)))) {
-                blockInstance->scale -= 0.00002;
+                blockInstance->scale -= static_cast<float>(deltaTime) * 0.002f;
             }
-            blockInstance->rotation.y += 0.02;
-            blockInstance->rotation.x += 0.02;
+            blockInstance->rotation.y += static_cast<float>(deltaTime) * 10.0f;
+            blockInstance->rotation.x += static_cast<float>(deltaTime) * 10.0f;
 
             blockModel->drawInstances(view, projection);
         }
@@ -358,7 +364,8 @@ int main() {
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
+        // glfwSetWindowShouldClose(window, true);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera.ProcessKeyboard(FORWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
