@@ -4,7 +4,9 @@
 
 #include "renderer.h"
 #include "../model/triangle.h"
+
 #define GLM_ENABLE_EXPERIMENTAL
+
 #include "glm/ext.hpp"
 
 namespace engine {
@@ -44,12 +46,22 @@ namespace engine {
         std::sort(
             transparentTriangles.begin(), transparentTriangles.end(),
             [](std::reference_wrapper<Triangle> a, std::reference_wrapper<Triangle> b) {
-                return a.get().cameraDistance < b.get().cameraDistance;
+                return a.get().cameraDistance > b.get().cameraDistance;
             }
         );
 
+        std::cout << "==========" << std::endl;
         for (auto triangle: transparentTriangles) {
+            std::cout << "Distance" << triangle.get().cameraDistance << std::endl;
+            std::cout << "Centroid" << glm::to_string(triangle.get().centroid) << std::endl;
+            std::cout << "Instance" << triangle.get().instance.lock()->id << std::endl;
+            std::cout << "Triangle Pos" << glm::to_string(
+                triangle.get().vertices[0].get().Position + triangle.get().vertices[1].get().Position +
+                triangle.get().vertices[1].get().Position) << std::endl;
+            std::cout << "Instance Pos" << glm::to_string(triangle.get().instance.lock()->position) << std::endl;
             triangle.get().draw(viewMatrix, projectionMatrix);
+            std::cout << "^^^^" << std::endl;
         }
+        std::cout << "==========" << std::endl;
     }
 }

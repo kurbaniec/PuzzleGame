@@ -32,7 +32,10 @@ namespace engine {
         auto c = (vertices[0].get().Position + vertices[1].get().Position + vertices[1].get().Position);
         c *= 1/3.0f;
         auto c2 = glm::vec4(c, 1.0f);
-        auto c3 = c2 * modelMatrix;
+
+        // Calculate centroid "vertex" with model (composition) matrix
+        // Note: Order is important p' = Mp
+        auto c3 = modelMatrix * c2;
         centroid = glm::vec3(c3);
 
         return centroid;
