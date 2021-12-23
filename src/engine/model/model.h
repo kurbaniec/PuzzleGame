@@ -302,10 +302,20 @@ namespace engine {
             // And: https://stackoverflow.com/a/10769481/12347616
             int texDims[2];
             glBindTexture(GL_TEXTURE_2D, textureID);
-            glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &texDims[0]);   // 0 Mipmap Level => 0 = Base image
+            glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH,
+                                     &texDims[0]);   // 0 Mipmap Level => 0 = Base image
             glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &texDims[1]);
-            glBindTexture(GL_TEXTURE_2D, 0);
             print("size ", texDims[0], "-", texDims[1]);
+            // Get colors
+            // See: https://stackoverflow.com/questions/48938930/pixel-access-with-glgetteximage
+            auto* pixels = new float [texDims[0] * texDims[1] * 4];
+            glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, pixels);
+            auto r = pixels[0];
+            auto g = pixels[0 + 0 + 1];
+            auto b = pixels[0 + 0 + 2];
+            auto a = pixels[0 + 0 + 3];
+
+            delete[] pixels;
 
             return textureID;
         }
