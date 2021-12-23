@@ -4,6 +4,7 @@
 
 #include <string>
 #include "simplemodel.h"
+#include "triangle.h"
 
 namespace engine {
 
@@ -17,7 +18,7 @@ namespace engine {
         loadModel(path, textures_loaded, meshes, transparentMeshes);
     }
 
-    void SimpleModel::draw(glm::mat4 view, glm::mat4 projection) {
+    void SimpleModel::drawInstances(glm::mat4 view, glm::mat4 projection) {
         // shader->use();
         /*for (auto& mesh: meshes)
             mesh.Draw(shader);*/
@@ -49,8 +50,25 @@ namespace engine {
     SimpleModel::create(std::string id, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, glm::vec3 origin) {
         auto instance = Model::create(id, position, rotation, scale, origin);
         instances.push_back(instance);
-
+        for (auto& mesh: transparentMeshes) {
+            for (auto i = 0, offset = 0; i < mesh.indices.size(); i+=3, ++offset) {
+                std::vector<std::reference_wrapper<Vertex>> vertices {
+                    std::ref(mesh.vertices[mesh.indices[i]]),
+                    std::ref(mesh.vertices[mesh.indices[i+1]]),
+                    std::ref(mesh.vertices[mesh.indices[i+2]]),
+                };
+                transparentTriangles.emplace_back(vertices, mesh, offset, instance->getModelMatrix());
+            }
+        }
         return instance;
+    }
+
+    std::vector<std::reference_wrapper<Triangle>> SimpleModel::getTriangles() {
+        transparentTrianglesRef.clear();
+        for(auto& triangle: transparentTriangles) {
+            transparentTrianglesRef.emplace_back(std::ref(triangle));
+        }
+        return transparentTrianglesRef;
     }
 
 }

@@ -16,7 +16,7 @@ namespace engine {
 
     }
 
-    glm::mat4 Instance::getModelMatrix() {
+    glm::mat4& Instance::getModelMatrix() {
         // Build unique transformation for model
         // See: https://learnopengl.com/Getting-started/
         modelMatrix = glm::mat4(1.0f);

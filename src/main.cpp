@@ -202,7 +202,7 @@ int main() {
     glfwSetKeyCallback(window, key_callback);
 
     // tell GLFW to capture our mouse
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -338,7 +338,7 @@ int main() {
             blockInstance->rotation.y += 0.02;
             blockInstance->rotation.x += 0.02;
 
-            blockModel->draw(view, projection);
+            blockModel->drawInstances(view, projection);
         }
 
 

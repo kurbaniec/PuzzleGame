@@ -7,7 +7,7 @@
 namespace engine {
 
     Triangle::Triangle(
-        std::vector<Vertex> vertices,
+        std::vector<std::reference_wrapper<Vertex>> vertices,
         Mesh& mesh,
         unsigned int offset,
         glm::mat4& modelMatrix

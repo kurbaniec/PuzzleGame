@@ -7,6 +7,8 @@
 
 #ifndef PUZZLE_GAME_ENGINE_MODEL_H
 #include "model.h"
+#include "triangle.h"
+
 #endif //PUZZLE_GAME_ENGINE_MODEL_H
 
 namespace engine {
@@ -17,6 +19,7 @@ namespace engine {
         std::vector<Texture> textures_loaded;    // stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
         std::vector<Mesh> meshes;
         std::vector<Mesh> transparentMeshes;
+        std::vector<Triangle> transparentTriangles;
         std::string directory;
 
         std::vector<std::shared_ptr<Instance>> instances;
@@ -30,12 +33,17 @@ namespace engine {
                 (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator
         );
 
-        void draw(glm::mat4 view, glm::mat4 projection) override;
+        void drawInstances(glm::mat4 view, glm::mat4 projection) override;
+
+        std::vector<std::reference_wrapper<Triangle>> getTriangles() override;
 
         glm::mat4 getModelMatrix() override;
 
         std::shared_ptr<Instance>
         create(std::string id, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, glm::vec3 origin) override;
+
+    private:
+        std::vector<std::reference_wrapper<Triangle>> transparentTrianglesRef;
     };
 }
 

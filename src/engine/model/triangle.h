@@ -10,12 +10,12 @@
 namespace engine {
     class Triangle {
     public:
-        const std::vector<Vertex> vertices;
+        const std::vector<std::reference_wrapper<Vertex>> vertices;
         const Mesh& mesh;
         const unsigned int offset;
         glm::mat4& modelMatrix;
 
-        Triangle(std::vector<Vertex> vertices, Mesh& mesh, unsigned int offset, glm::mat4& modelMatrix);
+        Triangle(std::vector<std::reference_wrapper<Vertex>> vertices, Mesh& mesh, unsigned int offset, glm::mat4& modelMatrix);
 
         glm::vec3 centroid();
     };

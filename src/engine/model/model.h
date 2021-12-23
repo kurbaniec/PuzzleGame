@@ -31,6 +31,7 @@ namespace engine {
     // Forward declaration
     // See: https://stackoverflow.com/a/35452830/12347616
     class Instance;
+    class Triangle;
 
     //unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma = false);
 
@@ -55,7 +56,8 @@ namespace engine {
             for (unsigned int i = 0; i < meshes.size(); i++)
                 meshes[i].Draw(shader);
         }*/
-        virtual void draw(glm::mat4 view, glm::mat4 projection) = 0;
+        virtual void drawInstances(glm::mat4 view, glm::mat4 projection) = 0;
+        virtual std::vector<std::reference_wrapper<Triangle>> getTriangles() = 0;
 
         virtual glm::mat4 getModelMatrix() = 0;
 

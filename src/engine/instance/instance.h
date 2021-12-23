@@ -29,7 +29,7 @@ namespace engine {
             glm::vec3 origin
         );
 
-        virtual glm::mat4 getModelMatrix();
+        virtual glm::mat4& getModelMatrix();
 
     protected:
         std::weak_ptr<Model> model;
