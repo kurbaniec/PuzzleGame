@@ -165,7 +165,7 @@ const unsigned int SCR_WIDTH = 1280;
 const unsigned int SCR_HEIGHT = 720;
 
 // camera
-engine::Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+//engine::Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -203,7 +203,14 @@ int main() {
         glfwTerminate();
         return -1;
     }
+
+    auto state = std::make_shared<engine::State>();
+    auto camera = std::make_shared<engine::Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
+    state->setCamera(camera);
+
     glfwMakeContextCurrent(window);
+    // See: https://stackoverflow.com/a/61336206/12347616
+    glfwSetWindowUserPointer(window, *reinterpret_pointer_cast<void*>(state));
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
@@ -238,7 +245,6 @@ int main() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
-    auto state = std::make_shared<engine::State>();
     auto factory = std::make_shared<engine::InstanceFactory>(state);
 
     // build and compile shaders
@@ -311,9 +317,9 @@ int main() {
 
         // view/projection transformations
         glm::mat4 projection = glm::perspective(
-            glm::radians(camera.Zoom), (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f
+            glm::radians(camera->Zoom), (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f
         );
-        glm::mat4 view = camera.GetViewMatrix();
+        glm::mat4 view = camera->GetViewMatrix();
 
         // Old way from learnopengl
         // don't forget to enable shader before setting uniforms
@@ -374,6 +380,9 @@ int main() {
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow* window) {
+    // See: https://stackoverflow.com/a/23204968/12347616
+    auto* state = static_cast<std::shared_ptr<engine::State>*>(glfwGetWindowUserPointer(window));
+    auto camera = (*state)->getCamera();
     if (focus) {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             // glfwSetWindowShouldClose(window, true);
@@ -381,13 +390,13 @@ void processInput(GLFWwindow* window) {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-            camera.ProcessKeyboard(engine::FORWARD, deltaTime);
+            camera->ProcessKeyboard(engine::FORWARD, deltaTime);
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-            camera.ProcessKeyboard(engine::BACKWARD, deltaTime);
+            camera->ProcessKeyboard(engine::BACKWARD, deltaTime);
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            camera.ProcessKeyboard(engine::LEFT, deltaTime);
+            camera->ProcessKeyboard(engine::LEFT, deltaTime);
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            camera.ProcessKeyboard(engine::RIGHT, deltaTime);
+            camera->ProcessKeyboard(engine::RIGHT, deltaTime);
         /*if (glfwGetKey(window, GLFW_KEY_0) == GLFW_RELEASE) {
             print("Released Button 0");
         }*/
@@ -418,6 +427,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+    auto* state = static_cast<std::shared_ptr<engine::State>*>(glfwGetWindowUserPointer(window));
+    auto camera = (*state)->getCamera();
     if (focus) {
         if (firstMouse) {
             lastX = xpos;
@@ -431,14 +442,16 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
         lastX = xpos;
         lastY = ypos;
 
-        camera.ProcessMouseMovement(xoffset, yoffset);
+        camera->ProcessMouseMovement(xoffset, yoffset);
     }
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    camera.ProcessMouseScroll(yoffset);
+    auto* state = static_cast<std::shared_ptr<engine::State>*>(glfwGetWindowUserPointer(window));
+    auto camera = (*state)->getCamera();
+    camera->ProcessMouseScroll(yoffset);
 }
 
 // See: https://www.glfw.org/docs/3.3/input_guide.html#cursor_enter

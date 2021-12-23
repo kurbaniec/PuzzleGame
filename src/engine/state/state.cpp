@@ -22,6 +22,10 @@ namespace engine {
         instances[id] = std::move(instance);
     }
 
+    void State::setCamera(std::shared_ptr<Camera> new_camera) {
+        camera = std::move(new_camera);
+    }
+
     std::shared_ptr<Model> State::getModel(const std::string& modelName) {
         if (models.contains(modelName)) {
             return models[modelName];
@@ -34,5 +38,9 @@ namespace engine {
             return instances[id];
         }
         return nullptr;
+    }
+
+    std::shared_ptr<Camera> State::getCamera() const {
+        return camera;
     }
 }
