@@ -57,11 +57,18 @@ namespace engine {
         Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures, bool transparent);
 
         // render the mesh
-        void Draw(std::shared_ptr<Shader> const& shader);
+        void draw(std::shared_ptr<Shader> const& shader);
+
+        // render subpart (triangle) of the mesh
+        void drawTriangle(std::shared_ptr<Shader> const& shader, unsigned int offset);
 
     private:
         // render data
         unsigned int VBO, EBO;
+
+        void bindTexture(const std::shared_ptr<Shader>& shader);
+
+        void unbindTexture();
 
         // initializes all the buffer objects/arrays
         void setupMesh();

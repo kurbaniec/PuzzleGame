@@ -27,13 +27,13 @@ namespace engine {
         for (auto& instance: instances) {
             shader->setMat4("model", instance->getModelMatrix());
             for (auto& mesh: meshes)
-                mesh.Draw(shader);
+                mesh.draw(shader);
         }
         // TODO: Move to transparent render
         for (auto& instance: instances) {
             shader->setMat4("model", instance->getModelMatrix());
             for (auto& mesh: transparentMeshes)
-                mesh.Draw(shader);
+                mesh.draw(shader);
         }
     }
 
@@ -49,6 +49,7 @@ namespace engine {
     SimpleModel::create(std::string id, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, glm::vec3 origin) {
         auto instance = Model::create(id, position, rotation, scale, origin);
         instances.push_back(instance);
+
         return instance;
     }
 

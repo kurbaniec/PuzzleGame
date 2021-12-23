@@ -21,8 +21,26 @@ namespace engine {
         print("Indices ", indices.size());
     }
 
-    void Mesh::Draw(const std::shared_ptr<Shader>& shader) {
+    void Mesh::draw(const std::shared_ptr<Shader>& shader) {
         // bind appropriate textures
+        bindTexture(shader);
+        // draw mesh
+        glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
+        // always good practice to set everything back to defaults once configured.
+        unbindTexture();
+    }
+
+    void Mesh::drawTriangle(const std::shared_ptr<Shader>& shader, unsigned int offset) {
+        bindTexture(shader);
+        glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, (void*)(offset * 3 * sizeof(GL_UNSIGNED_INT)));
+        glBindVertexArray(0);
+        unbindTexture();
+    }
+
+    void Mesh::bindTexture(const std::shared_ptr<Shader>& shader) {
         unsigned int diffuseNr = 1;
         unsigned int specularNr = 1;
         unsigned int normalNr = 1;
@@ -46,13 +64,9 @@ namespace engine {
             // and finally bind the texture
             glBindTexture(GL_TEXTURE_2D, textures[i].id);
         }
+    }
 
-        // draw mesh
-        glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
-
-        // always good practice to set everything back to defaults once configured.
+    void Mesh::unbindTexture() {
         glActiveTexture(GL_TEXTURE0);
     }
 

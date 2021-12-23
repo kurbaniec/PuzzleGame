@@ -38,11 +38,6 @@ namespace engine {
     public:
         const std::string id;
 
-        glm::vec3 position;
-        glm::vec3 rotation;
-        glm::vec3 scale;
-        glm::vec3 origin;
-
         // model data
         /*vector<Texture> textures_loaded;    // stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
         vector<Mesh> meshes;
