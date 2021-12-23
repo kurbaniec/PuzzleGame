@@ -16,6 +16,8 @@ namespace engine {
         const std::vector<std::reference_wrapper<Vertex>> vertices;
         const unsigned int offset;
         const std::shared_ptr<Shader>& shader;
+        glm::vec3 centroid;
+        float cameraDistance;
 
         Triangle(
             std::shared_ptr<Instance> instance,
@@ -25,7 +27,8 @@ namespace engine {
             std::shared_ptr<Shader>& shader
         );
 
-        glm::vec3 centroid();
+        glm::vec3& updateCentroid();
+        float updateCameraDistance(glm::vec3 cameraPosition);
 
         void draw(glm::mat4 view, glm::mat4 projection);
     };
