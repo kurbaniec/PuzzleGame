@@ -210,6 +210,12 @@ namespace engine {
                                                                    textures_loaded, directory);
             textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
+            /*for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
+                auto color = scene->mMaterials[mesh->mMaterialIndex]->mColors[0][i];
+                print("Has Color ", mesh->HasVertexColors(i), " ", color);
+            }*/
+            print(mesh->GetNumColorChannels());
+
             // return a mesh object created from the extracted mesh data
             return Mesh(vertices, indices, textures);
         }
@@ -284,6 +290,22 @@ namespace engine {
                     SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
                 );
             }
+
+            if (textureID == 0) {
+                std::cout << "Error loading texture" << std::endl;
+                throw std::runtime_error("Error loading texture");
+            }
+
+            // Get texture dimensions
+            // See: https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glGetTexLevelParameter.xhtml
+            // And: https://stackoverflow.com/a/30141975/12347616
+            // And: https://stackoverflow.com/a/10769481/12347616
+            int texDims[2];
+            glBindTexture(GL_TEXTURE_2D, textureID);
+            glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &texDims[0]);   // 0 Mipmap Level => 0 = Base image
+            glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &texDims[1]);
+            glBindTexture(GL_TEXTURE_2D, 0);
+            print("size ", texDims[0], "-", texDims[1]);
 
             return textureID;
         }
