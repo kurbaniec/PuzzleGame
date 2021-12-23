@@ -23,12 +23,18 @@ namespace engine {
         // See: https://stackoverflow.com/questions/13690070/how-can-i-transform-a-glmvec3-by-a-glmmat4
         // vec4 to vec3
         // See: https://stackoverflow.com/a/18842386/12347616
-        auto a = glm::vec3(glm::vec4(vertices[0].get().Position, 1.0f) * modelMatrix);
-        auto b = glm::vec3(glm::vec4(vertices[1].get().Position, 1.0f) * modelMatrix);
-        auto c = glm::vec3(glm::vec4(vertices[2].get().Position, 1.0f) * modelMatrix);
-        // Calculate centroid
-        // See: https://brilliant.org/wiki/triangles-centroid/
-        centroid = (a+b+c) * 1.0f/3.0f;
+        // auto a = glm::vec3(glm::vec4(vertices[0].get().Position, 1.0f) * modelMatrix);
+        // auto b = glm::vec3(glm::vec4(vertices[1].get().Position, 1.0f) * modelMatrix);
+        // auto c = glm::vec3(glm::vec4(vertices[2].get().Position, 1.0f) * modelMatrix);
+        // // Calculate centroid
+        // // See: https://brilliant.org/wiki/triangles-centroid/
+        // centroid = (a+b+c) * 1.0f/3.0f;
+        auto c = (vertices[0].get().Position + vertices[1].get().Position + vertices[1].get().Position);
+        c *= 1/3.0f;
+        auto c2 = glm::vec4(c, 1.0f);
+        auto c3 = c2 * modelMatrix;
+        centroid = glm::vec3(c3);
+
         return centroid;
     }
 

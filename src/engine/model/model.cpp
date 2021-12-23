@@ -262,6 +262,7 @@ namespace engine {
                     break;
                 }
             }
+            glActiveTexture(GL_TEXTURE0);
             print("transparent ", transparent);
 
             delete[] pixels;

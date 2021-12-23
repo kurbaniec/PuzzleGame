@@ -44,7 +44,7 @@ namespace engine {
         std::sort(
             transparentTriangles.begin(), transparentTriangles.end(),
             [](std::reference_wrapper<Triangle> a, std::reference_wrapper<Triangle> b) {
-                return a.get().cameraDistance > b.get().cameraDistance;
+                return a.get().cameraDistance < b.get().cameraDistance;
             }
         );
 
