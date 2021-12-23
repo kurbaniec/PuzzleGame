@@ -241,7 +241,7 @@ int main() {
         std::make_shared<engine::SimpleModel>(
             "blockModel",
             "resources/objects/block/transparentblock.obj",
-            shaderTest, true,
+            shaderTest,
             [](const std::string& id, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
                glm::vec3 origin) -> shared_ptr<engine::Instance> {
                 return std::make_shared<BlockInstance>(id, pos, rot, scale, origin);

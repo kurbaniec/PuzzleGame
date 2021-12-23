@@ -50,7 +50,6 @@ namespace engine {
         explicit Model(
             std::string id,
             std::shared_ptr<Shader> shader,
-            bool transparent,
             std::function<std::shared_ptr<Instance>
                 (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator
         );
@@ -74,7 +73,6 @@ namespace engine {
         );
 
     protected:
-        bool transparent;
         glm::mat4 modelMatrix;
         std::shared_ptr<Shader> shader;
         std::function<std::shared_ptr<Instance>(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator;
@@ -192,22 +190,28 @@ namespace engine {
             // specular: texture_specularN
             // normal: texture_normalN
 
+            // Also check if mesh contains transparent elements
+            bool transparent = false;
+
             // 1. diffuse maps
-            std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse",
-                                                                    textures_loaded, directory);
+            std::vector<Texture> diffuseMaps = loadMaterialTextures(
+                material, aiTextureType_DIFFUSE, "texture_diffuse",
+                textures_loaded, directory, transparent);
             textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
             // 2. specular maps
-            std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR,
-                                                                     "texture_specular",
-                                                                     textures_loaded, directory);
+            std::vector<Texture> specularMaps = loadMaterialTextures(
+                material, aiTextureType_SPECULAR, "texture_specular",
+                textures_loaded, directory, transparent);
             textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
             // 3. normal maps
-            std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal",
-                                                                   textures_loaded, directory);
+            std::vector<Texture> normalMaps = loadMaterialTextures(
+                material, aiTextureType_HEIGHT, "texture_normal",
+                textures_loaded, directory, transparent);
             textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
             // 4. height maps
-            std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height",
-                                                                   textures_loaded, directory);
+            std::vector<Texture> heightMaps = loadMaterialTextures(
+                material, aiTextureType_AMBIENT, "texture_height",
+                textures_loaded, directory, transparent);
             textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
             /*for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
@@ -217,7 +221,7 @@ namespace engine {
             print(mesh->GetNumColorChannels());
 
             // return a mesh object created from the extracted mesh data
-            return Mesh(vertices, indices, textures);
+            return Mesh(vertices, indices, textures, transparent);
         }
 
         // checks all material textures of a given type and loads the textures if they're not loaded yet.
@@ -227,7 +231,8 @@ namespace engine {
             aiTextureType type,
             std::string typeName,
             std::vector<Texture>& textures_loaded,
-            std::string& directory
+            std::string& directory,
+            bool& transparent
         ) {
             std::vector<Texture> textures;
             for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
@@ -244,9 +249,10 @@ namespace engine {
                 }
                 if (!skip) {   // if texture hasn't been loaded already, load it
                     Texture texture;
-                    texture.id = TextureFromFile(str.C_Str(), directory);
+                    texture.id = TextureFromFile(str.C_Str(), directory, transparent);
                     texture.type = typeName;
                     texture.path = str.C_Str();
+                    texture.transparent = transparent;
                     textures.push_back(texture);
                     textures_loaded.push_back(
                         texture);  // store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
@@ -264,7 +270,7 @@ namespace engine {
             }
         }
 
-        unsigned int TextureFromFile(const char* path, const std::string& directory) {
+        unsigned int TextureFromFile(const char* path, const std::string& directory, bool& transparent) {
             std::string filename = std::string(path);
             filename = directory + '/' + filename;
 
@@ -296,26 +302,38 @@ namespace engine {
                 throw std::runtime_error("Error loading texture");
             }
 
-            // Get texture dimensions
-            // See: https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glGetTexLevelParameter.xhtml
-            // And: https://stackoverflow.com/a/30141975/12347616
-            // And: https://stackoverflow.com/a/10769481/12347616
-            int texDims[2];
-            glBindTexture(GL_TEXTURE_2D, textureID);
-            glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH,
-                                     &texDims[0]);   // 0 Mipmap Level => 0 = Base image
-            glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &texDims[1]);
-            print("size ", texDims[0], "-", texDims[1]);
-            // Get colors
-            // See: https://stackoverflow.com/questions/48938930/pixel-access-with-glgetteximage
-            auto* pixels = new float [texDims[0] * texDims[1] * 4];
-            glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, pixels);
-            auto r = pixels[0];
-            auto g = pixels[0 + 0 + 1];
-            auto b = pixels[0 + 0 + 2];
-            auto a = pixels[0 + 0 + 3];
+            if (!transparent) {
+                // Get texture dimensions
+                // See: https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glGetTexLevelParameter.xhtml
+                // And: https://stackoverflow.com/a/30141975/12347616
+                // And: https://stackoverflow.com/a/10769481/12347616
+                int texDims[2];
+                glBindTexture(GL_TEXTURE_2D, textureID);
+                glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH,
+                                         &texDims[0]);   // 0 Mipmap Level => 0 = Base image
+                glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &texDims[1]);
+                print("size ", texDims[0], "-", texDims[1]);
+                // Get colors
+                // See: https://stackoverflow.com/questions/48938930/pixel-access-with-glgetteximage
+                auto size = texDims[0] * texDims[1] * 4;
+                auto* pixels = new float[size];
+                glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, pixels);
+                // auto r = pixels[0];
+                // auto g = pixels[0 + 0 + 1];
+                // auto b = pixels[0 + 0 + 2];
+                // auto a = pixels[0 + 0 + 3];
+                //bool isTransparent = false;
+                for (auto i = 0; i < size; i += 4) {
+                    if (pixels[i] == 1.0f) {
+                        //isTransparent = true;
+                        transparent = true;
+                        break;
+                    }
+                }
+                print("transparent ", transparent);
 
-            delete[] pixels;
+                delete[] pixels;
+            }
 
             return textureID;
         }

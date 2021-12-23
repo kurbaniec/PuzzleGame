@@ -11,10 +11,9 @@ namespace engine {
         const std::string& id,
         const std::string& path,
         std::shared_ptr<Shader> shader,
-        bool transparent,
         std::function<std::shared_ptr<Instance>
             (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator
-    ) : Model(id, std::move(shader), transparent, std::move(creator)) {
+    ) : Model(id, std::move(shader), std::move(creator)) {
         loadModel(path, textures_loaded, meshes);
     }
 
