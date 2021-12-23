@@ -50,18 +50,18 @@ namespace engine {
             }
         );
 
-        std::cout << "==========" << std::endl;
+        //std::cout << "==========" << std::endl;
         for (auto triangle: transparentTriangles) {
-            std::cout << "Distance" << triangle.get().cameraDistance << std::endl;
-            std::cout << "Centroid" << glm::to_string(triangle.get().centroid) << std::endl;
-            std::cout << "Instance" << triangle.get().instance.lock()->id << std::endl;
-            std::cout << "Triangle Pos" << glm::to_string(
-                triangle.get().vertices[0].get().Position + triangle.get().vertices[1].get().Position +
-                triangle.get().vertices[1].get().Position) << std::endl;
-            std::cout << "Instance Pos" << glm::to_string(triangle.get().instance.lock()->position) << std::endl;
+            // std::cout << "Distance" << triangle.get().cameraDistance << std::endl;
+            // std::cout << "Centroid" << glm::to_string(triangle.get().centroid) << std::endl;
+            // std::cout << "Instance" << triangle.get().instance.lock()->id << std::endl;
+            // std::cout << "Triangle Pos" << glm::to_string(
+            //     triangle.get().vertices[0].get().Position + triangle.get().vertices[1].get().Position +
+            //     triangle.get().vertices[1].get().Position) << std::endl;
+            // std::cout << "Instance Pos" << glm::to_string(triangle.get().instance.lock()->position) << std::endl;
             triangle.get().draw(viewMatrix, projectionMatrix);
-            std::cout << "^^^^" << std::endl;
+            //std::cout << "^^^^" << std::endl;
         }
-        std::cout << "==========" << std::endl;
+        //std::cout << "==========" << std::endl;
     }
 }
