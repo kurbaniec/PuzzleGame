@@ -19,6 +19,7 @@ namespace engine {
         glm::vec3 rotation;
         glm::vec3 scale;
         glm::vec3 origin;
+        glm::mat4 modelMatrix;
         bool enabled = true;
 
         Instance(
@@ -33,7 +34,6 @@ namespace engine {
 
     protected:
         std::weak_ptr<Model> model;
-        glm::mat4 modelMatrix;
     };
 }
 

@@ -57,7 +57,7 @@ namespace engine {
                     std::ref(mesh.vertices[mesh.indices[i+1]]),
                     std::ref(mesh.vertices[mesh.indices[i+2]]),
                 };
-                transparentTriangles.emplace_back(vertices, mesh, offset, instance->getModelMatrix());
+                transparentTriangles.emplace_back(instance, mesh, vertices, offset);
             }
         }
         return instance;

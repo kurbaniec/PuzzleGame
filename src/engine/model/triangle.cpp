@@ -4,16 +4,17 @@
 
 #include "triangle.h"
 
+#include <utility>
+#include "../instance/instance.h"
+
 namespace engine {
 
     Triangle::Triangle(
-        std::vector<std::reference_wrapper<Vertex>> vertices,
+        std::shared_ptr<Instance>& instance,
         Mesh& mesh,
-        unsigned int offset,
-        glm::mat4& modelMatrix
-    ): vertices(std::move(vertices)), mesh(mesh), offset(offset), modelMatrix(modelMatrix) {
-
-    }
+        std::vector<std::reference_wrapper<Vertex>> vertices,
+        unsigned int offset
+    ): instance(instance), mesh(mesh), vertices(std::move(vertices)), offset(offset) {}
 
     glm::vec3 Triangle::centroid() {
         // TODO
