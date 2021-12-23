@@ -32,7 +32,6 @@ namespace engine {
     // See: https://stackoverflow.com/a/35452830/12347616
     class Instance;
     class Triangle;
-
     //unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma = false);
 
     class Model {

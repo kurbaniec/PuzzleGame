@@ -30,12 +30,6 @@ namespace engine {
             for (auto& mesh: meshes)
                 mesh.draw(shader);
         }
-        // TODO: Move to transparent render
-        for (auto& instance: instances) {
-            shader->setMat4("model", instance->modelMatrix);
-            for (auto& mesh: transparentMeshes)
-                mesh.draw(shader);
-        }
     }
 
     glm::mat4 SimpleModel::getModelMatrix() {
@@ -57,7 +51,7 @@ namespace engine {
                     std::ref(mesh.vertices[mesh.indices[i+1]]),
                     std::ref(mesh.vertices[mesh.indices[i+2]]),
                 };
-                transparentTriangles.emplace_back(instance, mesh, vertices, offset);
+                transparentTriangles.emplace_back(instance, mesh, vertices, offset, shader);
             }
         }
         return instance;

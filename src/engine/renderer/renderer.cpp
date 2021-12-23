@@ -3,6 +3,7 @@
 //
 
 #include "renderer.h"
+#include "../model/triangle.h"
 
 namespace engine {
 
@@ -10,6 +11,7 @@ namespace engine {
 
     void Renderer::draw() {
         // Get view & projection matrix
+        // ----------------------------
         auto viewMatrix = state->camera->GetViewMatrix();
         auto projectionMatrix = state->window->getProjectionMatrix();
         // Update instance model matrices
@@ -17,9 +19,21 @@ namespace engine {
             instance->updateModelMatrix();
         }
         // Draw opaque non-transparent meshes
+        // ----------------------------------
         for (auto& [modelName, model]: state->models) {
             model->drawInstances(viewMatrix, projectionMatrix);
         }
         // Draw transparent mesh triangles
+        // -------------------------------
+        transparentTriangles.clear();
+        for (auto& [modelName, model]: state->models) {
+            // Combine vectors
+            // See: std::vector<std::reference_wrapper<Triangle>>
+            auto triangles = model->getTriangles();
+            transparentTriangles.insert(transparentTriangles.end(), triangles.begin(), triangles.end());
+        }
+        for (auto triangle: transparentTriangles) {
+           triangle.get().draw(viewMatrix, projectionMatrix);
+        }
     }
 }

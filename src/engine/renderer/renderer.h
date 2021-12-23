@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "../state/state.h"
+#include "../model/triangle.h"
 
 namespace engine {
     class Renderer {
@@ -17,6 +18,7 @@ namespace engine {
 
     private:
         std::shared_ptr<State> state;
+        std::vector<std::reference_wrapper<Triangle>> transparentTriangles;
     };
 }
 

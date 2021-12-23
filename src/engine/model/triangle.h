@@ -11,19 +11,23 @@
 namespace engine {
     class Triangle {
     public:
-        const std::shared_ptr<Instance>& instance;
+        const std::weak_ptr<Instance> instance;
         const Mesh& mesh;
         const std::vector<std::reference_wrapper<Vertex>> vertices;
         const unsigned int offset;
+        const std::shared_ptr<Shader>& shader;
 
         Triangle(
-            std::shared_ptr<Instance>& instance,
+            std::shared_ptr<Instance> instance,
             Mesh& mesh,
             std::vector<std::reference_wrapper<Vertex>> vertices,
-            unsigned int offset
+            unsigned int offset,
+            std::shared_ptr<Shader>& shader
         );
 
         glm::vec3 centroid();
+
+        void draw(glm::mat4 view, glm::mat4 projection);
     };
 }
 
