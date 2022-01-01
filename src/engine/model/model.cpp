@@ -25,10 +25,16 @@ namespace engine {
         const std::string& path, std::vector<Texture>& textures_loaded, std::vector<Mesh>& meshes,
         std::vector<Mesh>& transparentMeshes
     ) {
-        // read file via ASSIMP
+        // Read file via ASSIMP
+        // Also generate bounding boxes
+        // See: https://github.com/assimp/assimp/issues/426#issuecomment-920930875
+        // And: http://assimp.sourceforge.net/lib_html/postprocess_8h.html#a64795260b95f5a4b3f3dc1be4f52e410aa4ae05f45c5682ab245cf8e87986426f
         Assimp::Importer importer;
-        const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals |
-                                                       aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+        const aiScene* scene = importer.ReadFile(
+            path,
+            aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs |
+            aiProcess_CalcTangentSpace | aiProcess_GenBoundingBoxes
+        );
         // check for errors
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
         {
@@ -51,6 +57,7 @@ namespace engine {
             // the node object only contains indices to index the actual objects in the scene.
             // the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+            // TODO: assign bounding box
             auto engineMesh = processMesh(mesh, scene, textures_loaded, directory);
             if (!engineMesh.transparent) {
                 meshes.push_back(std::move(engineMesh));
