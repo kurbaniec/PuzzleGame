@@ -198,8 +198,8 @@ int main() {
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
-    if (window == NULL) {
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Puzzle Game", nullptr, nullptr);
+    if (window == nullptr) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
@@ -213,7 +213,9 @@ int main() {
 
     glfwMakeContextCurrent(window);
     // See: https://stackoverflow.com/a/61336206/12347616
-    glfwSetWindowUserPointer(window, *reinterpret_pointer_cast<void*>(state));
+    // And: https://www.reddit.com/r/cpp_questions/comments/d2owlo/comment/ezw398b/?utm_source=share&utm_medium=web2x&context=3
+    auto glfwState = state;
+    glfwSetWindowUserPointer(window, *reinterpret_pointer_cast<void*>(glfwState));
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
@@ -385,8 +387,8 @@ int main() {
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow* window) {
     // See: https://stackoverflow.com/a/23204968/12347616
-    auto* state = static_cast<std::shared_ptr<engine::State>*>(glfwGetWindowUserPointer(window));
-    auto camera = (*state)->getCamera();
+    auto state = *static_cast<std::shared_ptr<engine::State>*>(glfwGetWindowUserPointer(window));
+    auto camera = state->getCamera();
     if (focus) {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             // glfwSetWindowShouldClose(window, true);
@@ -435,8 +437,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-    auto* state = static_cast<std::shared_ptr<engine::State>*>(glfwGetWindowUserPointer(window));
-    auto camera = (*state)->getCamera();
+    auto state = *static_cast<std::shared_ptr<engine::State>*>(glfwGetWindowUserPointer(window));
+    auto camera = state->getCamera();
     if (focus) {
         if (firstMouse) {
             lastX = xpos;
@@ -457,8 +459,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    auto* state = static_cast<std::shared_ptr<engine::State>*>(glfwGetWindowUserPointer(window));
-    auto camera = (*state)->getCamera();
+    auto state = *static_cast<std::shared_ptr<engine::State>*>(glfwGetWindowUserPointer(window));
+    auto camera = state->getCamera();
     camera->ProcessMouseScroll(yoffset);
 }
 
