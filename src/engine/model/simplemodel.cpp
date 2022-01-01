@@ -14,8 +14,8 @@ namespace engine {
         std::shared_ptr<Shader> shader,
         std::function<std::shared_ptr<Instance>
             (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator
-    ) : Model(id, std::move(shader), std::move(creator)) {
-        loadModel(path, textures_loaded, meshes, transparentMeshes);
+    ) : Model(id, std::move(creator)), shader(std::move(shader)) {
+        loadModel(path, texturesLoaded, meshes, transparentMeshes);
     }
 
     void SimpleModel::drawInstances(glm::mat4 view, glm::mat4 projection) {
@@ -30,14 +30,6 @@ namespace engine {
             for (auto& mesh: meshes)
                 mesh.draw(shader);
         }
-    }
-
-    glm::mat4 SimpleModel::getModelMatrix() {
-        // Build unique transformation for model
-        // See: https://learnopengl.com/Getting-started/
-        modelMatrix = glm::mat4(1.0f);
-        // Transformations must be in reversed order!
-        return glm::mat4();
     }
 
     std::shared_ptr<Instance>

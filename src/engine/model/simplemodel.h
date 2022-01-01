@@ -15,16 +15,6 @@ namespace engine {
 
     class SimpleModel : public Model {
     public:
-        // model data
-        std::vector<Texture> textures_loaded;    // stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
-        std::vector<Mesh> meshes;
-        std::vector<Mesh> transparentMeshes;
-        std::vector<Triangle> transparentTriangles;
-        std::string directory;
-
-        std::vector<std::shared_ptr<Instance>> instances;
-
-        // constructor, expects a filepath to a 3D model.
         explicit SimpleModel(
             const std::string& id,
             const std::string& path,
@@ -37,13 +27,19 @@ namespace engine {
 
         std::vector<std::reference_wrapper<Triangle>> getTriangles() override;
 
-        glm::mat4 getModelMatrix() override;
-
         std::shared_ptr<Instance>
         create(std::string id, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, glm::vec3 origin) override;
 
     private:
+        // Model Data
+        std::vector<Mesh> meshes;
+        std::vector<Mesh> transparentMeshes;
+        std::vector<Triangle> transparentTriangles;
         std::vector<std::reference_wrapper<Triangle>> transparentTrianglesRef;
+        std::shared_ptr<Shader> shader;
+        std::vector<Texture> texturesLoaded;
+        // Managed Instances
+        std::vector<std::shared_ptr<Instance>> instances;
     };
 }
 

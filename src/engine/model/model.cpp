@@ -8,16 +8,18 @@
 
 namespace engine {
     std::shared_ptr<Instance>
-    engine::Model::create(std::string id, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, glm::vec3 origin) {
-        return creator(std::move(id), position, rotation, scale, origin);
+    engine::Model::create(
+        std::string instanceId,
+        glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, glm::vec3 origin
+    ) {
+        return creator(std::move(instanceId), position, rotation, scale, origin);
     }
 
     Model::Model(
         std::string id,
-        std::shared_ptr<Shader> shader,
         std::function<std::shared_ptr<Instance>
             (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator
-    ) : id(std::move(id)), shader(std::move(shader)), creator(std::move(creator)) {}
+    ) : id(std::move(id)), creator(std::move(creator)) {}
 
     void Model::loadModel(
         const std::string& path, std::vector<Texture>& textures_loaded, std::vector<Mesh>& meshes,

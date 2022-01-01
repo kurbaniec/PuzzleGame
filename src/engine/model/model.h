@@ -31,37 +31,25 @@ namespace engine {
     // Forward declaration
     // See: https://stackoverflow.com/a/35452830/12347616
     class Instance;
+
     class Triangle;
-    //unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma = false);
 
     class Model {
     public:
         const std::string id;
 
-        // model data
-        /*vector<Texture> textures_loaded;    // stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
-        vector<Mesh> meshes;
-        string directory;*/
         explicit Model(
             std::string id,
-            std::shared_ptr<Shader> shader,
             std::function<std::shared_ptr<Instance>
                 (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator
         );
 
-        // draws the model, and thus all its meshes
-        /*void Draw(Shader& shader) {
-            //print("Mesh size: ", meshes.size());
-            for (unsigned int i = 0; i < meshes.size(); i++)
-                meshes[i].Draw(shader);
-        }*/
         virtual void drawInstances(glm::mat4 view, glm::mat4 projection) = 0;
+
         virtual std::vector<std::reference_wrapper<Triangle>> getTriangles() = 0;
 
-        virtual glm::mat4 getModelMatrix() = 0;
-
         virtual std::shared_ptr<Instance> create(
-            std::string id,
+            std::string instanceId,
             glm::vec3 position,
             glm::vec3 rotation,
             glm::vec3 scale,
@@ -69,8 +57,7 @@ namespace engine {
         );
 
     protected:
-        glm::mat4 modelMatrix;
-        std::shared_ptr<Shader> shader;
+        // Instance Creator
         std::function<std::shared_ptr<Instance>(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator;
 
         // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
