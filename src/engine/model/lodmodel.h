@@ -18,8 +18,8 @@ namespace engine {
             const std::vector<std::string>& paths,
             const std::vector<float>& distances,
             const std::vector<std::shared_ptr<Shader>>& shaders,
-            std::function<std::shared_ptr<Instance>
-                (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator,
+            const std::function<std::shared_ptr<Instance>
+                (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)>& creator,
             std::shared_ptr<Camera> camera
         );
 
@@ -29,6 +29,7 @@ namespace engine {
 
     private:
         std::map<float, SimpleModel> models;
+        std::vector<float> distances;
         std::vector<std::reference_wrapper<Triangle>> transparentTrianglesRef;
         std::shared_ptr<Camera> camera;
 
@@ -37,6 +38,8 @@ namespace engine {
         std::function<std::shared_ptr<Instance>
             (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)>
         createLodCreatorLambda();
+
+        void updateInstances();
 
         float getCameraDistance(glm::vec3 position);
     };

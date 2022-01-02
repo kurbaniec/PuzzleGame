@@ -57,4 +57,14 @@ namespace engine {
         return transparentTrianglesRef;
     }
 
+    const std::vector<std::shared_ptr<Instance>>& SimpleModel::getInstances() {
+        return instances;
+    }
+
+    void SimpleModel::removeInstances(const std::vector<int>& indices) {
+        for (auto& index : indices) {
+            instances.erase(instances.begin()+index);
+        }
+    }
+
 }

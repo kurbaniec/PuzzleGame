@@ -29,6 +29,10 @@ namespace engine {
         std::shared_ptr<Instance>
         create(std::string id, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, glm::vec3 origin) override;
 
+        const std::vector<std::shared_ptr<Instance>>& getInstances();
+
+        void removeInstances(const std::vector<int>& indices);
+
     private:
         // Model Data
         std::vector<Mesh> meshes;

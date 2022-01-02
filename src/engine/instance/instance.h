@@ -7,7 +7,8 @@
 
 #include <string>
 #include <glm/glm.hpp>
-#include "../model/model.h"
+#include <memory>
+//#include "../model/model.h"
 
 namespace engine {
     class Model;
