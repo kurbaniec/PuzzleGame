@@ -283,8 +283,8 @@ int main() {
             "blockLodModel",
             std::vector<std::string>{
                 "resources/objects/block/transparentblock.obj",
-                "resources/objects/block/transparentblock.obj"},
-            std::vector<float>{1, 4},
+                "resources/objects/block2/transparentblock.obj"},
+            std::vector<float>{5, 10},
             std::vector<std::shared_ptr<engine::Shader>>{shaderTest, shaderTest},
             [](const std::string& id, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
                glm::vec3 origin) -> shared_ptr<engine::Instance> {
