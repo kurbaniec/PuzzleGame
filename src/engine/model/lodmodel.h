@@ -34,6 +34,9 @@ namespace engine {
         std::vector<std::reference_wrapper<Triangle>> transparentTrianglesRef;
         std::shared_ptr<Camera> camera;
 
+        std::vector<std::vector<int>> toRemove;
+        std::vector<std::vector<std::shared_ptr<Instance>>> toAdd;
+
         std::shared_ptr<Instance>
         lodCreator(const std::string& id, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin);
         std::function<std::shared_ptr<Instance>

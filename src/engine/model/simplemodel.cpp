@@ -56,18 +56,30 @@ namespace engine {
         // Add collection to existing one
         // See: https://stackoverflow.com/a/2551785/12347616
         instances.insert(std::end(instances), std::begin(new_instances), std::end(new_instances));
-        for (auto& instance : instances) {
+        for (auto& instance: new_instances) {
             createTriangles(instance);
         }
     }
 
-    void SimpleModel::removeInstances(const std::vector<int>& indices) {
+    void SimpleModel::removeInstances(std::vector<int>& indices) {
+        // Two loop are needed because `erase` modifies the `instances` vector
+        // and for `removeTriangles` we need to get the instance first with the original index
         for (auto& index: indices) {
-            {
-                auto instance = instances[index];
-                removeTriangles(instance->id);
+            auto instance = instances[index];
+            removeTriangles(instance->id);
+        }
+        // Sort indices before removal so that index to delete is always valid
+        // See: https://stackoverflow.com/q/9025084/12347616
+        std::sort(indices.begin(), indices.end(), std::greater<>());
+        for (auto& index: indices) {
+            try {
+                std::cout << "size " << instances.size() << std::endl;
+                std::cout << "index " << index << std::endl;
+                instances.erase(instances.begin() + index);
+            } catch (...) {
+                std::cerr << "baum" << std::endl;
             }
-            instances.erase(instances.begin() + index);
+
         }
     }
 
@@ -87,11 +99,12 @@ namespace engine {
     void SimpleModel::removeTriangles(const std::string& instanceId) {
         // Triangle needs to implement Move assignment in order to work
         // See: https://stackoverflow.com/a/21813528/12347616
-        auto _ = std::remove_if(
-            transparentTriangles.begin(), transparentTriangles.end(),
-            [instanceId](Triangle& triangle) -> bool {
-                return triangle.instance.lock()->id == instanceId;
-            }
+        transparentTriangles.erase(
+            std::remove_if(
+                transparentTriangles.begin(), transparentTriangles.end(),
+                [instanceId](Triangle& triangle) -> bool {
+                    return triangle.instance.lock()->id == instanceId;
+                }), transparentTriangles.end()
         );
     }
 

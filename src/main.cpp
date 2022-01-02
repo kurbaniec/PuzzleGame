@@ -8,6 +8,7 @@
 #include "utils/model.h"
 
 #include "engine/model/simplemodel.h"
+#include "engine/model/lodmodel.h"
 #include "engine/instance/instance.h"
 #include "game/BlockInstance.h"
 #include "engine/state/state.h"
@@ -276,9 +277,25 @@ int main() {
             }
         )
     );
+    factory->registerModel(
+        "blockLodModel",
+        std::make_shared<engine::LodModel>(
+            "blockLodModel",
+            std::vector<std::string>{
+                "resources/objects/block/transparentblock.obj",
+                "resources/objects/block/transparentblock.obj"},
+            std::vector<float>{1, 4},
+            std::vector<std::shared_ptr<engine::Shader>>{shaderTest, shaderTest},
+            [](const std::string& id, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
+               glm::vec3 origin) -> shared_ptr<engine::Instance> {
+                return std::make_shared<BlockInstance>(id, pos, rot, scale, origin);
+            },
+            camera
+        )
+    );
     factory->createInstance("blockModel", "test");
     factory->createInstance("blockModel", "test2");
-    factory->createInstance("blockModel", "test3");
+    factory->createInstance("blockLodModel", "test3");
 
 
     auto blockModel = state->getModel("blockModel");

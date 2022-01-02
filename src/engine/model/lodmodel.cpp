@@ -28,6 +28,9 @@ namespace engine {
                 auto path = paths[i];
                 auto shader = shaders[i];
                 models.insert({distance, SimpleModel(simpleId, path, shader, creator)});
+
+                toRemove.emplace_back();
+                toAdd.emplace_back();
             }
             /*// Copy vector to list & assign distances member field
             // See: https://www.techiedelight.com/convert-vector-list-cpp/
@@ -71,98 +74,122 @@ namespace engine {
     }
 
     void LodModel::updateInstances() {
-        std::vector<std::vector<int>> toRemove;
-        std::vector<std::vector<std::shared_ptr<Instance>>> toAdd;
-
         auto distIndex = 0;
         auto distMax = distances.size() - 1;
 
-        for (auto& distance: distances) {
-            // SimpleModel has no default constructor
-            // So one must use `at` instead of `[]` operator.
-            // See: https://stackoverflow.com/a/12124339/12347616
-            auto model = models.at(distance);
-            auto instances = model.getInstances();
+        try {
 
-            auto instanceIndex = 0;
-            for (auto& instance: instances) {
-                auto instanceDistance = getCameraDistance(instance->position);
-                if (instanceDistance <= distance) {
-                    if (distIndex > 0) {
-                        //auto currentDist = distance;
-                        //auto newDist = distance;
-                        auto newDistIndex = distIndex;
+            for (auto& distance: distances) {
+                // SimpleModel has no default constructor
+                // So one must use `at` instead of `[]` operator.
+                // See: https://stackoverflow.com/a/12124339/12347616
+                auto model = models.at(distance);
+                auto instances = model.getInstances();
 
-                        for (auto i = distIndex; i >= 0; --i) {
-                            auto distanceCheck = distances[i];
-                            if (distanceCheck <= instanceDistance) {
-                                //newDist = distanceCheck;
-                                newDistIndex = i;
-                                break;
+                auto instanceIndex = 0;
+                for (auto& instance: instances) {
+                    auto instanceDistance = getCameraDistance(instance->position);
+                    std::cout << instanceDistance << std::endl;
+                    if (instanceDistance <= distance) {
+                        if (distIndex > 0) {
+                            //auto currentDist = distance;
+                            //auto newDist = distance;
+                            auto newDistIndex = distIndex;
+
+                            for (auto i = distIndex; i >= 0; --i) {
+                                auto distanceCheck = distances[i];
+                                if (instanceDistance <= distanceCheck) {
+                                    //newDist = distanceCheck;
+                                    newDistIndex = i;
+                                } else {
+                                    break;
+                                }
+                            }
+
+                            // for (auto distanceCheck = distances.begin() + distCounter - 1;
+                            //      distanceCheck != distances.begin(); --distanceCheck) {
+                            //     if (*distanceCheck < instanceDistance) {
+                            //         newDistance = *distanceCheck;
+                            //         break;
+                            //     }
+                            // }
+
+                            if (distIndex != newDistIndex) {
+                                std::cout << "A " << distIndex << " " << newDistIndex << std::endl;
+                                toRemove[distIndex].push_back(instanceIndex);
+                                toAdd[newDistIndex].push_back(instance);
+                            }
+
+                        }
+                    } else {
+                        if (distIndex < distMax) {
+                            //auto currentDist = distance;
+                            //auto newDist = distance;
+                            auto newDistIndex = distIndex;
+
+                            for (auto i = distIndex; i <= distMax; ++i) {
+                                auto distanceCheck = distances[i];
+                                if (instanceDistance <= distanceCheck) {
+                                    //newDist = distanceCheck;
+                                    newDistIndex = i;
+                                    break;
+                                }
+                            }
+
+                            if (distIndex != newDistIndex) {
+                                std::cout << "B " << distIndex << " " << newDistIndex << std::endl;
+                                toRemove[distIndex].push_back(instanceIndex);
+                                toAdd[newDistIndex].push_back(instance);
                             }
                         }
-
-                        // for (auto distanceCheck = distances.begin() + distCounter - 1;
-                        //      distanceCheck != distances.begin(); --distanceCheck) {
-                        //     if (*distanceCheck < instanceDistance) {
-                        //         newDistance = *distanceCheck;
-                        //         break;
-                        //     }
-                        // }
-
-                        if (distIndex != newDistIndex) {
-                            toRemove[distIndex].push_back(instanceIndex);
-                            toAdd[newDistIndex].push_back(instance);
-                        }
-
                     }
-                } else {
-                    if (distIndex < distMax) {
-                        //auto currentDist = distance;
-                        //auto newDist = distance;
-                        auto newDistIndex = distIndex;
-
-                        for (auto i = distIndex; i <= distMax; ++i) {
-                            auto distanceCheck = distances[i];
-                            if (distanceCheck > instanceDistance) {
-                                //newDist = distanceCheck;
-                                newDistIndex = i;
-                                break;
-                            }
-                        }
-
-                        if (distIndex != newDistIndex) {
-                            toRemove[distIndex].push_back(instanceIndex);
-                            toAdd[newDistIndex].push_back(instance);
-                        }
-                    }
+                    ++instanceIndex;
                 }
-                ++instanceIndex;
+                ++distIndex;
             }
-            ++distIndex;
+        } catch (std::exception& e) {
+            std::cerr << e.what() << std::endl;
         }
 
         distIndex = 0;
         for (auto& distance: distances) {
             auto model = models.at(distance);
-            auto remove = toRemove[distIndex];
-            if (!remove.empty())
-                model.removeInstances(toRemove[distIndex]);
-            auto add = toAdd[distIndex];
-            if (!add.empty())
-                model.addInstances(add);
+            try {
+                if (!toRemove[distIndex].empty()) {
+                    model.removeInstances(toRemove[distIndex]);
+                    toRemove[distIndex].clear();
+                }
+            } catch (std::exception& e) {
+                std::cerr << e.what() << std::endl;
+            }
+            try {
+                if (!toAdd[distIndex].empty()) {
+                    model.addInstances(toAdd[distIndex]);
+                    toAdd[distIndex].clear();
+                }
+            } catch (std::exception& e) {
+                std::cerr << e.what() << std::endl;
+            }
             ++distIndex;
         }
     }
 
     void LodModel::drawInstances(glm::mat4 view, glm::mat4 projection) {
         updateInstances();
-        for (auto& [_, model]: models) {
+        for (auto&[_, model]: models) {
             model.drawInstances(view, projection);
         }
     }
 
     std::vector<std::reference_wrapper<Triangle>> LodModel::getTriangles() {
+        transparentTrianglesRef.clear();
+        for (auto&[_, model]: models) {
+            auto triangles = model.getTriangles();
+            transparentTrianglesRef.insert(
+                std::end(transparentTrianglesRef),
+                std::begin(triangles),std::end(triangles)
+            );
+        }
         return transparentTrianglesRef;
     }
 
