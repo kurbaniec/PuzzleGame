@@ -26,6 +26,7 @@
 #include "shader.h"
 #include "mesh.h"
 #include "../instance/instance.h"
+#include "triangle.h"
 
 namespace engine {
     // Forward declaration

@@ -9,6 +9,8 @@
 #include "../instance/instance.h"
 
 namespace engine {
+    class Instance;
+
     class Triangle {
     public:
         const std::weak_ptr<Instance> instance;

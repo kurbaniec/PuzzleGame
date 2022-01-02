@@ -12,8 +12,6 @@
 #endif //PUZZLE_GAME_ENGINE_MODEL_H
 
 namespace engine {
-    class Triangle;
-
     class SimpleModel : public Model {
     public:
         explicit SimpleModel(
