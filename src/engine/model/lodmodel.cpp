@@ -29,6 +29,12 @@ namespace engine {
                 auto shader = shaders[i];
                 models.insert({distance, SimpleModel(simpleId, path, shader, creator)});
             }
+            /*// Copy vector to list & assign distances member field
+            // See: https://www.techiedelight.com/convert-vector-list-cpp/
+            std::copy(distances.begin(), distances.end(), std::back_inserter(this->distances));
+            // Sort distances
+            // See: https://stackoverflow.com/a/10652701/12347616
+            this->distances.sort();*/
             this->distances = distances;
             std::sort(this->distances.begin(), this->distances.end());
         } else {
@@ -65,14 +71,95 @@ namespace engine {
     }
 
     void LodModel::updateInstances() {
-        std::vector<std::vector<float>> toRemove;
-        for (auto &distance : distances) {
-            auto i = 0;
+        std::vector<std::vector<int>> toRemove;
+        std::vector<std::vector<std::shared_ptr<Instance>>> toAdd;
+
+        auto distIndex = 0;
+        auto distMax = distances.size() - 1;
+
+        for (auto& distance: distances) {
+            // SimpleModel has no default constructor
+            // So one must use `at` instead of `[]` operator.
+            // See: https://stackoverflow.com/a/12124339/12347616
+            auto model = models.at(distance);
+            auto instances = model.getInstances();
+
+            auto instanceIndex = 0;
+            for (auto& instance: instances) {
+                auto instanceDistance = getCameraDistance(instance->position);
+                if (instanceDistance <= distance) {
+                    if (distIndex > 0) {
+                        //auto currentDist = distance;
+                        //auto newDist = distance;
+                        auto newDistIndex = distIndex;
+
+                        for (auto i = distIndex; i >= 0; --i) {
+                            auto distanceCheck = distances[i];
+                            if (distanceCheck <= instanceDistance) {
+                                //newDist = distanceCheck;
+                                newDistIndex = i;
+                                break;
+                            }
+                        }
+
+                        // for (auto distanceCheck = distances.begin() + distCounter - 1;
+                        //      distanceCheck != distances.begin(); --distanceCheck) {
+                        //     if (*distanceCheck < instanceDistance) {
+                        //         newDistance = *distanceCheck;
+                        //         break;
+                        //     }
+                        // }
+
+                        if (distIndex != newDistIndex) {
+                            toRemove[distIndex].push_back(instanceIndex);
+                            toAdd[newDistIndex].push_back(instance);
+                        }
+
+                    }
+                } else {
+                    if (distIndex < distMax) {
+                        //auto currentDist = distance;
+                        //auto newDist = distance;
+                        auto newDistIndex = distIndex;
+
+                        for (auto i = distIndex; i <= distMax; ++i) {
+                            auto distanceCheck = distances[i];
+                            if (distanceCheck > instanceDistance) {
+                                //newDist = distanceCheck;
+                                newDistIndex = i;
+                                break;
+                            }
+                        }
+
+                        if (distIndex != newDistIndex) {
+                            toRemove[distIndex].push_back(instanceIndex);
+                            toAdd[newDistIndex].push_back(instance);
+                        }
+                    }
+                }
+                ++instanceIndex;
+            }
+            ++distIndex;
+        }
+
+        distIndex = 0;
+        for (auto& distance: distances) {
+            auto model = models.at(distance);
+            auto remove = toRemove[distIndex];
+            if (!remove.empty())
+                model.removeInstances(toRemove[distIndex]);
+            auto add = toAdd[distIndex];
+            if (!add.empty())
+                model.addInstances(add);
+            ++distIndex;
         }
     }
 
     void LodModel::drawInstances(glm::mat4 view, glm::mat4 projection) {
-
+        updateInstances();
+        for (auto& [_, model]: models) {
+            model.drawInstances(view, projection);
+        }
     }
 
     std::vector<std::reference_wrapper<Triangle>> LodModel::getTriangles() {

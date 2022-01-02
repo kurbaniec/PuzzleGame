@@ -29,6 +29,7 @@ namespace engine {
 
     private:
         std::map<float, SimpleModel> models;
+        //std::list<float> distances;
         std::vector<float> distances;
         std::vector<std::reference_wrapper<Triangle>> transparentTrianglesRef;
         std::shared_ptr<Camera> camera;

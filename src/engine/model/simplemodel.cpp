@@ -37,11 +37,11 @@ namespace engine {
         auto instance = Model::create(id, position, rotation, scale, origin);
         instances.push_back(instance);
         for (auto& mesh: transparentMeshes) {
-            for (auto i = 0, offset = 0; i < mesh.indices.size(); i+=3, ++offset) {
-                std::vector<std::reference_wrapper<Vertex>> vertices {
+            for (auto i = 0, offset = 0; i < mesh.indices.size(); i += 3, ++offset) {
+                std::vector<std::reference_wrapper<Vertex>> vertices{
                     std::ref(mesh.vertices[mesh.indices[i]]),
-                    std::ref(mesh.vertices[mesh.indices[i+1]]),
-                    std::ref(mesh.vertices[mesh.indices[i+2]]),
+                    std::ref(mesh.vertices[mesh.indices[i + 1]]),
+                    std::ref(mesh.vertices[mesh.indices[i + 2]]),
                 };
                 transparentTriangles.emplace_back(instance, mesh, vertices, offset, shader);
             }
@@ -51,7 +51,7 @@ namespace engine {
 
     std::vector<std::reference_wrapper<Triangle>> SimpleModel::getTriangles() {
         transparentTrianglesRef.clear();
-        for(auto& triangle: transparentTriangles) {
+        for (auto& triangle: transparentTriangles) {
             transparentTrianglesRef.emplace_back(std::ref(triangle));
         }
         return transparentTrianglesRef;
@@ -62,9 +62,15 @@ namespace engine {
     }
 
     void SimpleModel::removeInstances(const std::vector<int>& indices) {
-        for (auto& index : indices) {
-            instances.erase(instances.begin()+index);
+        for (auto& index: indices) {
+            instances.erase(instances.begin() + index);
         }
+    }
+
+    void SimpleModel::addInstances(const std::vector<std::shared_ptr<Instance>>& new_instances) {
+        // Add collection to existing one
+        // See: https://stackoverflow.com/a/2551785/12347616
+        instances.insert(std::end(instances), std::begin(new_instances), std::end(new_instances));
     }
 
 }

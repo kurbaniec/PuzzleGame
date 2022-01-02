@@ -32,6 +32,7 @@ namespace engine {
         const std::vector<std::shared_ptr<Instance>>& getInstances();
 
         void removeInstances(const std::vector<int>& indices);
+        void addInstances(const std::vector<std::shared_ptr<Instance>>& instances);
 
     private:
         // Model Data
