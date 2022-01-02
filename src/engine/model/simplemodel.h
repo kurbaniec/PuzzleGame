@@ -24,15 +24,15 @@ namespace engine {
 
         void drawInstances(glm::mat4 view, glm::mat4 projection) override;
 
-        std::vector<std::reference_wrapper<Triangle>> getTriangles() override;
-
         std::shared_ptr<Instance>
         create(std::string id, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, glm::vec3 origin) override;
 
+        std::vector<std::reference_wrapper<Triangle>> getTriangles() override;
+
         const std::vector<std::shared_ptr<Instance>>& getInstances();
 
-        void removeInstances(const std::vector<int>& indices);
         void addInstances(const std::vector<std::shared_ptr<Instance>>& instances);
+        void removeInstances(const std::vector<int>& indices);
 
     private:
         // Model Data
@@ -44,6 +44,9 @@ namespace engine {
         std::vector<Texture> texturesLoaded;
         // Managed Instances
         std::vector<std::shared_ptr<Instance>> instances;
+
+        void createTriangles(const std::shared_ptr<Instance>& instance);
+        void removeTriangles(const std::string& instanceId);
     };
 }
 

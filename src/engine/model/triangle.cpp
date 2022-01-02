@@ -48,5 +48,14 @@ namespace engine {
         const_cast<Mesh&>(mesh).drawTriangle(shader, offset);
     }
 
+    Triangle::Triangle(Triangle&& source) noexcept
+        : instance(source.instance), mesh(source.mesh), vertices(source.vertices),
+          offset(source.offset), shader(source.shader), centroid(source.centroid),
+          cameraDistance(source.cameraDistance) {}
+
+    Triangle& Triangle::operator=(Triangle&&) noexcept {
+        return *this;
+    }
+
 
 }

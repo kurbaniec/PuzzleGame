@@ -33,6 +33,12 @@ namespace engine {
         float updateCameraDistance(glm::vec3 cameraPosition);
 
         void draw(glm::mat4 view, glm::mat4 projection);
+
+        Triangle(Triangle&) = default;
+        //Triangle& operator=(Triangle&) noexcept = default;
+        Triangle(Triangle&& source) noexcept;
+        Triangle& operator=(Triangle&&) noexcept;
+
     };
 }
 
