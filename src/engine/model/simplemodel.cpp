@@ -72,14 +72,7 @@ namespace engine {
         // See: https://stackoverflow.com/q/9025084/12347616
         std::sort(indices.begin(), indices.end(), std::greater<>());
         for (auto& index: indices) {
-            try {
-                std::cout << "size " << instances.size() << std::endl;
-                std::cout << "index " << index << std::endl;
-                instances.erase(instances.begin() + index);
-            } catch (...) {
-                std::cerr << "baum" << std::endl;
-            }
-
+            instances.erase(instances.begin() + index);
         }
     }
 

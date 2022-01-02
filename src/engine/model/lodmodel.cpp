@@ -83,13 +83,13 @@ namespace engine {
                 // SimpleModel has no default constructor
                 // So one must use `at` instead of `[]` operator.
                 // See: https://stackoverflow.com/a/12124339/12347616
-                auto model = models.at(distance);
+                auto& model = models.at(distance);
                 auto instances = model.getInstances();
 
                 auto instanceIndex = 0;
                 for (auto& instance: instances) {
                     auto instanceDistance = getCameraDistance(instance->position);
-                    std::cout << instanceDistance << std::endl;
+                    //std::cout << instanceDistance << std::endl;
                     if (instanceDistance <= distance) {
                         if (distIndex > 0) {
                             //auto currentDist = distance;
@@ -153,22 +153,16 @@ namespace engine {
 
         distIndex = 0;
         for (auto& distance: distances) {
-            auto model = models.at(distance);
-            try {
-                if (!toRemove[distIndex].empty()) {
-                    model.removeInstances(toRemove[distIndex]);
-                    toRemove[distIndex].clear();
-                }
-            } catch (std::exception& e) {
-                std::cerr << e.what() << std::endl;
+            auto& model = models.at(distance);
+            auto& remove = toRemove[distIndex];
+            if (!remove.empty()) {
+                model.removeInstances(remove);
+                remove.clear();
             }
-            try {
-                if (!toAdd[distIndex].empty()) {
-                    model.addInstances(toAdd[distIndex]);
-                    toAdd[distIndex].clear();
-                }
-            } catch (std::exception& e) {
-                std::cerr << e.what() << std::endl;
+            auto& add = toAdd[distIndex];
+            if (!add.empty()) {
+                model.addInstances(add);
+                add.clear();
             }
             ++distIndex;
         }
@@ -187,7 +181,7 @@ namespace engine {
             auto triangles = model.getTriangles();
             transparentTrianglesRef.insert(
                 std::end(transparentTrianglesRef),
-                std::begin(triangles),std::end(triangles)
+                std::begin(triangles), std::end(triangles)
             );
         }
         return transparentTrianglesRef;
