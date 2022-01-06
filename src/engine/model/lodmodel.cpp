@@ -13,7 +13,7 @@ namespace engine {
         const std::vector<std::string>& paths,
         const std::vector<float>& distances, const std::vector<std::shared_ptr<Shader>>& shaders,
         const std::function<std::shared_ptr<Instance>
-            (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)>& creator,
+            (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3)>& creator,
         std::shared_ptr<Camera> camera
     ) : Model(id, createLodCreatorLambda()), camera(std::move(camera)) {
         auto size = paths.size();
@@ -67,10 +67,12 @@ namespace engine {
     }
 
     std::function<std::shared_ptr<Instance>
-        (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)>
+        (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3)>
     LodModel::createLodCreatorLambda() {
         auto func = [this](
-            const std::string& id, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin
+            const std::string& id,
+            glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
+            glm::vec3 boundsMin, glm::vec3 boundsMax
         ) -> std::shared_ptr<Instance> {
             return this->lodCreator(id, pos, rot, scale, origin);
         };

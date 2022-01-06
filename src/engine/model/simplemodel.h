@@ -6,6 +6,7 @@
 #define PUZZLE_GAME_ENGINE_SIMPLEMODEL_H
 
 #ifndef PUZZLE_GAME_ENGINE_MODEL_H
+
 #include "model.h"
 #include "triangle.h"
 
@@ -19,19 +20,23 @@ namespace engine {
             const std::string& path,
             std::shared_ptr<Shader> shader,
             std::function<std::shared_ptr<Instance>
-                (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator
+                (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator
         );
 
         void drawInstances(glm::mat4 view, glm::mat4 projection) override;
 
         std::shared_ptr<Instance>
-        create(std::string id, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, glm::vec3 origin) override;
+        create(
+            std::string id,
+            glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, glm::vec3 origin
+        ) override;
 
         std::vector<std::reference_wrapper<Triangle>> getTriangles() override;
 
         const std::vector<std::shared_ptr<Instance>>& getInstances();
 
         void addInstances(const std::vector<std::shared_ptr<Instance>>& instances);
+
         void removeInstances(std::vector<int>& indices);
 
     private:
@@ -46,6 +51,7 @@ namespace engine {
         std::vector<std::shared_ptr<Instance>> instances;
 
         void createTriangles(const std::shared_ptr<Instance>& instance);
+
         void removeTriangles(const std::string& instanceId);
     };
 }

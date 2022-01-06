@@ -8,6 +8,7 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <memory>
+#include "../collision/boundingbox.h"
 //#include "../model/model.h"
 
 namespace engine {
@@ -28,13 +29,17 @@ namespace engine {
             glm::vec3 position,
             glm::vec3 rotation,
             glm::vec3 scale,
-            glm::vec3 origin
+            glm::vec3 origin,
+            glm::vec3 boundsMin,
+            glm::vec3 boundsMax
         );
 
+        const Bounds& bounds();
         virtual glm::mat4& updateModelMatrix();
 
     protected:
-        std::weak_ptr<Model> model;
+        Bounds boundsVal;
+        //std::weak_ptr<Model> model;
     };
 }
 

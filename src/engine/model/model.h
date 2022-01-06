@@ -42,7 +42,7 @@ namespace engine {
         explicit Model(
             std::string id,
             std::function<std::shared_ptr<Instance>
-                (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator
+                (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator
         );
 
         virtual void drawInstances(glm::mat4 view, glm::mat4 projection) = 0;
@@ -66,7 +66,9 @@ namespace engine {
         glm::vec3 boundsMax{};
 
         // Instance Creator
-        std::function<std::shared_ptr<Instance>(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator;
+        std::function<std::shared_ptr<Instance>(
+            std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3
+        )> creator;
 
         // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
         void loadModel(

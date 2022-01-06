@@ -3,6 +3,7 @@
 //
 
 #include "boundingbox.h"
+#include "glm/gtx/string_cast.hpp"
 
 namespace engine {
 
@@ -35,7 +36,7 @@ namespace engine {
     }
 
     void BoundingBox::updateWorldAabb(const glm::vec3& localMin, const glm::vec3& localMax, glm::mat4 modelMatrix) {
-        glm::vec3 points [8] = {
+        glm::vec3 points[8] = {
             glm::vec3(modelMatrix * glm::vec4(localMin, 1.0f)),
             glm::vec3(modelMatrix * glm::vec4(localMin.x, localMin.y, localMax.z, 1.0f)),
             glm::vec3(modelMatrix * glm::vec4(localMax.x, localMin.y, localMin.z, 1.0f)),
@@ -45,9 +46,12 @@ namespace engine {
             glm::vec3(modelMatrix * glm::vec4(localMin.x, localMax.y, localMax.z, 1.0f)),
             glm::vec3(modelMatrix * glm::vec4(localMin.x, localMax.y, localMin.z, 1.0f)),
         };
-        glm::vec3 min;
-        glm::vec3 max;
-        for (auto& point : points) {
+        // Assign random points from calculated ones
+        // Note: Do not assign default values like vec3(0.0f)
+        // Why? Min values can be greater than 0!
+        glm::vec3 min = points[0];
+        glm::vec3 max = points[0];
+        for (auto& point: points) {
             if (point.x < min.x) min.x = point.x;
             if (point.y < min.y) min.y = point.y;
             if (point.z < min.z) min.z = point.z;
@@ -57,6 +61,11 @@ namespace engine {
         }
         minVal = min;
         maxVal = max;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const BoundingBox& box) {
+        os << "{ min: " << glm::to_string(box.minVal) << ", max: " << glm::to_string(box.maxVal) << " }";
+        return os;
     }
 
     Bounds::Bounds(glm::vec3 min, glm::vec3 max)
@@ -84,5 +93,14 @@ namespace engine {
     void Bounds::updateWorldBounds(glm::mat4 modelMatrix) {
         worldBb.updateWorld(localBb.minVal, localBb.maxVal, modelMatrix);
         worldAabb.updateWorldAabb(localBb.minVal, localBb.maxVal, modelMatrix);
+    }
+
+    std::ostream& operator<<(std::ostream& os, const Bounds& bounds) {
+        os << "{ " << std::endl <<
+           "\tlocal: " << bounds.localBb << ", " << std::endl <<
+           "\tworld: " << bounds.worldBb << ", " << std::endl <<
+           "\taabb: " << bounds.worldAabb << std::endl <<
+           "}";
+        return os;
     }
 }

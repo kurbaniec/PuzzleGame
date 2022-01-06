@@ -13,7 +13,7 @@ namespace engine {
         const std::string& path,
         std::shared_ptr<Shader> shader,
         std::function<std::shared_ptr<Instance>
-            (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator
+            (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator
     ) : Model(id, std::move(creator)), shader(std::move(shader)) {
         loadModel(path, texturesLoaded, meshes, transparentMeshes);
     }
@@ -33,7 +33,10 @@ namespace engine {
     }
 
     std::shared_ptr<Instance>
-    SimpleModel::create(std::string id, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, glm::vec3 origin) {
+    SimpleModel::create(
+        std::string id,
+        glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, glm::vec3 origin
+    ) {
         auto instance = Model::create(id, position, rotation, scale, origin);
         instances.push_back(instance);
         createTriangles(instance);

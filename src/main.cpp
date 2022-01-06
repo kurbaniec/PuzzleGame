@@ -271,9 +271,10 @@ int main() {
             "blockModel",
             "resources/objects/block/transparentblock.obj",
             shaderTest,
-            [](const std::string& id, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
-               glm::vec3 origin) -> shared_ptr<engine::Instance> {
-                return std::make_shared<BlockInstance>(id, pos, rot, scale, origin);
+            [](const std::string& id,
+               glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
+               glm::vec3 boundsMin, glm::vec3 boundsMax) -> shared_ptr<engine::Instance> {
+                return std::make_shared<BlockInstance>(id, pos, rot, scale, origin, boundsMin, boundsMax);
             }
         )
     );
@@ -286,9 +287,10 @@ int main() {
                 "resources/objects/block2/transparentblock.obj"},
             std::vector<float>{5, 10},
             std::vector<std::shared_ptr<engine::Shader>>{shaderTest, shaderTest},
-            [](const std::string& id, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale,
-               glm::vec3 origin) -> shared_ptr<engine::Instance> {
-                return std::make_shared<BlockInstance>(id, pos, rot, scale, origin);
+            [](const std::string& id,
+               glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
+               glm::vec3 boundsMin, glm::vec3 boundsMax) -> shared_ptr<engine::Instance> {
+                return std::make_shared<BlockInstance>(id, pos, rot, scale, origin, boundsMin, boundsMax);
             },
             camera
         )
@@ -385,6 +387,11 @@ int main() {
 
             //blockModel->drawInstances(view, projection);
         }
+        //std::cout << blockInstance->bounds() << std::endl;
+        //std::cout << blockInstance3->bounds() << std::endl;
+        std::cout << blockInstance3->bounds().aabb().height() << std::endl;
+        std::cout << blockInstance3->bounds().aabb().width() << std::endl;
+        std::cout << blockInstance3->bounds().aabb().depth() << std::endl << std::endl;
 
         renderer->draw();
 
@@ -485,8 +492,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 
 // See: https://www.glfw.org/docs/3.3/input_guide.html#cursor_enter
 void cursor_enter_callback(GLFWwindow* window, int entered) {
-    if (entered)
-    {
+    if (entered) {
         // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         // The cursor entered the content area of the window
 
@@ -498,23 +504,18 @@ void cursor_enter_callback(GLFWwindow* window, int entered) {
 }
 
 // See: https://www.glfw.org/docs/latest/window_guide.html#window_focus
-void window_focus_callback(GLFWwindow* window, int focused)
-{
-    if (focused)
-    {
+void window_focus_callback(GLFWwindow* window, int focused) {
+    if (focused) {
         // The window gained input focus
         focus = true;
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    }
-    else
-    {
+    } else {
         // The window lost input focus
         focus = false;
     }
 }
 
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
-{
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
     if (!focus) {
         if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
             focus = true;

@@ -6,6 +6,7 @@
 #define PUZZLE_GAME_ENGINE_BOUNDINGBOX_H
 
 
+#include <ostream>
 #include "glm/vec3.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
 
@@ -20,7 +21,7 @@ namespace engine {
         [[nodiscard]] float height() const; // distance min/max y
         [[nodiscard]] float width() const; // distance min/max x
         [[nodiscard]] float depth() const; // distance min/max z
-
+        friend std::ostream& operator<<(std::ostream& os, const BoundingBox& box);
 
     private:
         glm::vec3 minVal;
@@ -38,8 +39,10 @@ namespace engine {
         [[nodiscard]] const BoundingBox& world() const;
         [[nodiscard]] const BoundingBox& aabb() const;
 
-        void setLocalBounds(glm::vec3 newMin, glm::vec3 max);
+        void setLocalBounds(glm::vec3 min, glm::vec3 max);
         void updateWorldBounds(glm::mat4 modelMatrix);
+
+        friend std::ostream& operator<<(std::ostream& os, const Bounds& bounds);
 
     private:
         BoundingBox localBb;

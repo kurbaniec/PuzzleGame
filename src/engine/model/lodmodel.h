@@ -19,7 +19,7 @@ namespace engine {
             const std::vector<float>& distances,
             const std::vector<std::shared_ptr<Shader>>& shaders,
             const std::function<std::shared_ptr<Instance>
-                (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)>& creator,
+                (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3)>& creator,
             std::shared_ptr<Camera> camera
         );
 
@@ -38,9 +38,13 @@ namespace engine {
         std::vector<std::vector<std::shared_ptr<Instance>>> toAdd;
 
         std::shared_ptr<Instance>
-        lodCreator(const std::string& id, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin);
+        lodCreator(
+            const std::string& id,
+            glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin
+        );
+
         std::function<std::shared_ptr<Instance>
-            (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)>
+            (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3)>
         createLodCreatorLambda();
 
         void updateInstances();
