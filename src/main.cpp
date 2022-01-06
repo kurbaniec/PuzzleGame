@@ -446,6 +446,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     // height will be significantly larger than specified on retina displays.
     auto* state = static_cast<std::shared_ptr<engine::State>*>(glfwGetWindowUserPointer(window));
     auto projection = (*state)->getWindow();
+    // Check when minimizing window
+    if (height == 0) height = 1;
     projection->width = width;
     projection->height = height;
     glViewport(0, 0, width, height);
@@ -516,6 +518,9 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
     if (!focus) {
         if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
             focus = true;
+            // int width, height;
+            // glfwGetWindowSize(window, &width, &height);
+            // glfwSetCursorPos(window, width/2.0, height/2.0);
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
 
