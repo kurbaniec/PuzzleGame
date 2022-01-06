@@ -57,7 +57,14 @@ namespace engine {
             glm::vec3 origin
         );
 
+        glm::vec3 boundingBoxMin();
+        glm::vec3 boundingBoxMax();
+
     protected:
+        // Local Bounding Box / AABB coordinates
+        glm::vec3 boundsMin{};
+        glm::vec3 boundsMax{};
+
         // Instance Creator
         std::function<std::shared_ptr<Instance>(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator;
 
@@ -68,6 +75,8 @@ namespace engine {
             std::vector<Mesh>& meshes,
             std::vector<Mesh>& transparentMeshes
         );
+
+        void updateModelBounds(aiMesh* mesh);
 
     private:
         // processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).

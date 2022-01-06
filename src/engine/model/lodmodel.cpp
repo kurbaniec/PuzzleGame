@@ -43,6 +43,10 @@ namespace engine {
         } else {
             throw std::runtime_error("Path/Distance/Shader size mismatch");
         }
+        // Assign first lod bounding box as overall bounding box
+        auto& model = models.at(distances[0]);
+        boundsMin = model.boundingBoxMin();
+        boundsMax = model.boundingBoxMax();
     }
 
     std::shared_ptr<Instance>

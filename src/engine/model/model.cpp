@@ -57,7 +57,9 @@ namespace engine {
             // the node object only contains indices to index the actual objects in the scene.
             // the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            // TODO: assign bounding box
+            // Assign/Update bounding box
+            updateModelBounds(mesh);
+            // Process mesh
             auto engineMesh = processMesh(mesh, scene, textures_loaded, directory);
             if (!engineMesh.transparent) {
                 meshes.push_back(std::move(engineMesh));
@@ -278,6 +280,25 @@ namespace engine {
         }
 
         return textureID;
+    }
+
+    void Model::updateModelBounds(aiMesh* mesh) {
+        auto min = mesh->mAABB.mMin;
+        auto max = mesh->mAABB.mMax;
+        if (min.x < boundsMin.x) boundsMin.x = min.x;
+        if (min.y < boundsMin.y) boundsMin.y = min.y;
+        if (min.z < boundsMin.z) boundsMin.z = min.z;
+        if (max.x > boundsMax.x) boundsMax.x = max.x;
+        if (max.y > boundsMax.y) boundsMax.y = max.y;
+        if (max.z > boundsMax.z) boundsMax.z = max.z;
+    }
+
+    glm::vec3 Model::boundingBoxMin() {
+        return boundsMin;
+    }
+
+    glm::vec3 Model::boundingBoxMax() {
+        return boundsMax;
     }
 
 
