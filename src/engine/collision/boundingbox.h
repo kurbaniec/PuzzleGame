@@ -23,12 +23,11 @@ namespace engine {
 
 
     private:
-        glm::vec3& localMin;
-        glm::vec3& localMax;
-        glm::vec3 valMin;
-        glm::vec3 valMax;
+        glm::vec3 minVal;
+        glm::vec3 maxVal;
 
-        void update(glm::mat4 modelMatrix);
+        void updateWorld(const glm::vec3& localMin, const glm::vec3& localMax, glm::mat4 modelMatrix);
+        void updateWorldAabb(const glm::vec3& localMin, const glm::vec3& localMax, glm::mat4 modelMatrix);
     };
 
     class Bounds {
@@ -37,16 +36,15 @@ namespace engine {
 
         [[nodiscard]] const BoundingBox& local() const;
         [[nodiscard]] const BoundingBox& world() const;
+        [[nodiscard]] const BoundingBox& aabb() const;
 
         void setLocalBounds(glm::vec3 newMin, glm::vec3 max);
         void updateWorldBounds(glm::mat4 modelMatrix);
 
     private:
-        glm::vec3 min;
-        glm::vec3 max;
-
         BoundingBox localBb;
         BoundingBox worldBb;
+        BoundingBox worldAabb;
     };
 }
 
