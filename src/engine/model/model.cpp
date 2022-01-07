@@ -169,7 +169,7 @@ namespace engine {
             auto color = scene->mMaterials[mesh->mMaterialIndex]->mColors[0][i];
             print("Has Color ", mesh->HasVertexColors(i), " ", color);
         }*/
-        print(mesh->GetNumColorChannels());
+        //print(mesh->GetNumColorChannels());
 
         // return a mesh object created from the extracted mesh data
         return Mesh(vertices, indices, textures, transparent);
@@ -231,7 +231,8 @@ namespace engine {
             // See: https://github.com/SpartanJ/SOIL2
             // And: https://www.reedbeta.com/blog/understanding-bcn-texture-compression-formats/#bc2-bc3-and-bc5
             textureID = SOIL_load_OGL_texture(
-                filename.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_DDS_LOAD_DIRECT
+                filename.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
+                SOIL_FLAG_DDS_LOAD_DIRECT | SOIL_FLAG_TEXTURE_REPEATS
             );
         } else {
             // Use general image loader
@@ -239,7 +240,7 @@ namespace engine {
             // And: https://github.com/alelievr/SOIL2/blob/master/incs/SOIL2.h
             textureID = SOIL_load_OGL_texture(
                 filename.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID,
-                SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y
+                SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_TEXTURE_REPEATS
             );
         }
 
@@ -258,7 +259,7 @@ namespace engine {
             glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH,
                                      &texDims[0]);   // 0 Mipmap Level => 0 = Base image
             glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &texDims[1]);
-            print("size ", texDims[0], "-", texDims[1]);
+            //print("size ", texDims[0], "-", texDims[1]);
             // Get colors
             // See: https://stackoverflow.com/questions/48938930/pixel-access-with-glgetteximage
             auto size = texDims[0] * texDims[1] * 4;
@@ -277,7 +278,7 @@ namespace engine {
                 }
             }
             glActiveTexture(GL_TEXTURE0);
-            print("transparent ", transparent);
+            //print("transparent ", transparent);
 
             delete[] pixels;
         }

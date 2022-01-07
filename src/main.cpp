@@ -298,7 +298,7 @@ int main() {
     factory->registerModel(
         "cube_grass_corner",
         std::make_shared<engine::SimpleModel>(
-            "blockModel",
+            "cube_grass_corner",
             "resources/objects/blocks/cube_grass_corner/cube_grass_corner.obj",
             shaderTest,
             [](const std::string& id,
@@ -309,10 +309,32 @@ int main() {
         )
     );
 
+    factory->registerModel(
+        "player_model",
+        std::make_shared<engine::LodModel>(
+            "player_model",
+            std::vector<std::string>{
+                "resources/objects/player/lod_1/player.obj",
+                "resources/objects/player/lod_2/player.obj",
+                "resources/objects/player/lod_3/player.obj",
+                "resources/objects/player/lod_4/player.obj"},
+            std::vector<float>{5, 10, 15, 20},
+            std::vector<std::shared_ptr<engine::Shader>>{shaderTest, shaderTest, shaderTest, shaderTest},
+            [](const std::string& id,
+               glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
+               glm::vec3 boundsMin, glm::vec3 boundsMax) -> shared_ptr<engine::Instance> {
+                return std::make_shared<BlockInstance>(id, pos, rot, scale, origin, boundsMin, boundsMax);
+            },
+            camera
+        )
+    );
+
+
     factory->createInstance("blockModel", "test");
     factory->createInstance("blockModel", "test2");
     factory->createInstance("blockLodModel", "test3");
     factory->createInstance("cube_grass_corner", "cb");
+    factory->createInstance("player_model", "player");
 
 
     auto blockModel = state->getModel("blockModel");
@@ -321,6 +343,7 @@ int main() {
     auto blockInstance3 = state->getInstance("test3");
 
     auto cb = state->getInstance("cb");
+    auto player = state->getInstance("player");
 
     // engine::SimpleModel mTest(
     //     "blockModel",
@@ -379,6 +402,7 @@ int main() {
         // Using own custom engine classes
         if (!disable) {
             cb->position.y = -5;
+            player->position.y = -10;
 
             /*model = glm::translate(model, glm::vec3(0.0f, 0.0f, 5.0f));
             *//*shader.setMat4("model", model);
