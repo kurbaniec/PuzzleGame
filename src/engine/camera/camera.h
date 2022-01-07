@@ -71,7 +71,8 @@ namespace engine {
 
         // returns the view matrix calculated using Euler Angles and the LookAt Matrix
         glm::mat4 GetViewMatrix() {
-            return glm::lookAt(Position, Position + Front, Up);
+            // return glm::lookAt(Position, Position + Front, Up);
+            return glm::lookAt(Position, glm::vec3(0.0f),  glm::vec3(0.0f, 1.0f, 0.0f));
         }
 
         // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
@@ -89,7 +90,7 @@ namespace engine {
 
         // processes input received from a mouse input system. Expects the offset value in both the x and y direction.
         void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true) {
-            xoffset *= MouseSensitivity;
+            /*xoffset *= MouseSensitivity;
             yoffset *= MouseSensitivity;
 
             Yaw += xoffset;
@@ -104,7 +105,36 @@ namespace engine {
             }
 
             // update Front, Right and Up Vectors using the updated Euler angles
-            updateCameraVectors();
+            updateCameraVectors();*/
+            auto pos = glm::vec4(Position, 1.0f);
+            auto point = glm::vec3(0.0f);
+            auto pivot = glm::vec4(point, 1.0f);
+
+            auto vm = glm::lookAt(Position, point, Up);
+            Right = glm::transpose(vm)[0];
+
+            auto xAngle = xoffset;
+            //auto yAngle = yoffset;
+            auto yAngle = yoffset;
+
+            auto viewDir = glm::vec3(-glm::transpose(vm)[2]);
+            // float cosAngle = glm::dot(viewDir, Up);
+            // if (cosAngle * sgn(yAngle) > 0.99f)
+            //
+
+            auto m = glm::mat4(1.0f);
+            // m = glm::rotate(m, glm::radians(xAngle), Up);
+            // Position = (m * (pos - pivot)) + pivot;
+            // m = glm::mat4(1.0f);
+            // m = glm::rotate(m, glm::radians(yAngle), Right);
+            // Position = (m * (pos - pivot)) + pivot;
+
+            m = glm::rotate(m, glm::radians(xAngle), Up);
+            m = glm::rotate(m, glm::radians(yAngle), Right);
+            Position = m * glm::vec4(Position, 1.0f);
+
+            vm = glm::lookAt(Position, point, Up);
+            Right = glm::transpose(vm)[0];
         }
 
         // processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
@@ -117,6 +147,12 @@ namespace engine {
         }
 
     private:
+        int sgn(double v) {
+            if (v < 0) return -1;
+            if (v > 0) return 1;
+            return 0;
+        }
+
         // calculates the front vector from the Camera's (updated) Euler Angles
         void updateCameraVectors() {
             // calculate the new Front vector
