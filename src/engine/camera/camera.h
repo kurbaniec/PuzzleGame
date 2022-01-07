@@ -72,7 +72,7 @@ namespace engine {
         // returns the view matrix calculated using Euler Angles and the LookAt Matrix
         glm::mat4 GetViewMatrix() {
             // return glm::lookAt(Position, Position + Front, Up);
-            return glm::lookAt(Position, glm::vec3(0.0f),  glm::vec3(0.0f, 1.0f, 0.0f));
+            return glm::lookAt(Position, glm::vec3(2.0f),  glm::vec3(0.0f, 1.0f, 0.0f));
         }
 
         // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
@@ -106,21 +106,26 @@ namespace engine {
 
             // update Front, Right and Up Vectors using the updated Euler angles
             updateCameraVectors();*/
+
+            // Orbit camera
+            // See: https://asliceofrendering.com/camera/2019/11/30/ArcballCamera/
             auto pos = glm::vec4(Position, 1.0f);
-            auto point = glm::vec3(0.0f);
+            auto point = glm::vec3(2.0f);
             auto pivot = glm::vec4(point, 1.0f);
 
             auto vm = glm::lookAt(Position, point, Up);
             Right = glm::transpose(vm)[0];
 
             auto xAngle = xoffset;
-            //auto yAngle = yoffset;
             auto yAngle = yoffset;
 
             auto viewDir = glm::vec3(-glm::transpose(vm)[2]);
-            // float cosAngle = glm::dot(viewDir, Up);
-            // if (cosAngle * sgn(yAngle) > 0.99f)
-            //
+            // if (glm::length(viewDir-Up) <= 0.1f)
+            //     yAngle = 0;
+            float cosAngle = glm::dot(viewDir, Up);
+            if (cosAngle * sgn(yAngle) > 0.99f)
+                yAngle = 0;
+
 
             auto m = glm::mat4(1.0f);
             // m = glm::rotate(m, glm::radians(xAngle), Up);
@@ -128,13 +133,16 @@ namespace engine {
             // m = glm::mat4(1.0f);
             // m = glm::rotate(m, glm::radians(yAngle), Right);
             // Position = (m * (pos - pivot)) + pivot;
-
+            //m = glm::translate(m, glm::vec3(+2.0f));
             m = glm::rotate(m, glm::radians(xAngle), Up);
             m = glm::rotate(m, glm::radians(yAngle), Right);
-            Position = m * glm::vec4(Position, 1.0f);
+            //m = glm::translate(m, glm::vec3(-2.0f));
+            Position = (m * (pos - pivot)) + pivot;
 
             vm = glm::lookAt(Position, point, Up);
             Right = glm::transpose(vm)[0];
+
+            Front = -glm::normalize(Position - point);
         }
 
         // processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
