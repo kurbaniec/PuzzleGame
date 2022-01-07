@@ -295,15 +295,32 @@ int main() {
             camera
         )
     );
+    factory->registerModel(
+        "cube_grass_corner",
+        std::make_shared<engine::SimpleModel>(
+            "blockModel",
+            "resources/objects/blocks/cube_grass_corner/cube_grass_corner.obj",
+            shaderTest,
+            [](const std::string& id,
+               glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
+               glm::vec3 boundsMin, glm::vec3 boundsMax) -> shared_ptr<engine::Instance> {
+                return std::make_shared<BlockInstance>(id, pos, rot, scale, origin, boundsMin, boundsMax);
+            }
+        )
+    );
+
     factory->createInstance("blockModel", "test");
     factory->createInstance("blockModel", "test2");
     factory->createInstance("blockLodModel", "test3");
+    factory->createInstance("cube_grass_corner", "cb");
 
 
     auto blockModel = state->getModel("blockModel");
     auto blockInstance = state->getInstance("test");
     auto blockInstance2 = state->getInstance("test2");
     auto blockInstance3 = state->getInstance("test3");
+
+    auto cb = state->getInstance("cb");
 
     // engine::SimpleModel mTest(
     //     "blockModel",
@@ -361,6 +378,8 @@ int main() {
 
         // Using own custom engine classes
         if (!disable) {
+            cb->position.y = -5;
+
             /*model = glm::translate(model, glm::vec3(0.0f, 0.0f, 5.0f));
             *//*shader.setMat4("model", model);
             m2.Draw(shader);*//*
