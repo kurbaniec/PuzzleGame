@@ -289,88 +289,30 @@ int main() {
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     auto game = DemoGame(window, state);
-    game.setup();
+    try {
+        game.setup();
+    } catch (const runtime_error& error) {
+        std::cerr << error.what() << std::endl;
+        exit(EXIT_FAILURE);
+    }
 
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window)) {
-        // per-frame time logic
-        // --------------------
-        // double currentFrame = glfwGetTime();
-        // deltaTime = currentFrame - lastFrame;
-        // lastFrame = currentFrame;
+
+        // Update delta time
         state->setCurrentFrame(static_cast<float>(glfwGetTime()));
-        auto deltaTime = state->getDeltaTime();
-        // print(deltaTime);
-
-        // input
-        // -----
-        //processInput(window);
-
-        // render
-        // ------
+        // Clear screent
         renderer->clear();
-
-        game.update();
-
-        /*// view/projection transformations
-        glm::mat4 projection = glm::perspective(
-            glm::radians(camera->zoom), (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f
-        );
-        glm::mat4 view = camera->GetViewMatrix();
-
-        // Old way from learnopengl
-        // don't forget to enable shader before setting uniforms
-        *//*shader.use();
-        shader.setMat4("projection", projection);
-        shader.setMat4("view", view);
-
-        // render the loaded model
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model,
-                               glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));    // it's a bit too big for our scene, so scale it down
-        shader.setMat4("model", model);
-        m.Draw(shader);*//*
-
-        // Using own custom engine classes
-        if (!disable) {
-            cb->position.y = -5;
-            player->position.y = -10;
-
-            *//*model = glm::translate(model, glm::vec3(0.0f, 0.0f, 5.0f));
-            *//**//*shader.setMat4("model", model);
-            m2.Draw(shader);*//**//*
-            shaderTest->use();
-            shaderTest->setMat4("projection", projection);
-            shaderTest->setMat4("view", view);
-            shaderTest->setMat4("model", model);*//*
-
-            blockInstance3->position.z += static_cast<float>(deltaTime) * 0.5f;
-            blockInstance3->rotation.y += static_cast<float>(deltaTime) * 10.0f;
-            // blockInstance3->rotation.y = 45;
-            // blockInstance3->rotation.z = 90;
-            // blockInstance3->position.z = 1;
-
-            //blockInstance2->position.y += 0.0002;
-            blockInstance2->position.y = 2;
-
-            // See: https://stackoverflow.com/a/34104944/12347616
-            if (!glm::all(glm::lessThan(blockInstance->scale, glm::vec3(0.2f)))) {
-                blockInstance->scale -= static_cast<float>(deltaTime) * 0.002f;
-            }
-            blockInstance->rotation.y += static_cast<float>(deltaTime) * 10.0f;
-            blockInstance->rotation.x += static_cast<float>(deltaTime) * 10.0f;
-
-            //blockModel->drawInstances(view, projection);
+        try {
+            // Process input & game logic
+            game.update();
+            // Render
+            renderer->draw();
+        } catch (const runtime_error& error) {
+            std::cerr << error.what() << std::endl;
+            exit(EXIT_FAILURE);
         }
-        //std::cout << blockInstance->bounds() << std::endl;
-        //std::cout << blockInstance3->bounds() << std::endl;
-        // std::cout << blockInstance3->bounds().aabb().height() << std::endl;
-        // std::cout << blockInstance3->bounds().aabb().width() << std::endl;
-        // std::cout << blockInstance3->bounds().aabb().depth() << std::endl << std::endl;*/
-
-        renderer->draw();
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------

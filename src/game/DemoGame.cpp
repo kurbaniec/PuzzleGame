@@ -100,21 +100,20 @@ void DemoGame::setup() {
 }
 
 void DemoGame::update() {
-    // Get deltaTime
+    // per-frame time logic
+    // --------------------
     auto deltaTime = state->getDeltaTime();
     // Process user input (camera controls)
+    // ------------------------------------
     processInput(deltaTime);
     // Update instance positions
+    // -------------------------
     grass->position.y = -5;
     player->position.y = -10;
 
     block3->position.z += deltaTime * 0.5f;
     block3->rotation.y += deltaTime * 10.0f;
-    // blockInstance3->rotation.y = 45;
-    // blockInstance3->rotation.z = 90;
-    // blockInstance3->position.z = 1;
 
-    //blockInstance2->position.y += 0.0002;
     block2->position.y = 2;
 
     // See: https://stackoverflow.com/a/34104944/12347616
@@ -128,45 +127,40 @@ void DemoGame::update() {
 void DemoGame::processInput(float deltaTime) {
     auto camera = state->getCamera();
     auto keys = state->getKeys();
-    //if (focus) {
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-            // glfwSetWindowShouldClose(window, true);
-            //focus = false;
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-        }
-        auto wPress = glfwGetKey(window, GLFW_KEY_W);
-        if (wPress == GLFW_PRESS)
-            camera->ProcessKeyboard(engine::FORWARD, deltaTime);
-        auto sPress = glfwGetKey(window, GLFW_KEY_S);
-        if (sPress == GLFW_PRESS)
-            camera->ProcessKeyboard(engine::BACKWARD, deltaTime);
-        auto aPress = glfwGetKey(window, GLFW_KEY_A);
-        if (aPress == GLFW_PRESS)
-            camera->ProcessKeyboard(engine::LEFT, deltaTime);
-        auto dPress = glfwGetKey(window, GLFW_KEY_D);
-        if (dPress == GLFW_PRESS)
-            camera->ProcessKeyboard(engine::RIGHT, deltaTime);
-        auto spacePress = glfwGetKey(window, GLFW_KEY_SPACE);
-        if (!keys->contains(GLFW_KEY_SPACE))
-            keys->insert({GLFW_KEY_SPACE, GLFW_RELEASE});
-        if (keys->at(GLFW_KEY_SPACE) == GLFW_RELEASE && spacePress == GLFW_PRESS) {
-            std::cout << "baum" << std::endl;
-            camera->toggleMode();
-        }
 
-        /*if (glfwGetKey(window, GLFW_KEY_0) == GLFW_RELEASE) {
-            print("Released Button 0");
-        }*/
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+    auto wPress = glfwGetKey(window, GLFW_KEY_W);
+    if (wPress == GLFW_PRESS)
+        camera->ProcessKeyboard(engine::FORWARD, deltaTime);
+    auto sPress = glfwGetKey(window, GLFW_KEY_S);
+    if (sPress == GLFW_PRESS)
+        camera->ProcessKeyboard(engine::BACKWARD, deltaTime);
+    auto aPress = glfwGetKey(window, GLFW_KEY_A);
+    if (aPress == GLFW_PRESS)
+        camera->ProcessKeyboard(engine::LEFT, deltaTime);
+    auto dPress = glfwGetKey(window, GLFW_KEY_D);
+    if (dPress == GLFW_PRESS)
+        camera->ProcessKeyboard(engine::RIGHT, deltaTime);
+    auto spacePress = glfwGetKey(window, GLFW_KEY_SPACE);
+    if (!keys->contains(GLFW_KEY_SPACE))
+        keys->insert({GLFW_KEY_SPACE, GLFW_RELEASE});
+    if (keys->at(GLFW_KEY_SPACE) == GLFW_RELEASE && spacePress == GLFW_PRESS) {
+        camera->toggleMode();
+    }
 
-        // Clear is needed because insert does not overwrite existing keys
-        keys->clear();
-        keys->insert(
-            {
-                {GLFW_KEY_W, wPress}, {GLFW_KEY_S, sPress},
-                { GLFW_KEY_A, aPress}, {GLFW_KEY_D, dPress},
-                {GLFW_KEY_SPACE, spacePress}
-            }
-        );
-    //}
+    // Clear is needed because insert does not overwrite existing keys
+    keys->clear();
+    keys->insert(
+        {
+            {GLFW_KEY_W,     wPress},
+            {GLFW_KEY_S,     sPress},
+            {GLFW_KEY_A,     aPress},
+            {GLFW_KEY_D,     dPress},
+            {GLFW_KEY_SPACE, spacePress}
+        }
+    );
+
 }
 

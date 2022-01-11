@@ -41,8 +41,9 @@ namespace engine {
         // check for errors
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
         {
-            std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
-            return;
+            //std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
+            //return;
+            throw std::runtime_error(std::string("ERROR::ASSIMP:: ") + importer.GetErrorString());
         }
         // retrieve the directory path of the filepath
         auto directory = path.substr(0, path.find_last_of('/'));
