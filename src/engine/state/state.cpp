@@ -34,6 +34,11 @@ namespace engine {
         keys = std::move(new_keys);
     }
 
+    void State::setCurrentFrame(float currentFrame) {
+        delta.deltaTime =  currentFrame - delta.lastFrame;
+        delta.lastFrame = currentFrame;
+    }
+
     std::shared_ptr<Model> State::getModel(const std::string& modelName) {
         if (models.contains(modelName)) {
             return models[modelName];
@@ -58,5 +63,9 @@ namespace engine {
 
     std::shared_ptr<std::map<int, int>> State::getKeys() const {
         return keys;
+    }
+
+    float State::getDeltaTime() {
+        return delta.deltaTime;
     }
 }

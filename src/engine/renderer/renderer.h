@@ -14,6 +14,10 @@ namespace engine {
     public:
         explicit Renderer(std::shared_ptr<State> state);
 
+        void setup();
+
+        void clear();
+
         void draw();
 
     private:

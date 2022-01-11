@@ -15,6 +15,7 @@
 #include "engine/factory/InstanceFactory.h"
 #include "engine/camera/camera.h"
 #include "engine/renderer/renderer.h"
+#include "game/DemoGame.h"
 
 
 /*
@@ -173,8 +174,8 @@ float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
 
 // timing
-double deltaTime = 0.0f;
-double lastFrame = 0.0f;
+// double deltaTime = 0.0f;
+// double lastFrame = 0.0f;
 
 // toggle
 bool disable = false;
@@ -248,12 +249,8 @@ int main() {
 
     // configure global opengl state
     // -----------------------------
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     auto renderer = std::make_shared<engine::Renderer>(state);
-    auto factory = std::make_shared<engine::InstanceFactory>(state);
+    renderer->setup();
 
     // build and compile shaders
     // -------------------------
@@ -264,88 +261,19 @@ int main() {
     // -----------
     //Model ourModel(FileSystem::getPath("resources/objects/backpack/backpack.obj"));
     //Model ourModel("resources/objects/backpack/backpack.obj");
-    ModelOld m("resources/objects/block/transparentblock.obj");
-    ModelOld m2("resources/objects/block/transparentblock.obj");
+    //ModelOld m("resources/objects/block/transparentblock.obj");
+    //ModelOld m2("resources/objects/block/transparentblock.obj");
 
-    factory->registerModel(
-        "blockModel",
-        std::make_shared<engine::SimpleModel>(
-            "blockModel",
-            "resources/objects/block/transparentblock.obj",
-            shaderTest,
-            [](const std::string& id,
-               glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
-               glm::vec3 boundsMin, glm::vec3 boundsMax) -> shared_ptr<engine::Instance> {
-                return std::make_shared<BlockInstance>(id, pos, rot, scale, origin, boundsMin, boundsMax);
-            }
-        )
-    );
-    factory->registerModel(
-        "blockLodModel",
-        std::make_shared<engine::LodModel>(
-            "blockLodModel",
-            std::vector<std::string>{
-                "resources/objects/block/transparentblock.obj",
-                "resources/objects/block2/transparentblock.obj"},
-            std::vector<float>{5, 10},
-            std::vector<std::shared_ptr<engine::Shader>>{shaderTest, shaderTest},
-            [](const std::string& id,
-               glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
-               glm::vec3 boundsMin, glm::vec3 boundsMax) -> shared_ptr<engine::Instance> {
-                return std::make_shared<BlockInstance>(id, pos, rot, scale, origin, boundsMin, boundsMax);
-            },
-            camera
-        )
-    );
-    factory->registerModel(
-        "cube_grass_corner",
-        std::make_shared<engine::SimpleModel>(
-            "cube_grass_corner",
-            "resources/objects/blocks/cube_grass_corner/cube_grass_corner.obj",
-            shaderTest,
-            [](const std::string& id,
-               glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
-               glm::vec3 boundsMin, glm::vec3 boundsMax) -> shared_ptr<engine::Instance> {
-                return std::make_shared<BlockInstance>(id, pos, rot, scale, origin, boundsMin, boundsMax);
-            }
-        )
-    );
-
-    factory->registerModel(
-        "player_model",
-        std::make_shared<engine::LodModel>(
-            "player_model",
-            std::vector<std::string>{
-                "resources/objects/player/lod_1/player.obj",
-                "resources/objects/player/lod_2/player.obj",
-                "resources/objects/player/lod_3/player.obj",
-                "resources/objects/player/lod_4/player.obj"},
-            std::vector<float>{5, 10, 15, 20},
-            std::vector<std::shared_ptr<engine::Shader>>{shaderTest, shaderTest, shaderTest, shaderTest},
-            [](const std::string& id,
-               glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
-               glm::vec3 boundsMin, glm::vec3 boundsMax) -> shared_ptr<engine::Instance> {
-                return std::make_shared<BlockInstance>(id, pos, rot, scale, origin, boundsMin, boundsMax);
-            },
-            camera
-        )
-    );
+    auto factory = std::make_shared<engine::InstanceFactory>(state);
 
 
-    factory->createInstance("blockModel", "test");
-    factory->createInstance("blockModel", "test2");
-    factory->createInstance("blockLodModel", "test3");
-    factory->createInstance("cube_grass_corner", "cb");
-    factory->createInstance("player_model", "player");
-
-
-    auto blockModel = state->getModel("blockModel");
+    /*auto blockModel = state->getModel("blockModel");
     auto blockInstance = state->getInstance("test");
     auto blockInstance2 = state->getInstance("test2");
     auto blockInstance3 = state->getInstance("test3");
 
     auto cb = state->getInstance("cb");
-    auto player = state->getInstance("player");
+    auto player = state->getInstance("player");*/
 
     // engine::SimpleModel mTest(
     //     "blockModel",
@@ -360,28 +288,32 @@ int main() {
     // draw in wireframe
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+    auto game = DemoGame(window, state);
+    game.setup();
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window)) {
         // per-frame time logic
         // --------------------
-        double currentFrame = glfwGetTime();
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
+        // double currentFrame = glfwGetTime();
+        // deltaTime = currentFrame - lastFrame;
+        // lastFrame = currentFrame;
+        state->setCurrentFrame(static_cast<float>(glfwGetTime()));
+        auto deltaTime = state->getDeltaTime();
         // print(deltaTime);
 
         // input
         // -----
-        processInput(window);
+        //processInput(window);
 
         // render
         // ------
-        glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        renderer->clear();
 
+        game.update();
 
-
-        // view/projection transformations
+        /*// view/projection transformations
         glm::mat4 projection = glm::perspective(
             glm::radians(camera->zoom), (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f
         );
@@ -389,7 +321,7 @@ int main() {
 
         // Old way from learnopengl
         // don't forget to enable shader before setting uniforms
-        /*shader.use();
+        *//*shader.use();
         shader.setMat4("projection", projection);
         shader.setMat4("view", view);
 
@@ -399,20 +331,20 @@ int main() {
                                glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
         model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));    // it's a bit too big for our scene, so scale it down
         shader.setMat4("model", model);
-        m.Draw(shader);*/
+        m.Draw(shader);*//*
 
         // Using own custom engine classes
         if (!disable) {
             cb->position.y = -5;
             player->position.y = -10;
 
-            /*model = glm::translate(model, glm::vec3(0.0f, 0.0f, 5.0f));
-            *//*shader.setMat4("model", model);
-            m2.Draw(shader);*//*
+            *//*model = glm::translate(model, glm::vec3(0.0f, 0.0f, 5.0f));
+            *//**//*shader.setMat4("model", model);
+            m2.Draw(shader);*//**//*
             shaderTest->use();
             shaderTest->setMat4("projection", projection);
             shaderTest->setMat4("view", view);
-            shaderTest->setMat4("model", model);*/
+            shaderTest->setMat4("model", model);*//*
 
             blockInstance3->position.z += static_cast<float>(deltaTime) * 0.5f;
             blockInstance3->rotation.y += static_cast<float>(deltaTime) * 10.0f;
@@ -436,7 +368,7 @@ int main() {
         //std::cout << blockInstance3->bounds() << std::endl;
         // std::cout << blockInstance3->bounds().aabb().height() << std::endl;
         // std::cout << blockInstance3->bounds().aabb().width() << std::endl;
-        // std::cout << blockInstance3->bounds().aabb().depth() << std::endl << std::endl;
+        // std::cout << blockInstance3->bounds().aabb().depth() << std::endl << std::endl;*/
 
         renderer->draw();
 
@@ -459,6 +391,7 @@ void processInput(GLFWwindow* window) {
     auto state = *static_cast<std::shared_ptr<engine::State>*>(glfwGetWindowUserPointer(window));
     auto camera = state->getCamera();
     auto keys = state->getKeys();
+    auto deltaTime = state->getDeltaTime();
     if (focus) {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             // glfwSetWindowShouldClose(window, true);

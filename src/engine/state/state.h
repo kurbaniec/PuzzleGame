@@ -25,12 +25,23 @@ namespace engine {
         void setCamera(std::shared_ptr<Camera> camera);
         void setWindow(std::shared_ptr<Window> window);
         void setKeys(std::shared_ptr<std::map<int, int>> keys);
+        void setCurrentFrame(float currentFrame);
 
         std::shared_ptr<Model> getModel(const std::string& modelName);
         std::shared_ptr<Instance> getInstance(const std::string& id);
         std::shared_ptr<Camera> getCamera() const;
         std::shared_ptr<Window> getWindow() const;
         std::shared_ptr<std::map<int, int>> getKeys() const;
+        float getDeltaTime();
+
+    private:
+        class DeltaTime {
+        public:
+            float lastFrame = 0;
+            float deltaTime = 0;
+        };
+
+        DeltaTime delta{};
     };
 }
 
