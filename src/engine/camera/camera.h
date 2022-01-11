@@ -31,7 +31,7 @@ namespace engine {
     const float YAW = -90.0f;
     const float PITCH = 0.0f;
     const float SPEED = 2.5f;
-    const float SENSITIVITY = 0.1f;
+    const float SENSITIVITY = 0.25f;
     const float ZOOM = 45.0f;
     const glm::vec3 TARGET = glm::vec3(0.0f);
 

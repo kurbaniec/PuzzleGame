@@ -209,8 +209,10 @@ int main() {
     auto state = std::make_shared<engine::State>();
     auto camera = std::make_shared<engine::Camera>(glm::vec3(0.0f, 0.0f, 3.0f));
     auto projection = std::make_shared<engine::Window>(1280, 720, state);
+    auto keys = std::make_shared<map<int, int>>();
     state->setCamera(camera);
     state->setWindow(projection);
+    state->setKeys(keys);
 
     glfwMakeContextCurrent(window);
     // See: https://stackoverflow.com/a/61336206/12347616
@@ -432,9 +434,9 @@ int main() {
         }
         //std::cout << blockInstance->bounds() << std::endl;
         //std::cout << blockInstance3->bounds() << std::endl;
-        std::cout << blockInstance3->bounds().aabb().height() << std::endl;
-        std::cout << blockInstance3->bounds().aabb().width() << std::endl;
-        std::cout << blockInstance3->bounds().aabb().depth() << std::endl << std::endl;
+        // std::cout << blockInstance3->bounds().aabb().height() << std::endl;
+        // std::cout << blockInstance3->bounds().aabb().width() << std::endl;
+        // std::cout << blockInstance3->bounds().aabb().depth() << std::endl << std::endl;
 
         renderer->draw();
 
@@ -456,25 +458,46 @@ void processInput(GLFWwindow* window) {
     // See: https://stackoverflow.com/a/23204968/12347616
     auto state = *static_cast<std::shared_ptr<engine::State>*>(glfwGetWindowUserPointer(window));
     auto camera = state->getCamera();
+    auto keys = state->getKeys();
     if (focus) {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             // glfwSetWindowShouldClose(window, true);
             focus = false;
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        auto wPress = glfwGetKey(window, GLFW_KEY_W);
+        if (wPress == GLFW_PRESS)
             camera->ProcessKeyboard(engine::FORWARD, deltaTime);
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        auto sPress = glfwGetKey(window, GLFW_KEY_S);
+        if (sPress == GLFW_PRESS)
             camera->ProcessKeyboard(engine::BACKWARD, deltaTime);
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        auto aPress = glfwGetKey(window, GLFW_KEY_A);
+        if (aPress == GLFW_PRESS)
             camera->ProcessKeyboard(engine::LEFT, deltaTime);
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        auto dPress = glfwGetKey(window, GLFW_KEY_D);
+        if (dPress == GLFW_PRESS)
             camera->ProcessKeyboard(engine::RIGHT, deltaTime);
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        auto spacePress = glfwGetKey(window, GLFW_KEY_SPACE);
+        if (!keys->contains(GLFW_KEY_SPACE))
+            keys->insert({GLFW_KEY_SPACE, GLFW_RELEASE});
+        if (keys->at(GLFW_KEY_SPACE) == GLFW_RELEASE && spacePress == GLFW_PRESS) {
+            std::cout << "baum" << std::endl;
             camera->toggleMode();
+        }
+
         /*if (glfwGetKey(window, GLFW_KEY_0) == GLFW_RELEASE) {
             print("Released Button 0");
         }*/
+
+        // Clear is needed because insert does not overwrite existing keys
+        keys->clear();
+        keys->insert(
+            {
+                {GLFW_KEY_W, wPress}, {GLFW_KEY_S, sPress},
+                { GLFW_KEY_A, aPress}, {GLFW_KEY_D, dPress},
+                {GLFW_KEY_SPACE, spacePress}
+            }
+        );
     }
 }
 

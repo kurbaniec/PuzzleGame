@@ -30,6 +30,10 @@ namespace engine {
         window = std::move(new_window);
     }
 
+    void State::setKeys(std::shared_ptr<std::map<int, int>> new_keys) {
+        keys = std::move(new_keys);
+    }
+
     std::shared_ptr<Model> State::getModel(const std::string& modelName) {
         if (models.contains(modelName)) {
             return models[modelName];
@@ -50,5 +54,9 @@ namespace engine {
 
     std::shared_ptr<Window> State::getWindow() const {
         return window;
+    }
+
+    std::shared_ptr<std::map<int, int>> State::getKeys() const {
+        return keys;
     }
 }

@@ -93,8 +93,8 @@ namespace engine {
             // auto vm = glm::lookAt(position, point, up);
             // right = glm::transpose(vm)[0];
 
-            auto xAngle = xoffset;
-            auto yAngle = yoffset;
+            auto xAngle = xoffset * mouseSensitivity;
+            auto yAngle = yoffset * mouseSensitivity;
 
             auto viewDir = glm::vec3(-glm::transpose(viewMatrix)[2]);
             // if (glm::length(viewDir-Up) <= 0.1f)
@@ -163,17 +163,19 @@ namespace engine {
         }
     }
 
+    void Camera::toggleMode() {
+        if (mode == FREE) {
+            mode = ORBIT;
+            updateCameraVectorsOrbit();
+        } else {
+            mode = FREE;
+            updateCameraVectorsFree();
+        }
+    }
+
     int Camera::sgn(double v) {
         if (v < 0) return -1;
         if (v > 0) return 1;
         return 0;
-    }
-
-    void Camera::toggleMode() {
-        if (mode == FREE) {
-            mode = ORBIT;
-        } else {
-            mode = FREE;
-        }
     }
 }
