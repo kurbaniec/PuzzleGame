@@ -14,7 +14,7 @@ namespace engine {
 
     glm::mat4 Window::getProjectionMatrix() {
         return glm::perspective(
-            glm::radians(state.lock()->camera->Zoom), (float) width / (float) height, 0.1f, 100.0f
+            glm::radians(state.lock()->camera->zoom), (float) width / (float) height, 0.1f, 100.0f
         );
     }
 }

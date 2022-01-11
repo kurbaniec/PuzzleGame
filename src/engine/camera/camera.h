@@ -13,12 +13,18 @@
 
 namespace engine {
 
-    // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
-    enum Camera_Movement {
+    // Defines several possible options for camera movement.
+    // Used as abstraction to stay away from window-system specific input methods
+    enum CameraMovement {
         FORWARD,
         BACKWARD,
         LEFT,
         RIGHT
+    };
+
+    enum Mode {
+        FREE,
+        ORBIT
     };
 
     // Default camera values
@@ -27,23 +33,30 @@ namespace engine {
     const float SPEED = 2.5f;
     const float SENSITIVITY = 0.1f;
     const float ZOOM = 45.0f;
+    const glm::vec3 TARGET = glm::vec3(0.0f);
 
-    // An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
+    // An abstract camera class that processes input and calculates the
+    // corresponding Euler Angles, Vectors and Matrices for use in OpenGL
     class Camera {
     public:
+        // camera mode
+        Mode mode;
         // camera Attributes
-        glm::vec3 Position;
-        glm::vec3 Front;
-        glm::vec3 Up;
-        glm::vec3 Right;
-        glm::vec3 WorldUp;
+        glm::vec3 position;
+        glm::vec3 front;
+        glm::vec3 up;
+        glm::vec3 right;
+        glm::vec3 worldUp;
         // euler Angles
-        float Yaw;
-        float Pitch;
+        float yaw;
+        float pitch;
         // camera options
-        float MovementSpeed;
-        float MouseSensitivity;
-        float Zoom;
+        float movementSpeed;
+        float mouseSensitivity;
+        float zoom;
+        // orbit camera options
+        glm::vec3 target;
+
 
         // constructor with vectors
         Camera(
@@ -51,21 +64,25 @@ namespace engine {
             glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
             float yaw = YAW, float pitch = PITCH,
             float speed = SPEED, float sensitivity = SENSITIVITY,
-            float zoom = ZOOM
+            float zoom = ZOOM,
+            Mode mode = FREE, glm::vec3 target = TARGET
         );
 
         // constructor with scalar values
         Camera(
             float posX, float posY, float posZ,
             float upX, float upY, float upZ,
-            float yaw, float pitch
+            float yaw, float pitch,
+            Mode mode = FREE, glm::vec3 target = TARGET
         );
 
         // returns the view matrix calculated using Euler Angles and the LookAt Matrix
         [[nodiscard]] glm::mat4 GetViewMatrix() const;
 
+        [[nodiscard]] Mode GetCameraMode() const;
+
         // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
-        void ProcessKeyboard(Camera_Movement direction, float deltaTime);
+        void ProcessKeyboard(CameraMovement direction, float deltaTime);
 
         // processes input received from a mouse input system. Expects the offset value in both the x and y direction.
         void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
@@ -73,12 +90,18 @@ namespace engine {
         // processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
         void ProcessMouseScroll(float yoffset);
 
+        void toggleMode();
+
     private:
         glm::mat4 viewMatrix;
 
         static int sgn(double v);
 
         // calculates the front vector from the Camera's (updated) Euler Angles
+        void updateCameraVectorsFree();
+
+        void updateCameraVectorsOrbit();
+
         void updateCameraVectors();
     };
 

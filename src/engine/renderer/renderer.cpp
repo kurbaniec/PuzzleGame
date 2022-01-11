@@ -36,7 +36,7 @@ namespace engine {
             auto triangles = model->getTriangles();
             transparentTriangles.insert(transparentTriangles.end(), triangles.begin(), triangles.end());
         }
-        auto cameraPos = state->camera->Position;
+        auto cameraPos = state->camera->position;
         // std::cout << glm::to_string(cameraPos) << std::endl;
         for (auto triangle: transparentTriangles) {
             triangle.get().updateCentroid();

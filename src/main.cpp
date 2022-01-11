@@ -381,7 +381,7 @@ int main() {
 
         // view/projection transformations
         glm::mat4 projection = glm::perspective(
-            glm::radians(camera->Zoom), (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f
+            glm::radians(camera->zoom), (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f
         );
         glm::mat4 view = camera->GetViewMatrix();
 
@@ -470,6 +470,8 @@ void processInput(GLFWwindow* window) {
             camera->ProcessKeyboard(engine::LEFT, deltaTime);
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
             camera->ProcessKeyboard(engine::RIGHT, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+            camera->toggleMode();
         /*if (glfwGetKey(window, GLFW_KEY_0) == GLFW_RELEASE) {
             print("Released Button 0");
         }*/
