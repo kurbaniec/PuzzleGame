@@ -85,40 +85,19 @@ namespace engine {
         } else {
             // Orbit camera
             // See: https://asliceofrendering.com/camera/2019/11/30/ArcballCamera/
-            // auto pos = glm::vec4(position, 1.0f);
-            // //auto point = glm::vec3(2.0f);
-            // auto point = target;
-            // auto pivot = glm::vec4(point, 1.0f);
-            // //
-            // auto vm = glm::lookAt(position, point, up);
-            // right = glm::transpose(vm)[0];
-
             auto xAngle = xoffset * mouseSensitivity;
             auto yAngle = yoffset * mouseSensitivity;
 
-            auto viewDir = glm::vec3(-glm::transpose(viewMatrix)[2]);
-            // if (glm::length(viewDir-Up) <= 0.1f)
-            //     yAngle = 0;
-            float cosAngle = glm::dot(viewDir, up);
+            float cosAngle = glm::dot(front, up);
             if (cosAngle * sgn(yAngle) > 0.99f)
                 yAngle = 0;
 
             auto m = glm::mat4(1.0f);
-            // m = glm::rotate(m, glm::radians(xAngle), Up);
-            // Position = (m * (pos - pivot)) + pivot;
-            // m = glm::mat4(1.0f);
-            // m = glm::rotate(m, glm::radians(yAngle), Right);
-            // Position = (m * (pos - pivot)) + pivot;
-            //m = glm::translate(m, glm::vec3(+2.0f));
             m = glm::rotate(m, glm::radians(xAngle), up);
             m = glm::rotate(m, glm::radians(yAngle), right);
-            //m = glm::translate(m, glm::vec3(-2.0f));
-            position = (m * (glm::vec4(position, 1.0f) - glm::vec4(target, 1.0f))) + glm::vec4(target, 1.0f);
+            position = (m * (glm::vec4(position, 1.0f) - glm::vec4(target, 1.0f)))
+                       + glm::vec4(target, 1.0f);
 
-            // vm = glm::lookAt(position, point, up);
-            // right = glm::transpose(vm)[0];
-
-            front = -glm::normalize(position - target);
             updateCameraVectorsOrbit();
         }
     }
@@ -142,7 +121,7 @@ namespace engine {
         front = glm::normalize(frontTmp);
         // also re-calculate the Right and Up vector
         right = glm::normalize(
-            glm::cross(frontTmp, worldUp)
+            glm::cross(front, worldUp)
         );  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
         up = glm::normalize(glm::cross(right, frontTmp));
         viewMatrix = glm::lookAt(position, position + front, up);
@@ -150,8 +129,11 @@ namespace engine {
 
     void Camera::updateCameraVectorsOrbit() {
         up = worldUp;
-        right = glm::transpose(viewMatrix)[0];
+        //right = glm::transpose(viewMatrix)[0];
         front = -glm::normalize(position - target);
+        right = glm::normalize(
+            glm::cross(front, worldUp)
+        );
         viewMatrix = glm::lookAt(position, target, up);
     }
 
