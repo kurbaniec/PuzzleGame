@@ -408,7 +408,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     auto state = *static_cast<std::shared_ptr<engine::State>*>(glfwGetWindowUserPointer(window));
     auto camera = state->getCamera();
-    if (focus) {
+
+    if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED) {
         if (firstMouse) {
             lastX = xpos;
             lastY = ypos;
@@ -450,23 +451,27 @@ void cursor_enter_callback(GLFWwindow* window, int entered) {
 void window_focus_callback(GLFWwindow* window, int focused) {
     if (focused) {
         // The window gained input focus
-        focus = true;
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    } else {
-        // The window lost input focus
-        focus = false;
+        if (glfwGetInputMode(window, GLFW_CURSOR) != GLFW_CURSOR_DISABLED) {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        }
+        //focus = true;
+        //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
+    // else {
+    //     // The window lost input focus
+    //     focus = false;
+    // }
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-    if (!focus) {
-        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-            focus = true;
-            // int width, height;
-            // glfwGetWindowSize(window, &width, &height);
-            // glfwSetCursorPos(window, width/2.0, height/2.0);
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        if (glfwGetInputMode(window, GLFW_CURSOR) != GLFW_CURSOR_DISABLED) {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
-
+        //focus = true;
+        // int width, height;
+        // glfwGetWindowSize(window, &width, &height);
+        // glfwSetCursorPos(window, width/2.0, height/2.0);
+        // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
 }

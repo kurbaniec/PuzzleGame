@@ -128,42 +128,44 @@ void DemoGame::update() {
 }
 
 void DemoGame::processInput(float deltaTime) {
-    auto camera = state->getCamera();
-    auto keys = state->getKeys();
+    // Workaround to check if window is "focused"
+    if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED) {
+        auto camera = state->getCamera();
+        auto keys = state->getKeys();
 
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    }
-    auto wPress = glfwGetKey(window, GLFW_KEY_W);
-    if (wPress == GLFW_PRESS)
-        camera->ProcessKeyboard(engine::FORWARD, deltaTime);
-    auto sPress = glfwGetKey(window, GLFW_KEY_S);
-    if (sPress == GLFW_PRESS)
-        camera->ProcessKeyboard(engine::BACKWARD, deltaTime);
-    auto aPress = glfwGetKey(window, GLFW_KEY_A);
-    if (aPress == GLFW_PRESS)
-        camera->ProcessKeyboard(engine::LEFT, deltaTime);
-    auto dPress = glfwGetKey(window, GLFW_KEY_D);
-    if (dPress == GLFW_PRESS)
-        camera->ProcessKeyboard(engine::RIGHT, deltaTime);
-    auto spacePress = glfwGetKey(window, GLFW_KEY_SPACE);
-    if (!keys->contains(GLFW_KEY_SPACE))
-        keys->insert({GLFW_KEY_SPACE, GLFW_RELEASE});
-    if (keys->at(GLFW_KEY_SPACE) == GLFW_RELEASE && spacePress == GLFW_PRESS) {
-        camera->toggleMode();
-    }
-
-    // Clear is needed because insert does not overwrite existing keys
-    keys->clear();
-    keys->insert(
-        {
-            {GLFW_KEY_W,     wPress},
-            {GLFW_KEY_S,     sPress},
-            {GLFW_KEY_A,     aPress},
-            {GLFW_KEY_D,     dPress},
-            {GLFW_KEY_SPACE, spacePress}
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
-    );
+        auto wPress = glfwGetKey(window, GLFW_KEY_W);
+        if (wPress == GLFW_PRESS)
+            camera->ProcessKeyboard(engine::FORWARD, deltaTime);
+        auto sPress = glfwGetKey(window, GLFW_KEY_S);
+        if (sPress == GLFW_PRESS)
+            camera->ProcessKeyboard(engine::BACKWARD, deltaTime);
+        auto aPress = glfwGetKey(window, GLFW_KEY_A);
+        if (aPress == GLFW_PRESS)
+            camera->ProcessKeyboard(engine::LEFT, deltaTime);
+        auto dPress = glfwGetKey(window, GLFW_KEY_D);
+        if (dPress == GLFW_PRESS)
+            camera->ProcessKeyboard(engine::RIGHT, deltaTime);
+        auto spacePress = glfwGetKey(window, GLFW_KEY_SPACE);
+        if (!keys->contains(GLFW_KEY_SPACE))
+            keys->insert({GLFW_KEY_SPACE, GLFW_RELEASE});
+        if (keys->at(GLFW_KEY_SPACE) == GLFW_RELEASE && spacePress == GLFW_PRESS) {
+            camera->toggleMode();
+        }
 
+        // Clear is needed because insert does not overwrite existing keys
+        keys->clear();
+        keys->insert(
+            {
+                {GLFW_KEY_W,     wPress},
+                {GLFW_KEY_S,     sPress},
+                {GLFW_KEY_A,     aPress},
+                {GLFW_KEY_D,     dPress},
+                {GLFW_KEY_SPACE, spacePress}
+            }
+        );
+    }
 }
 
