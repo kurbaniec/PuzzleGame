@@ -8,6 +8,7 @@
 #include "../engine/model/lodmodel.h"
 #include "../engine/factory/InstanceFactory.h"
 #include "BlockInstance.h"
+#include "Player.h"
 
 PuzzleGame::PuzzleGame(
     GLFWwindow* window,
@@ -17,6 +18,7 @@ PuzzleGame::PuzzleGame(
 
 void PuzzleGame::setup() {
     setupLevel();
+    glfwSetScrollCallback(window, scrollCallback);
 }
 
 void PuzzleGame::update() {
@@ -28,7 +30,9 @@ void PuzzleGame::update() {
     processInput(deltaTime);
     // Update instance positions
     // -------------------------
+    player->update(deltaTime);
 
+    std::cout << player->bounds().aabb().height() << std::endl;
 }
 
 void PuzzleGame::processInput(float deltaTime) {
@@ -40,17 +44,24 @@ void PuzzleGame::processInput(float deltaTime) {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
+
         auto wPress = glfwGetKey(window, GLFW_KEY_W);
-        if (wPress == GLFW_PRESS)
-            camera->ProcessKeyboard(engine::FORWARD, deltaTime);
         auto sPress = glfwGetKey(window, GLFW_KEY_S);
-        if (sPress == GLFW_PRESS)
-            camera->ProcessKeyboard(engine::BACKWARD, deltaTime);
         auto aPress = glfwGetKey(window, GLFW_KEY_A);
-        if (aPress == GLFW_PRESS)
-            camera->ProcessKeyboard(engine::LEFT, deltaTime);
         auto dPress = glfwGetKey(window, GLFW_KEY_D);
-        if (dPress == GLFW_PRESS)
+        player->input = glm::vec2(wPress-sPress, aPress-dPress);
+
+        auto upPress = glfwGetKey(window, GLFW_KEY_UP);
+        if (upPress == GLFW_PRESS)
+            camera->ProcessKeyboard(engine::FORWARD, deltaTime);
+        auto downPress = glfwGetKey(window, GLFW_KEY_DOWN);
+        if (downPress == GLFW_PRESS)
+            camera->ProcessKeyboard(engine::BACKWARD, deltaTime);
+        auto leftPress = glfwGetKey(window, GLFW_KEY_LEFT);
+        if (leftPress == GLFW_PRESS)
+            camera->ProcessKeyboard(engine::LEFT, deltaTime);
+        auto rightPress = glfwGetKey(window, GLFW_KEY_RIGHT);
+        if (rightPress == GLFW_PRESS)
             camera->ProcessKeyboard(engine::RIGHT, deltaTime);
         auto spacePress = glfwGetKey(window, GLFW_KEY_SPACE);
         if (!keys->contains(GLFW_KEY_SPACE))
@@ -62,16 +73,12 @@ void PuzzleGame::processInput(float deltaTime) {
         // Clear is needed because insert does not overwrite existing keys
         keys->clear();
         keys->insert(
-            {
-                {GLFW_KEY_W,     wPress},
-                {GLFW_KEY_S,     sPress},
-                {GLFW_KEY_A,     aPress},
-                {GLFW_KEY_D,     dPress},
-                {GLFW_KEY_SPACE, spacePress}
-            }
+            {{GLFW_KEY_SPACE, spacePress}}
         );
     }
 }
+
+
 
 void PuzzleGame::setupLevel() {
     auto factory = std::make_shared<engine::InstanceFactory>(state);
@@ -88,12 +95,13 @@ void PuzzleGame::setupLevel() {
                 "resources/objects/player/lod_2/player.obj",
                 "resources/objects/player/lod_3/player.obj",
                 "resources/objects/player/lod_4/player.obj"},
-            std::vector<float>{5, 10, 15, 20},
+            std::vector<float>{5, 8, 14, 25},
             std::vector<std::shared_ptr<engine::Shader>>{shader, shader, shader, shader},
             [](const std::string& id,
                glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
                glm::vec3 boundsMin, glm::vec3 boundsMax) -> std::shared_ptr<engine::Instance> {
-                return std::make_shared<BlockInstance>(id, pos, rot, scale, origin, boundsMin, boundsMax);
+                scale = scale * 0.4f;
+                return std::make_shared<Player>(id, pos, rot, scale, origin, boundsMin, boundsMax);
             },
             camera
         )
@@ -165,6 +173,8 @@ void PuzzleGame::setupLevel() {
     //     corners.push_back(std::move(instance));
     // }
 
+    player = std::dynamic_pointer_cast<Player>(factory->createInstance("player_model", "player"));
+
     mapLevel(
         factory, "cube_grass_center", "cube_grass_center_",
         glm::ivec3(-4, -1, -4), 5*2, 5*2, 2,
@@ -200,26 +210,6 @@ PuzzleGame::mapLevel(
     std::shared_ptr<engine::InstanceFactory> factory, std::string model, std::string idPrefix,
     glm::ivec3 start, int xSize, int zSize, int stepSize, std::vector<glm::ivec3> omit, glm::vec3 rotation
 ) {
-    // auto xStart = start.x;
-    // auto xEnd = xStart + xSize;
-    // auto zStart = start.z;
-    // auto zEnd = zStart + zSize;
-
-    // auto id = -1;
-    // std::vector<std::shared_ptr<engine::Instance>> instances;
-    // for (int x = xStart; x <= xEnd; x += stepSize) {
-    //     for (int z = zStart; z <= zEnd; z += stepSize) {
-    //         auto instanceId = idPrefix + std::to_string(++id);
-    //         auto instance = factory->createInstance(model, instanceId);
-    //         auto position = start;
-    //         position.x += x;
-    //         position.z += z;
-    //         instance->position = position;
-    //         instance->rotation = rotation;
-    //         instances.push_back(std::move(instance));
-    //     }
-    // }
-
     auto id = -1;
     std::vector<std::shared_ptr<engine::Instance>> instances;
     for (int x = 0; x < xSize; x += stepSize) {
@@ -238,6 +228,25 @@ PuzzleGame::mapLevel(
     }
 
     return instances;
+}
+
+void PuzzleGame::scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
+    auto state = *static_cast<std::shared_ptr<engine::State>*>(glfwGetWindowUserPointer(window));
+    auto camera = state->getCamera();
+    auto deltaTime = state->getDeltaTime();
+    auto offset = static_cast<float>(yOffset);
+    if (camera->mode == engine::FREE) {
+        camera->ProcessMouseScroll(offset);
+    } else {
+        const int factor = 5;
+        if (yOffset > 0) {
+            camera->ProcessKeyboard(engine::FORWARD, deltaTime * offset * factor);
+        } else if (yOffset < 0){
+            camera->ProcessKeyboard(engine::BACKWARD, deltaTime * glm::abs(offset) * factor);
+        }
+
+    }
+
 }
 
 
