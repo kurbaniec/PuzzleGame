@@ -66,9 +66,9 @@ namespace engine {
     bool BoundingBox::intersects(const BoundingBox& other) const {
         // See: https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_collision_detection
         // And: https://stackoverflow.com/a/46682296/12347616
-        return (minVal.x <= other.maxVal.x && maxVal.x >= other.minVal.x) &&
-               (minVal.y <= other.maxVal.y && maxVal.y >= other.minVal.y) &&
-               (minVal.z <= other.maxVal.z && maxVal.z >= other.minVal.z);
+        return (minVal.x < other.maxVal.x && maxVal.x > other.minVal.x) &&
+               (minVal.y < other.maxVal.y && maxVal.y > other.minVal.y) &&
+               (minVal.z < other.maxVal.z && maxVal.z > other.minVal.z);
     }
 
     std::ostream& operator<<(std::ostream& os, const BoundingBox& box) {

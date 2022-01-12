@@ -56,10 +56,41 @@ void Player::solveCollision(const std::shared_ptr<engine::Instance>& collider) {
     auto otherHeight = collider->bounds().aabb().height();
 
     // std::cout << position.y << " " << collider->position.y << std::endl;
-    auto kek = (colliderMax.y-playerMin.y);
+    auto kek = (colliderMax.y - playerMin.y);
 
-    if (playerMin.y < colliderMax.y && (colliderMax.y-playerMin.y) < playerHeight/2) {
+    if (playerMin.y < colliderMax.y && (colliderMax.y - playerMin.y) < playerHeight / 2) {
+        // Ground collision
         velocity.y = 0;
         position.y = colliderMax.y;
+    } else {
+        // Side collision
+        auto playerMax = this->bounds().aabb().max();
+        auto colliderMin = collider->bounds().aabb().min();
+
+        auto playerWidth = this->bounds().aabb().width();
+        auto playerDepth = this->bounds().aabb().depth();
+
+        velocity.z = 0;
+        if (playerMax.x > colliderMin.x && playerMin.x < colliderMin.x &&
+            (playerMax.z > colliderMin.z && playerMin.z < colliderMax.z)) {
+            // Right
+            position.x = colliderMin.x - playerWidth/2 - 0.015f;
+            std::cout << "Right" << std::endl;
+        } else if (playerMin.x < colliderMax.x && playerMax.x > colliderMax.x &&
+                   (playerMax.z > colliderMin.z && playerMin.z < colliderMax.z)) {
+            // Left
+            position.x = colliderMax.x + playerWidth/2 + 0.015f;
+            std::cout << "Left" << std::endl;
+        } else if (playerMax.z > colliderMin.z && playerMin.z < colliderMin.z &&
+                   (playerMax.x > colliderMin.x && playerMin.x < colliderMax.x)) {
+            // Front
+            position.z = colliderMin.z - playerDepth/2 - 0.015f;
+            std::cout << "Front" << std::endl;
+        } else {
+            // playerMin.z < colliderMax.z
+            // Back
+            position.z = colliderMax.z + playerDepth/2 + 0.015f;
+            std::cout << "Back" << std::endl;
+        }
     }
 }

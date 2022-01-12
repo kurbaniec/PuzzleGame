@@ -182,16 +182,22 @@ void PuzzleGame::setupLevel() {
     //     corners.push_back(std::move(instance));
     // }
 
-    player = std::dynamic_pointer_cast<Player>(factory->createInstance("player_model", "player"));
+    player = std::dynamic_pointer_cast<Player>(
+        factory->createInstance("player_model", "player"));
 
     auto cubeCrassCenterBlocks = mapLevel(
         factory, "cube_grass_center", "cube_grass_center_",
         glm::ivec3(-4, -1, -4), 5*2, 5*2, 2,
             std::vector<glm::ivec3>{ glm::ivec3(0, -1, 0) });
 
+    auto b = factory->createInstance("cube_grass_center", "c");
+    b->position.y = -2;
+
     blocks.insert(
         blocks.begin(), cubeCrassCenterBlocks.begin(), cubeCrassCenterBlocks.end()
     );
+
+    blocks.push_back(b);
 
     /*factory->createInstance("player_model", "player");
     corner1 = std::dynamic_pointer_cast<BlockInstance>(
