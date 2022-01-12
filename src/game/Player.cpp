@@ -2,6 +2,7 @@
 // Created by kurbaniec on 12.01.2022.
 //
 
+#include <iostream>
 #include "Player.h"
 
 Player::Player(
@@ -38,10 +39,27 @@ void Player::update(float deltaTime) {
     }
 
     position += forward * velocity.z * deltaTime;
+    position += up * velocity.y * deltaTime;
 
     if (inputAngle != 0) {
         rotation.y = std::fmod(rotation.y + (inputAngle * rotationSpeed * deltaTime), 360.0f);
     }
 
-    // position.y = -0.5;
+    velocity.y += gravity.y * deltaTime;
+}
+
+void Player::solveCollision(const std::shared_ptr<engine::Instance>& collider) {
+    auto playerMin = this->bounds().aabb().min();
+    auto colliderMax = collider->bounds().aabb().max();
+
+    auto playerHeight = this->bounds().aabb().height();
+    auto otherHeight = collider->bounds().aabb().height();
+
+    // std::cout << position.y << " " << collider->position.y << std::endl;
+    auto kek = (colliderMax.y-playerMin.y);
+
+    if (playerMin.y < colliderMax.y && (colliderMax.y-playerMin.y) < playerHeight/2) {
+        velocity.y = 0;
+        position.y = colliderMax.y;
+    }
 }

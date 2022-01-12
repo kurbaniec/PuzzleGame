@@ -19,12 +19,14 @@ public:
         glm::vec3 scale,
         glm::vec3 origin,
         glm::vec3 boundsMin, glm::vec3 boundsMax,
-        glm::vec3 gravity = glm::vec3(0, -2, 0),
+        glm::vec3 gravity = glm::vec3(0, -0.1, 0),
         float slowdown = 0.7f, float movementSpeed = 0.8f, float maxMovementSpeed = 1.8f,
         float rotationSpeed = 90.0f
     );
 
     void update(float deltaTime);
+
+    void solveCollision(const std::shared_ptr<engine::Instance>& collider);
 
 private:
     glm::vec3 velocity;

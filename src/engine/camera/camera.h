@@ -65,7 +65,7 @@ namespace engine {
             float yaw = YAW, float pitch = PITCH,
             float speed = SPEED, float sensitivity = SENSITIVITY,
             float zoom = ZOOM,
-            Mode mode = FREE, glm::vec3 target = TARGET
+            Mode mode = ORBIT, glm::vec3 target = TARGET
         );
 
         // constructor with scalar values
@@ -73,7 +73,7 @@ namespace engine {
             float posX, float posY, float posZ,
             float upX, float upY, float upZ,
             float yaw, float pitch,
-            Mode mode = FREE, glm::vec3 target = TARGET
+            Mode mode = ORBIT, glm::vec3 target = TARGET
         );
 
         // returns the view matrix calculated using Euler Angles and the LookAt Matrix

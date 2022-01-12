@@ -18,6 +18,7 @@ PuzzleGame::PuzzleGame(
 
 void PuzzleGame::setup() {
     setupLevel();
+    player->position.z = 1;
     glfwSetScrollCallback(window, scrollCallback);
 }
 
@@ -35,6 +36,7 @@ void PuzzleGame::update() {
     for (auto& block: blocks) {
         if (player->intersectsAabb(block)) {
             std::cout <<  "Intersect!" << std::endl;
+            player->solveCollision(block);
         }
 
     }
