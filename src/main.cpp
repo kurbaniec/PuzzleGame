@@ -16,6 +16,7 @@
 #include "engine/camera/camera.h"
 #include "engine/renderer/renderer.h"
 #include "game/DemoGame.h"
+#include "game/PuzzleGame.h"
 
 
 /*
@@ -288,7 +289,8 @@ int main() {
     // draw in wireframe
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    auto game = DemoGame(window, state);
+    //auto game = DemoGame(window, state);
+    auto game = PuzzleGame(window, state);
     try {
         game.setup();
     } catch (const runtime_error& error) {

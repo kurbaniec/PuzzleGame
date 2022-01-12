@@ -14,7 +14,7 @@ namespace engine {
         state->addModel(modelName, std::move(model));
     }
 
-    void InstanceFactory::createInstance(
+    std::shared_ptr<Instance> InstanceFactory::createInstance(
         const std::string& modelName, const std::string& id,
         glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, glm::vec3 origin
     ) {
@@ -30,7 +30,8 @@ namespace engine {
             throw std::runtime_error("Id on created Instance");
         }
         auto instanceId = instance->id;
-        state->addInstance(instanceId, std::move(instance));
+        state->addInstance(instanceId, instance);
+        return instance;
     }
 
 

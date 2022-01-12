@@ -16,7 +16,8 @@ namespace engine {
         explicit InstanceFactory(std::shared_ptr<State> state);
 
         void registerModel(const std::string& modelName, std::shared_ptr<Model> model);
-        void createInstance(
+
+        std::shared_ptr<Instance> createInstance(
             const std::string& modelName,
             const std::string& id,
             glm::vec3 position = glm::vec3(0.0f),
