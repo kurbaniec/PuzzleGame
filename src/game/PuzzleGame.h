@@ -47,7 +47,7 @@ private:
         std::shared_ptr<engine::InstanceFactory> factory,
         std::string model, std::string idPrefix,
         glm::ivec3 start, int xSize, int zSize, int stepSize,
-        std::set<glm::ivec3> omit, glm::vec3 rotation = glm::vec3(0.0f)
+        std::vector<glm::ivec3> omit, glm::vec3 rotation = glm::vec3(0.0f)
     );
 };
 

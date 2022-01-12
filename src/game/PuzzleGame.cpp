@@ -167,7 +167,8 @@ void PuzzleGame::setupLevel() {
 
     mapLevel(
         factory, "cube_grass_center", "cube_grass_center_",
-        glm::ivec3(-4, -1, -4), 5*2, 5*2, 2, std::set<glm::ivec3>{});
+        glm::ivec3(-4, -1, -4), 5*2, 5*2, 2,
+            std::vector<glm::ivec3>{ glm::ivec3(0, -1, 0) });
 
     /*factory->createInstance("player_model", "player");
     corner1 = std::dynamic_pointer_cast<BlockInstance>(
@@ -197,7 +198,7 @@ void PuzzleGame::setupLevel() {
 std::vector<std::shared_ptr<engine::Instance>>
 PuzzleGame::mapLevel(
     std::shared_ptr<engine::InstanceFactory> factory, std::string model, std::string idPrefix,
-    glm::ivec3 start, int xSize, int zSize, int stepSize, std::set<glm::ivec3> omit, glm::vec3 rotation
+    glm::ivec3 start, int xSize, int zSize, int stepSize, std::vector<glm::ivec3> omit, glm::vec3 rotation
 ) {
     // auto xStart = start.x;
     // auto xEnd = xStart + xSize;
@@ -223,14 +224,16 @@ PuzzleGame::mapLevel(
     std::vector<std::shared_ptr<engine::Instance>> instances;
     for (int x = 0; x < xSize; x += stepSize) {
         for (int z = 0; z < zSize; z += stepSize) {
-            auto instanceId = idPrefix + std::to_string(++id);
-            auto instance = factory->createInstance(model, instanceId);
             auto position = start;
             position.x += x;
             position.z += z;
-            instance->position = position;
-            instance->rotation = rotation;
-            instances.push_back(std::move(instance));
+            if (omit.empty() || std::find(omit.begin(), omit.end(), position) == omit.end()) {
+                auto instanceId = idPrefix + std::to_string(++id);
+                auto instance = factory->createInstance(model, instanceId);
+                instance->position = position;
+                instance->rotation = rotation;
+                instances.push_back(std::move(instance));
+            }
         }
     }
 
