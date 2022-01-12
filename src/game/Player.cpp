@@ -42,4 +42,6 @@ void Player::update(float deltaTime) {
     if (inputAngle != 0) {
         rotation.y = std::fmod(rotation.y + (inputAngle * rotationSpeed * deltaTime), 360.0f);
     }
+
+    // position.y = -0.5;
 }

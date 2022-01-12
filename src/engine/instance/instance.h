@@ -45,6 +45,7 @@ namespace engine {
         );
 
         const Bounds& bounds();
+        virtual bool intersectsAabb(const std::shared_ptr<Instance>& other) const;
         virtual void updateModelMatrix();
 
     protected:

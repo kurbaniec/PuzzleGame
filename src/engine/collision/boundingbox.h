@@ -21,6 +21,7 @@ namespace engine {
         [[nodiscard]] float height() const; // distance min/max y
         [[nodiscard]] float width() const; // distance min/max x
         [[nodiscard]] float depth() const; // distance min/max z
+        bool intersects(const BoundingBox& other) const;
         friend std::ostream& operator<<(std::ostream& os, const BoundingBox& box);
 
     private:

@@ -13,7 +13,7 @@
 PuzzleGame::PuzzleGame(
     GLFWwindow* window,
     const std::shared_ptr<engine::State>& state
-) : GameBasis(window, state) {}
+) : GameBasis(window, state), blocks() {}
 
 
 void PuzzleGame::setup() {
@@ -32,7 +32,14 @@ void PuzzleGame::update() {
     // -------------------------
     player->update(deltaTime);
 
-    std::cout << player->bounds().aabb().height() << std::endl;
+    for (auto& block: blocks) {
+        if (player->intersectsAabb(block)) {
+            std::cout <<  "Intersect!" << std::endl;
+        }
+
+    }
+
+    // std::cout << player->bounds().aabb().height() << std::endl;
 }
 
 void PuzzleGame::processInput(float deltaTime) {
@@ -175,10 +182,14 @@ void PuzzleGame::setupLevel() {
 
     player = std::dynamic_pointer_cast<Player>(factory->createInstance("player_model", "player"));
 
-    mapLevel(
+    auto cubeCrassCenterBlocks = mapLevel(
         factory, "cube_grass_center", "cube_grass_center_",
         glm::ivec3(-4, -1, -4), 5*2, 5*2, 2,
             std::vector<glm::ivec3>{ glm::ivec3(0, -1, 0) });
+
+    blocks.insert(
+        blocks.begin(), cubeCrassCenterBlocks.begin(), cubeCrassCenterBlocks.end()
+    );
 
     /*factory->createInstance("player_model", "player");
     corner1 = std::dynamic_pointer_cast<BlockInstance>(

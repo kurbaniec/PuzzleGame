@@ -35,6 +35,7 @@ private:
     };
 
     std::shared_ptr<Player> player;
+    std::vector<std::shared_ptr<engine::Instance>> blocks;
 
     std::shared_ptr<BlockInstance> corner1;
     std::shared_ptr<BlockInstance> corner2;

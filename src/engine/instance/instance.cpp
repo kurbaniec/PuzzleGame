@@ -58,5 +58,9 @@ namespace engine {
     const Bounds& Instance::bounds() {
         return boundsVal;
     }
+
+    bool Instance::intersectsAabb(const std::shared_ptr<Instance>& other) const {
+        return boundsVal.aabb().intersects(other->boundsVal.aabb());
+    }
 }
 
