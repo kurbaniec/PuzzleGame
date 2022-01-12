@@ -298,6 +298,8 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
+    renderer->draw();
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window)) {

@@ -46,6 +46,7 @@ void Player::update(float deltaTime) {
     }
 
     velocity.y += gravity.y * deltaTime;
+    updateModelMatrix();
 }
 
 void Player::solveCollision(const std::shared_ptr<engine::Instance>& collider) {
@@ -71,26 +72,40 @@ void Player::solveCollision(const std::shared_ptr<engine::Instance>& collider) {
         auto playerDepth = this->bounds().aabb().depth();
 
         velocity.z = 0;
-        if (playerMax.x > colliderMin.x && playerMin.x < colliderMin.x &&
-            (playerMax.z > colliderMin.z && playerMin.z < colliderMax.z)) {
-            // Right
-            position.x = colliderMin.x - playerWidth/2 - 0.015f;
-            std::cout << "Right" << std::endl;
-        } else if (playerMin.x < colliderMax.x && playerMax.x > colliderMax.x &&
-                   (playerMax.z > colliderMin.z && playerMin.z < colliderMax.z)) {
-            // Left
-            position.x = colliderMax.x + playerWidth/2 + 0.015f;
-            std::cout << "Left" << std::endl;
-        } else if (playerMax.z > colliderMin.z && playerMin.z < colliderMin.z &&
-                   (playerMax.x > colliderMin.x && playerMin.x < colliderMax.x)) {
-            // Front
-            position.z = colliderMin.z - playerDepth/2 - 0.015f;
-            std::cout << "Front" << std::endl;
-        } else {
-            // playerMin.z < colliderMax.z
-            // Back
-            position.z = colliderMax.z + playerDepth/2 + 0.015f;
-            std::cout << "Back" << std::endl;
-        }
+        float offset = 0.015f;
+        do {
+            auto test = collider->position - position;
+            auto testX = glm::abs(test.x );
+            auto textZ = glm::abs(test.z);
+
+            if (playerMax.x > colliderMin.x && playerMin.x < colliderMin.x &&
+                (playerMax.z > colliderMin.z || playerMin.z < colliderMax.z) &&
+                testX > textZ) {
+                // Right
+                position.x = colliderMin.x - playerWidth / 2 - offset;
+                std::cout << "Right" << std::endl;
+            } else if (playerMin.x < colliderMax.x && playerMax.x > colliderMax.x &&
+                (playerMax.z > colliderMin.z || playerMin.z < colliderMax.z) &&
+                testX > textZ) {
+                // Left
+                position.x = colliderMax.x + playerWidth / 2 + offset;
+                std::cout << "Left" << std::endl;
+            } else if (playerMin.z < colliderMax.z && playerMax.z < colliderMax.z &&
+                (playerMax.x > colliderMin.x || playerMin.x < colliderMax.x) &&
+                textZ > testX) {
+                // Front
+                position.z = colliderMin.z - playerDepth / 2 - offset;
+                std::cout << "Front" << std::endl;
+            } else if (playerMax.z > colliderMin.z && playerMin.z > colliderMin.z &&
+                (playerMax.x > colliderMin.x || playerMin.x < colliderMax.x) &&
+                textZ > testX) {
+                // playerMin.z < colliderMax.z
+                // Back
+                position.z = colliderMax.z + playerDepth / 2 + offset;
+                std::cout << "Back" << std::endl;
+            }
+            updateModelMatrix();
+            offset += 0.002f;
+        } while (intersectsAabb(collider));
     }
 }
