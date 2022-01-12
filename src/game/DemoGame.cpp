@@ -7,6 +7,7 @@
 #include "../engine/model/simplemodel.h"
 #include "BlockInstance.h"
 #include "../engine/model/lodmodel.h"
+#include "glm/gtx/string_cast.hpp"
 
 DemoGame::DemoGame(
     GLFWwindow* window,
@@ -122,6 +123,8 @@ void DemoGame::update() {
     }
     block1->rotation.y += deltaTime * 10.0f;
     block1->rotation.x += deltaTime * 10.0f;
+
+    std::cout << glm::to_string(block3->forward) << std::endl;
 }
 
 void DemoGame::processInput(float deltaTime) {

@@ -21,8 +21,14 @@ namespace engine {
         glm::vec3 rotation;
         glm::vec3 scale;
         glm::vec3 origin;
-        glm::mat4 modelMatrix;
-        bool enabled = true;
+        const glm::mat4 modelMatrix;
+        glm::vec4 localForward;
+        glm::vec4 localUp;
+        glm::vec4 localRight;
+        const glm::vec3 forward;
+        const glm::vec3 up;
+        const glm::vec3 right;
+        bool enabled;
 
         Instance(
             std::string id,
@@ -31,11 +37,15 @@ namespace engine {
             glm::vec3 scale,
             glm::vec3 origin,
             glm::vec3 boundsMin,
-            glm::vec3 boundsMax
+            glm::vec3 boundsMax,
+            glm::vec3 localForward = glm::vec3(0.0f, 0.0f, 1.0f),
+            glm::vec3 localUp = glm::vec3(0.0f, 1.0f, 0.0f),
+            glm::vec3 localRight = glm::vec3(1.0f, 0.0f, 0.0f),
+            bool enabled = true
         );
 
         const Bounds& bounds();
-        virtual glm::mat4& updateModelMatrix();
+        virtual void updateModelMatrix();
 
     protected:
         Bounds boundsVal;

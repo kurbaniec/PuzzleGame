@@ -10,7 +10,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd black.png
+map_Kd black.dds
 
 newmtl EyeColor
 Ns 229.864720
@@ -21,7 +21,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 3
-map_Kd eye.png
+map_Kd eye.dds
 
 newmtl Main
 Ns 225.000000
@@ -32,7 +32,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd blue.jpg
+map_Kd blue.dds
 
 newmtl Main2
 Ns 225.000000
@@ -43,7 +43,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd blue_2.png
+map_Kd blue_2.dds
 
 newmtl Main_Light
 Ns 225.000000
@@ -54,7 +54,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd creme.png
+map_Kd creme.dds
 
 newmtl White
 Ns 225.000000
@@ -65,4 +65,4 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
-map_Kd white.png
+map_Kd white.dds
