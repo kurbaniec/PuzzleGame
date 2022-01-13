@@ -14,7 +14,7 @@ namespace engine {
         std::shared_ptr<Shader> shader,
         std::function<std::shared_ptr<Instance>
             (std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> creator
-    ) : Model(id, std::move(creator)), shader(std::move(shader)) {
+    ) : Model(id, std::move(creator)), shader(std::move(shader)), transparentTriangles() {
         loadModel(path, texturesLoaded, meshes, transparentMeshes);
     }
 
@@ -87,7 +87,8 @@ namespace engine {
                     std::ref(mesh.vertices[mesh.indices[i + 1]]),
                     std::ref(mesh.vertices[mesh.indices[i + 2]]),
                 };
-                transparentTriangles.emplace_back(instance, mesh, vertices, offset, shader);
+                //transparentTriangles.emplace_back(instance, mesh, vertices, offset, shader);
+                transparentTriangles.push_back(std::move(Triangle(instance, mesh, vertices, offset, shader)));
             }
         }
     }
@@ -95,13 +96,39 @@ namespace engine {
     void SimpleModel::removeTriangles(const std::string& instanceId) {
         // Triangle needs to implement Move assignment in order to work
         // See: https://stackoverflow.com/a/21813528/12347616
-        transparentTriangles.erase(
-            std::remove_if(
-                transparentTriangles.begin(), transparentTriangles.end(),
-                [instanceId](Triangle& triangle) -> bool {
-                    return triangle.instance.lock()->id == instanceId;
-                }), transparentTriangles.end()
-        );
+
+        // auto remove = std::remove_if(
+        //     transparentTriangles.begin(), transparentTriangles.end(),
+        //     [instanceId](Triangle& triangle) -> bool {
+        //         auto id = triangle.instance.lock()->id;
+        //         return id == instanceId;
+        //     });
+        //
+        // transparentTriangles.erase(remove, transparentTriangles.end());
+
+        std::vector<Triangle> triangles;
+        for (auto& t : transparentTriangles) {
+            if (t.instance->id != instanceId) {
+                triangles.push_back(std::move(t));
+            }
+        }
+        transparentTriangles.clear();
+        transparentTriangles = triangles;
+
+        // std::vector<int> indices;
+        // for (int i = 0; i < transparentTriangles.size(); ++i) {
+        //     auto& triangle = transparentTriangles[i];
+        //     if (triangle.instance.lock()->id == instanceId) {
+        //         indices.push_back(i);
+        //     }
+        // }
+        // std::sort(indices.begin(), indices.end(), std::greater<>());
+        // for (auto& index: indices) {
+        //     transparentTriangles.erase(transparentTriangles.begin());
+        // }
+        //
+        // auto test = 0;
+
     }
 
 }

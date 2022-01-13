@@ -13,11 +13,11 @@ namespace engine {
 
     class Triangle {
     public:
-        const std::weak_ptr<Instance> instance;
+        const std::shared_ptr<Instance> instance;
         const Mesh& mesh;
         const std::vector<std::reference_wrapper<Vertex>> vertices;
         const unsigned int offset;
-        const std::shared_ptr<Shader>& shader;
+        const std::shared_ptr<Shader> shader;
         glm::vec3 centroid;
         float cameraDistance;
 
@@ -35,7 +35,7 @@ namespace engine {
         void draw(glm::mat4 view, glm::mat4 projection);
 
         Triangle(Triangle&) = default;
-        //Triangle& operator=(Triangle&) noexcept = default;
+        Triangle& operator=(const Triangle&) noexcept;
         Triangle(Triangle&& source) noexcept;
         Triangle& operator=(Triangle&&) noexcept;
 

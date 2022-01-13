@@ -18,7 +18,7 @@ namespace engine {
     ) : instance(instance), mesh(mesh), vertices(std::move(vertices)), offset(offset), shader(shader) {}
 
     glm::vec3& Triangle::updateCentroid() {
-        auto modelMatrix = instance.lock()->modelMatrix;
+        auto modelMatrix = instance->modelMatrix;
         // Calculate centroid
         // See: https://brilliant.org/wiki/triangles-centroid/
         auto localCentroid
@@ -44,7 +44,7 @@ namespace engine {
         shader->use();
         shader->setMat4("projection", projection);
         shader->setMat4("view", view);
-        shader->setMat4("model", instance.lock()->modelMatrix);
+        shader->setMat4("model", instance->modelMatrix);
         const_cast<Mesh&>(mesh).drawTriangle(shader, offset);
     }
 
@@ -53,9 +53,58 @@ namespace engine {
           offset(source.offset), shader(source.shader), centroid(source.centroid),
           cameraDistance(source.cameraDistance) {}
 
-    Triangle& Triangle::operator=(Triangle&&) noexcept {
+    Triangle& Triangle::operator=(Triangle&& other) noexcept {
+        if (this != &other) {
+            auto& i = const_cast<std::shared_ptr<Instance>&>(instance);
+            i = other.instance;
+            auto& m = const_cast<Mesh&>(mesh);
+            auto& otherM = const_cast<Mesh&>(other.mesh);
+            m = std::move(otherM);
+            auto& v = const_cast<std::vector<std::reference_wrapper<Vertex>>&>(vertices);
+            auto& otherV = const_cast<std::vector<std::reference_wrapper<Vertex>>&>(other.vertices);
+            v = std::move(otherV);
+            auto& o = const_cast<unsigned int&>(offset);
+            o = other.offset;
+            centroid = other.centroid;
+            cameraDistance = other.cameraDistance;
+        }
         return *this;
     }
+
+    Triangle& Triangle::operator=(const Triangle& other) noexcept {
+        if (this != &other) {
+            auto& i = const_cast<std::shared_ptr<Instance>&>(instance);
+            i = other.instance;
+            auto& m = const_cast<Mesh&>(mesh);
+            auto& otherM = const_cast<Mesh&>(other.mesh);
+            m = std::move(otherM);
+            auto& v = const_cast<std::vector<std::reference_wrapper<Vertex>>&>(vertices);
+            auto& otherV = const_cast<std::vector<std::reference_wrapper<Vertex>>&>(other.vertices);
+            v = std::move(otherV);
+            auto& o = const_cast<unsigned int&>(offset);
+            o = other.offset;
+            centroid = other.centroid;
+            cameraDistance = other.cameraDistance;
+        }
+        return *this;
+    }
+
+    // Triangle& Triangle::operator=(Triangle& other) noexcept {
+    //     if (this != &other) {
+    //         // const std::shared_ptr<Instance> instance;
+    //         // const Mesh& mesh;
+    //         // const std::vector<std::reference_wrapper<Vertex>> vertices;
+    //         // const unsigned int offset;
+    //         // const std::shared_ptr<Shader> shader;
+    //         // glm::vec3 centroid;
+    //         // float cameraDistance;
+    //         auto& i = const_cast<std::shared_ptr<Instance>&>(instance);
+    //         i = other.instance;
+    //         auto m = const_cast<const Mesh*>(&mesh);
+    //         m = &other.mesh;
+    //     }
+    //     return *this;
+    // }
 
 
 }

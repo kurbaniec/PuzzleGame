@@ -50,7 +50,8 @@ namespace engine {
         std::vector<Vertex> vertices;
         std::vector<unsigned int> indices;
         std::vector<Texture> textures;
-        const bool transparent;
+        // const bool transparent;
+        bool transparent;
         unsigned int VAO;
 
         // constructor
