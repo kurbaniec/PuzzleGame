@@ -161,6 +161,14 @@ namespace engine {
         updateCameraVectors();
     }
 
+    void Camera::setSpeed(float speed) {
+        movementSpeed = speed;
+    }
+
+    void Camera::setSensitivity(float sensitivity) {
+        mouseSensitivity = sensitivity;
+    }
+
     glm::vec3 Camera::getPosition() const {
         return position;
     }
@@ -173,8 +181,16 @@ namespace engine {
         return zoom;
     }
 
-    Mode Camera::getCameraMode() const {
+    Mode Camera::getMode() const {
         return mode;
+    }
+
+    float Camera::getSensitivity() const {
+        return mouseSensitivity;
+    }
+
+    float Camera::getSpeed() const {
+        return movementSpeed;
     }
 
     int Camera::sgn(double v) {

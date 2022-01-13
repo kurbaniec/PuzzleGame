@@ -70,7 +70,7 @@ namespace engine {
         // returns the view matrix calculated using Euler Angles and the LookAt Matrix
         [[nodiscard]] glm::mat4 getViewMatrix() const;
 
-        [[nodiscard]] Mode getCameraMode() const;
+        [[nodiscard]] Mode getMode() const;
 
         [[nodiscard]] glm::vec3 getPosition() const;
 
@@ -78,11 +78,19 @@ namespace engine {
 
         [[nodiscard]] float getZoom() const;
 
+        [[nodiscard]] float getSensitivity() const;
+
+        [[nodiscard]] float getSpeed() const;
+
         void toggleMode();
 
         void setPosition(glm::vec3 position);
 
         void setTarget(glm::vec3 target);
+
+        void setSensitivity(float sensitivity);
+
+        void setSpeed(float speed);
 
     private:
         glm::mat4 viewMatrix;

@@ -22,6 +22,8 @@ PuzzleGame::PuzzleGame(
 void PuzzleGame::setup() {
     //setupLevel();
     PuzzleGameLevel::setupLevel(*this);
+    // camera->setSensitivity(0.5);
+    camera->setSpeed(5);
     glfwSetScrollCallback(window, scrollCallback);
 }
 
@@ -42,6 +44,7 @@ void PuzzleGame::update() {
         }
     }
     camera->setTarget(glm::vec3(0.0f, player->position.y, 0.0f));
+    //camera->setTarget(player->position);
 
     // std::cout << player->bounds().aabb().height() << std::endl;
 }
@@ -340,7 +343,7 @@ void PuzzleGame::scrollCallback(GLFWwindow* window, double xOffset, double yOffs
     auto camera = state->getCamera();
     auto deltaTime = state->getDeltaTime();
     auto offset = static_cast<float>(yOffset);
-    if (camera->getCameraMode() == engine::FREE) {
+    if (camera->getMode() == engine::FREE) {
         camera->processMouseScroll(offset);
     } else {
         const int factor = 5;
