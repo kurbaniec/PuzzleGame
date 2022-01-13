@@ -84,8 +84,23 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
     factory->registerModel(
         "cube_grass_corner_single",
         std::make_shared<engine::SimpleModel>(
-            "cube_grass_corner",
+            "cube_grass_corner_single",
             "resources/objects/blocks/cube_grass_corner_single/cube_grass_corner_single.obj",
+            shader,
+            [](const std::string& id,
+               glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
+               glm::vec3 boundsMin, glm::vec3 boundsMax) -> std::shared_ptr<engine::Instance> {
+                return std::make_shared<BlockInstance>(
+                    id, pos, rot, scale, origin, boundsMin, boundsMax, std::set<std::string>({"jump"}));
+            }
+        )
+    );
+
+    factory->registerModel(
+        "cube_grass_side_single",
+        std::make_shared<engine::SimpleModel>(
+            "cube_grass_side_single",
+            "resources/objects/blocks/cube_grass_side_single/cube_grass_side_single.obj",
             shader,
             [](const std::string& id,
                glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
@@ -273,29 +288,47 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
         game.blocks.begin(), bridges.begin(), bridges.end()
     );
 
-    // Cube Grass Side
-    // ---------------
-    auto cgsId = -1;
-    std::vector<glm::vec3> gcsPositions = {
+    // Cube Grass Corner Single
+    // ----------------------
+    auto cgcsId = -1;
+    std::vector<glm::vec3> cgcsPositions = {
         glm::vec3(0, 6, 0), glm::vec3(2, 6, 0),
-        glm::vec3(2, 6, -2), glm::vec3(0, 6, -2)
+        glm::vec3(2, 6, -2), glm::vec3(0, 6, -2),
+        glm::vec3(-10, -3, 10), glm::vec3(10, -3, 10), glm::vec3(-10, -3, -8)
+
     };
-    std::vector<glm::vec3> gcsRotations = {
+    std::vector<glm::vec3> cgcsRotations = {
         glm::vec3(0, 0, 0), glm::vec3(0, 90, 0),
-        glm::vec3(0, 180, 0), glm::vec3(0, 270, 0)
+        glm::vec3(0, 180, 0), glm::vec3(0, 270, 0),
+        glm::vec3(0, 0, 0), glm::vec3(0, 90, 0), glm::vec3(0, 270, 0)
     };
     std::vector<std::shared_ptr<engine::Instance>> cgsBlocks;
 
-    for (int i = 0; i < gcsPositions.size(); ++i) {
-        auto instanceId = "cube_grass_corner_single_" + std::to_string(++cgsId);
+    for (int i = 0; i < cgcsPositions.size(); ++i) {
+        auto instanceId = "cube_grass_corner_single_" + std::to_string(++cgcsId);
         auto instance = factory->createInstance("cube_grass_corner_single", instanceId);
-        instance->position = gcsPositions[i];
-        instance->rotation = gcsRotations[i];
+        instance->position = cgcsPositions[i];
+        instance->rotation = cgcsRotations[i];
         cgsBlocks.push_back(std::move(instance));
     }
     game.blocks.insert(
         game.blocks.begin(), cgsBlocks.begin(), cgsBlocks.end()
     );
+
+    // Cube Grass Side Single
+    // ----------------------
+    auto cgssBlocks1 = mapGround(
+        factory, "cube_grass_side_single", "cube_grass_side_single_",
+        glm::ivec3(-8, -3, 10), 9 * 2, 1 * 2, 2,
+        std::vector<glm::ivec3>{}, glm::vec3(0, 0, 0), 50
+    );
+    game.blocks.insert(game.blocks.end(), cgssBlocks1.begin(), cgssBlocks1.end());
+    auto cgssBlocks2 = mapGround(
+        factory, "cube_grass_side_single", "cube_grass_side_single_",
+        glm::ivec3(-10, -3, -6), 1 * 2, 8 * 2, 2,
+        std::vector<glm::ivec3>{}, glm::vec3(0, 270, 0), 60
+    );
+    game.blocks.insert(game.blocks.end(), cgssBlocks2.begin(), cgssBlocks2.end());
 
     // auto bridge = factory->createInstance("bridge", "bridge_1");
     // bridge->position = glm::vec3(2, 0, 2);
