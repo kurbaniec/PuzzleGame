@@ -34,7 +34,7 @@ void PuzzleGame::update() {
 
     for (auto& block: blocks) {
         if (player->intersectsAabb(block)) {
-            std::cout <<  "Intersect!" << std::endl;
+            // std::cout << "Intersect!" << std::endl;
             player->solveCollision(block);
         }
 
@@ -57,7 +57,7 @@ void PuzzleGame::processInput(float deltaTime) {
         auto sPress = glfwGetKey(window, GLFW_KEY_S);
         auto aPress = glfwGetKey(window, GLFW_KEY_A);
         auto dPress = glfwGetKey(window, GLFW_KEY_D);
-        player->input = glm::vec2(wPress-sPress, aPress-dPress);
+        player->input = glm::vec2(wPress - sPress, aPress - dPress);
 
         auto upPress = glfwGetKey(window, GLFW_KEY_UP);
         if (upPress == GLFW_PRESS)
@@ -85,7 +85,6 @@ void PuzzleGame::processInput(float deltaTime) {
         );
     }
 }
-
 
 
 void PuzzleGame::setupLevel() {
@@ -151,7 +150,7 @@ void PuzzleGame::setupLevel() {
                 "resources/objects/blocks/fire_corner/lod_1/fire_corner.obj",
                 "resources/objects/blocks/fire_corner/lod_2/fire_corner.obj"
             },
-            std::vector<float>{14, 25},
+            std::vector<float>{14, 15},
             std::vector<std::shared_ptr<engine::Shader>>{shader, shader},
             [](const std::string& id,
                glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
@@ -205,19 +204,23 @@ void PuzzleGame::setupLevel() {
     player->position.z = 1;
 
 
-    auto fireCube1 = factory->createInstance("fire_corner", "fire_corner_1");
+    //auto fireCube1 = factory->createInstance("fire_corner", "fire_corner_1");
     //auto fireCube2 = factory->createInstance("fire_corner", "fire_corner_2");
     //auto fireCube3 = factory->createInstance("fire_corner", "fire_corner_3");
     //auto fireCube4 = factory->createInstance("fire_corner", "fire_corner_4");
 
+    auto fireCubes1 = mapWallX(
+        factory, "fire_corner", "fire_corner_",
+        glm::ivec3(-2, -4, 0), 1 * 2, 5 * 2, 2,
+        std::vector<glm::ivec3>{});
 
 
-    auto cubeCrassCenterBlocks = mapLevel(
+    auto cubeCrassCenterBlocks = mapGround(
         factory, "cube_grass_center", "cube_grass_center_",
-        glm::ivec3(-4, -1, -6), 5*2, 5*2, 2,
-            std::vector<glm::ivec3>{
-            glm::ivec3(0, -1, 0) , glm::ivec3(2, -1, 0),
-            glm::ivec3(2, -1, -2) , glm::ivec3(0, -1, -2)
+        glm::ivec3(-4, -1, -6), 5 * 2, 5 * 2, 2,
+        std::vector<glm::ivec3>{
+            glm::ivec3(0, -1, 0), glm::ivec3(2, -1, 0),
+            glm::ivec3(2, -1, -2), glm::ivec3(0, -1, -2)
         });
 
 
@@ -261,17 +264,62 @@ void PuzzleGame::setupLevel() {
 }
 
 std::vector<std::shared_ptr<engine::Instance>>
-PuzzleGame::mapLevel(
+PuzzleGame::mapGround(
     std::shared_ptr<engine::InstanceFactory> factory, std::string model, std::string idPrefix,
-    glm::ivec3 start, int xSize, int zSize, int stepSize, std::vector<glm::ivec3> omit, glm::vec3 rotation
+    glm::ivec3 start, int xSize, int zSize, int stepSize, std::vector<glm::ivec3> omit, glm::vec3 rotation, int id
 ) {
-    auto id = -1;
     std::vector<std::shared_ptr<engine::Instance>> instances;
     for (int x = 0; x < xSize; x += stepSize) {
         for (int z = 0; z < zSize; z += stepSize) {
             auto position = start;
             position.x += x;
             position.z += z;
+            if (omit.empty() || std::find(omit.begin(), omit.end(), position) == omit.end()) {
+                auto instanceId = idPrefix + std::to_string(++id);
+                auto instance = factory->createInstance(model, instanceId);
+                instance->position = position;
+                instance->rotation = rotation;
+                instances.push_back(std::move(instance));
+            }
+        }
+    }
+
+    return instances;
+}
+
+std::vector<std::shared_ptr<engine::Instance>>
+PuzzleGame::mapWallX(std::shared_ptr<engine::InstanceFactory> factory, std::string model, std::string idPrefix,
+                     glm::ivec3 start, int xSize, int ySize, int stepSize, std::vector<glm::ivec3> omit,
+                     glm::vec3 rotation, int id) {
+    std::vector<std::shared_ptr<engine::Instance>> instances;
+    for (int x = 0; x < xSize; x += stepSize) {
+        for (int y = 0; y < ySize; y += stepSize) {
+            auto position = start;
+            position.x += x;
+            position.y += y;
+            if (omit.empty() || std::find(omit.begin(), omit.end(), position) == omit.end()) {
+                auto instanceId = idPrefix + std::to_string(++id);
+                auto instance = factory->createInstance(model, instanceId);
+                instance->position = position;
+                instance->rotation = rotation;
+                instances.push_back(std::move(instance));
+            }
+        }
+    }
+
+    return instances;
+}
+
+std::vector<std::shared_ptr<engine::Instance>>
+PuzzleGame::mapWallZ(std::shared_ptr<engine::InstanceFactory> factory, std::string model, std::string idPrefix,
+                     glm::ivec3 start, int zSize, int ySize, int stepSize, std::vector<glm::ivec3> omit,
+                     glm::vec3 rotation, int id) {
+    std::vector<std::shared_ptr<engine::Instance>> instances;
+    for (int z = 0; z < zSize; z += stepSize) {
+        for (int y = 0; y < ySize; y += stepSize) {
+            auto position = start;
+            position.z += z;
+            position.y += y;
             if (omit.empty() || std::find(omit.begin(), omit.end(), position) == omit.end()) {
                 auto instanceId = idPrefix + std::to_string(++id);
                 auto instance = factory->createInstance(model, instanceId);
@@ -296,12 +344,13 @@ void PuzzleGame::scrollCallback(GLFWwindow* window, double xOffset, double yOffs
         const int factor = 5;
         if (yOffset > 0) {
             camera->ProcessKeyboard(engine::FORWARD, deltaTime * offset * factor);
-        } else if (yOffset < 0){
+        } else if (yOffset < 0) {
             camera->ProcessKeyboard(engine::BACKWARD, deltaTime * glm::abs(offset) * factor);
         }
 
     }
 
 }
+
 
 

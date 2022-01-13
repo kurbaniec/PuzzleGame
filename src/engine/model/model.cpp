@@ -271,8 +271,12 @@ namespace engine {
             // auto b = pixels[0 + 0 + 2];
             // auto a = pixels[0 + 0 + 3];
             //bool isTransparent = false;
-            for (auto i = 0; i < size; i += 4) {
-                if (pixels[i] == 1.0f) {
+            for (auto i = 3; i < size; i += 4) {
+                auto r = pixels[i-3];
+                auto g = pixels[i-2];
+                auto b = pixels[i-1];
+                auto a = pixels[i];
+                if (pixels[i] < 1.0f) {
                     //isTransparent = true;
                     transparent = true;
                     break;
