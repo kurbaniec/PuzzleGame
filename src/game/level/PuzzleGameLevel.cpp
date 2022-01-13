@@ -112,6 +112,51 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
     );
 
     factory->registerModel(
+        "cube_grass_side_bottom",
+        std::make_shared<engine::SimpleModel>(
+            "cube_grass_side_bottom",
+            "resources/objects/blocks/cube_grass_side_bottom/cube_grass_side_bottom.obj",
+            shader,
+            [](const std::string& id,
+               glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
+               glm::vec3 boundsMin, glm::vec3 boundsMax) -> std::shared_ptr<engine::Instance> {
+                return std::make_shared<BlockInstance>(
+                    id, pos, rot, scale, origin, boundsMin, boundsMax);
+            }
+        )
+    );
+
+    factory->registerModel(
+        "cube_grass_center_bottom",
+        std::make_shared<engine::SimpleModel>(
+            "cube_grass_center_bottom",
+            "resources/objects/blocks/cube_grass_center_bottom/cube_grass_center_bottom.obj",
+            shader,
+            [](const std::string& id,
+               glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
+               glm::vec3 boundsMin, glm::vec3 boundsMax) -> std::shared_ptr<engine::Instance> {
+                return std::make_shared<BlockInstance>(
+                    id, pos, rot, scale, origin, boundsMin, boundsMax);
+            }
+        )
+    );
+
+    factory->registerModel(
+        "cube_grass_corner_bottom",
+        std::make_shared<engine::SimpleModel>(
+            "cube_grass_corner_bottom",
+            "resources/objects/blocks/cube_grass_corner_bottom/cube_grass_corner_bottom.obj",
+            shader,
+            [](const std::string& id,
+               glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
+               glm::vec3 boundsMin, glm::vec3 boundsMax) -> std::shared_ptr<engine::Instance> {
+                return std::make_shared<BlockInstance>(
+                    id, pos, rot, scale, origin, boundsMin, boundsMax);
+            }
+        )
+    );
+
+    factory->registerModel(
         "fire_corner",
         std::make_shared<engine::LodModel>(
             "fire_corner",
@@ -255,6 +300,7 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
     // blocks.push_back(b2);
 
     // Cube Grass Corner
+    // -----------------
     auto cgcId = -1;
     std::vector<glm::vec3> cgcPositions = {
         glm::vec3(-8, -1, 8), glm::vec3(10, -1, 8),
@@ -308,18 +354,22 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
     );
 
     // Cube Grass Corner Single
-    // ----------------------
+    // ------------------------
     auto cgcsId = -1;
     std::vector<glm::vec3> cgcsPositions = {
         glm::vec3(0, 6, 0), glm::vec3(2, 6, 0),
         glm::vec3(2, 6, -2), glm::vec3(0, 6, -2),
-        glm::vec3(-10, -3, 10), glm::vec3(10, -3, 10), glm::vec3(-10, -3, -8)
+        glm::vec3(-10, -3, 10), glm::vec3(10, -3, 10), glm::vec3(-10, -3, -8),
+        glm::vec3(-6, 0, 6), glm::vec3(-6, 0, 4),
+        glm::vec3(-4, 0, 4), glm::vec3(-4, 0, 6)
 
     };
     std::vector<glm::vec3> cgcsRotations = {
         glm::vec3(0, 0, 0), glm::vec3(0, 90, 0),
         glm::vec3(0, 180, 0), glm::vec3(0, 270, 0),
-        glm::vec3(0, 0, 0), glm::vec3(0, 90, 0), glm::vec3(0, 270, 0)
+        glm::vec3(0, 0, 0), glm::vec3(0, 90, 0), glm::vec3(0, 270, 0),
+        glm::vec3(0, 0, 0), glm::vec3(0, 270, 0),
+        glm::vec3(0, 180, 0), glm::vec3(0, 90, 0),
     };
     std::vector<std::shared_ptr<engine::Instance>> cgsBlocks;
 
@@ -391,6 +441,51 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
         instance->rotation = wcRotations[i];
         wc5.push_back(std::move(instance));
     }
+
+    // Cube Grass Side Bottom
+    // ----------------------
+    auto gsb1 = mapGround(
+        factory, "cube_grass_side_bottom", "cube_grass_side_bottom_",
+        glm::ivec3(-6, -3, 8), 8 * 2, 1 * 2, 2,
+        std::vector<glm::ivec3>{}
+    );
+    game.blocks.insert(game.blocks.end(), gsb1.begin(), gsb1.end());
+    auto gsb2 = mapGround(
+        factory, "cube_grass_side_bottom", "cube_grass_side_bottom_",
+        glm::ivec3(-8, -3, -8), 9 * 2, 1 * 2, 2,
+        std::vector<glm::ivec3>{}, glm::vec3(0, 180, 0), 8
+    );
+    game.blocks.insert(game.blocks.end(), gsb2.begin(), gsb2.end());
+    auto gsb3 = mapGround(
+        factory, "cube_grass_side_bottom", "cube_grass_side_bottom_",
+        glm::ivec3(-8, -3, -6), 1 * 2, 8 * 2, 2,
+        std::vector<glm::ivec3>{}, glm::vec3(0, 270, 0), 17
+    );
+    game.blocks.insert(game.blocks.end(), gsb3.begin(), gsb3.end());
+    auto gsb4 = mapGround(
+        factory, "cube_grass_side_bottom", "cube_grass_side_bottom_",
+        glm::ivec3(10, -3, -6), 1 * 2, 8 * 2, 2,
+        std::vector<glm::ivec3>{}, glm::vec3(0, 90, 0), 25
+    );
+    game.blocks.insert(game.blocks.end(), gsb4.begin(), gsb4.end());
+
+    // Cube Grass Corner Bottom
+    // ------------------------
+    auto cgcb = factory->createInstance("cube_grass_corner_bottom", "cube_grass_corner_bottom_0");
+    cgcb->position = glm::vec3(-8+9*2, -3, -8);
+    cgcb->rotation = glm::vec3(0, 180, 0);
+
+    // Cube Grass Center Bottom
+    // ------------------------
+    auto cgcbBlocks = mapGround(
+        factory, "cube_grass_center_bottom", "cube_grass_center_bottom_",
+        glm::ivec3(-6, -3, -8), 8 * 2, 8 * 2, 2,
+        std::vector<glm::ivec3>{
+            glm::ivec3(0, -3, 0), glm::ivec3(2, -3, 0),
+            glm::ivec3(2, -3, -2), glm::ivec3(0, -3, -2)
+        });
+
+    game.blocks.insert(game.blocks.begin(), cgcbBlocks.begin(), cgcbBlocks.end());
 }
 
 std::vector<std::shared_ptr<engine::Instance>>
