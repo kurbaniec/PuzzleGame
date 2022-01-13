@@ -180,7 +180,7 @@ namespace engine {
     }
 
     float LodModel::getCameraDistance(glm::vec3 position) {
-        return glm::length(camera->position - position);
+        return glm::length(camera->getPosition() - position);
     }
 
 

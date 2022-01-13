@@ -41,16 +41,12 @@ namespace engine {
         }
     }
 
-    glm::mat4 Camera::GetViewMatrix() const {
+    glm::mat4 Camera::getViewMatrix() const {
         return viewMatrix;
     }
 
-    Mode Camera::GetCameraMode() const {
-        return mode;
-    }
 
-
-    void Camera::ProcessKeyboard(CameraMovement direction, float deltaTime) {
+    void Camera::processKeyboard(CameraMovement direction, float deltaTime) {
         float velocity = movementSpeed * deltaTime;
         if (direction == FORWARD)
             position += front * velocity;
@@ -64,7 +60,7 @@ namespace engine {
         updateCameraVectors();
     }
 
-    void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch) {
+    void Camera::processMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch) {
         if (mode == FREE) {
             xoffset *= mouseSensitivity;
             yoffset *= mouseSensitivity;
@@ -102,7 +98,7 @@ namespace engine {
         }
     }
 
-    void Camera::ProcessMouseScroll(float yoffset) {
+    void Camera::processMouseScroll(float yoffset) {
         zoom -= (float) yoffset;
         if (zoom < 1.0f)
             zoom = 1.0f;
@@ -153,6 +149,32 @@ namespace engine {
             mode = FREE;
             updateCameraVectorsFree();
         }
+    }
+
+    void Camera::setPosition(glm::vec3 newPosition) {
+        position = newPosition;
+        updateCameraVectors();
+    }
+
+    void Camera::setTarget(glm::vec3 newTarget) {
+        target = newTarget;
+        updateCameraVectors();
+    }
+
+    glm::vec3 Camera::getPosition() const {
+        return position;
+    }
+
+    glm::vec3 Camera::getTarget() const {
+        return target;
+    }
+
+    float Camera::getZoom() const {
+        return zoom;
+    }
+
+    Mode Camera::getCameraMode() const {
+        return mode;
     }
 
     int Camera::sgn(double v) {

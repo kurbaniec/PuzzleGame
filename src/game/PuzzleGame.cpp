@@ -14,7 +14,9 @@
 PuzzleGame::PuzzleGame(
     GLFWwindow* window,
     const std::shared_ptr<engine::State>& state
-) : GameBasis(window, state), blocks() {}
+) : GameBasis(window, state), blocks() {
+    camera = state->getCamera();
+}
 
 
 void PuzzleGame::setup() {
@@ -33,14 +35,13 @@ void PuzzleGame::update() {
     // Update instance positions
     // -------------------------
     player->update(deltaTime);
-
     for (auto& block: blocks) {
         if (player->intersectsAabb(block)) {
             // std::cout << "Intersect!" << std::endl;
             player->solveCollision(block);
         }
-
     }
+    camera->setTarget(glm::vec3(0.0f, player->position.y, 0.0f));
 
     // std::cout << player->bounds().aabb().height() << std::endl;
 }
@@ -48,7 +49,6 @@ void PuzzleGame::update() {
 void PuzzleGame::processInput(float deltaTime) {
     // Workaround to check if window is "focused"
     if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED) {
-        auto camera = state->getCamera();
         auto keys = state->getKeys();
 
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -63,16 +63,16 @@ void PuzzleGame::processInput(float deltaTime) {
 
         auto upPress = glfwGetKey(window, GLFW_KEY_UP);
         if (upPress == GLFW_PRESS)
-            camera->ProcessKeyboard(engine::FORWARD, deltaTime);
+            camera->processKeyboard(engine::FORWARD, deltaTime);
         auto downPress = glfwGetKey(window, GLFW_KEY_DOWN);
         if (downPress == GLFW_PRESS)
-            camera->ProcessKeyboard(engine::BACKWARD, deltaTime);
+            camera->processKeyboard(engine::BACKWARD, deltaTime);
         auto leftPress = glfwGetKey(window, GLFW_KEY_LEFT);
         if (leftPress == GLFW_PRESS)
-            camera->ProcessKeyboard(engine::LEFT, deltaTime);
+            camera->processKeyboard(engine::LEFT, deltaTime);
         auto rightPress = glfwGetKey(window, GLFW_KEY_RIGHT);
         if (rightPress == GLFW_PRESS)
-            camera->ProcessKeyboard(engine::RIGHT, deltaTime);
+            camera->processKeyboard(engine::RIGHT, deltaTime);
         auto spacePress = glfwGetKey(window, GLFW_KEY_SPACE);
         if (!keys->contains(GLFW_KEY_SPACE))
             keys->insert({GLFW_KEY_SPACE, GLFW_RELEASE});
@@ -340,14 +340,14 @@ void PuzzleGame::scrollCallback(GLFWwindow* window, double xOffset, double yOffs
     auto camera = state->getCamera();
     auto deltaTime = state->getDeltaTime();
     auto offset = static_cast<float>(yOffset);
-    if (camera->mode == engine::FREE) {
-        camera->ProcessMouseScroll(offset);
+    if (camera->getCameraMode() == engine::FREE) {
+        camera->processMouseScroll(offset);
     } else {
         const int factor = 5;
         if (yOffset > 0) {
-            camera->ProcessKeyboard(engine::FORWARD, deltaTime * offset * factor);
+            camera->processKeyboard(engine::FORWARD, deltaTime * offset * factor);
         } else if (yOffset < 0) {
-            camera->ProcessKeyboard(engine::BACKWARD, deltaTime * glm::abs(offset) * factor);
+            camera->processKeyboard(engine::BACKWARD, deltaTime * glm::abs(offset) * factor);
         }
 
     }

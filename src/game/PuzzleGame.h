@@ -37,6 +37,7 @@ private:
     };
 
     std::shared_ptr<Player> player;
+    std::shared_ptr<engine::Camera> camera;
     std::vector<std::shared_ptr<engine::Instance>> blocks;
 
     std::shared_ptr<BlockInstance> corner1;

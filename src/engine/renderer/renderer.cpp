@@ -28,7 +28,7 @@ namespace engine {
     void Renderer::draw() {
         // Get view & projection matrix
         // ----------------------------
-        auto viewMatrix = state->camera->GetViewMatrix();
+        auto viewMatrix = state->camera->getViewMatrix();
         auto projectionMatrix = state->window->getProjectionMatrix();
         // Update instance model matrices
         for (auto&[id, instance]: state->instances) {
@@ -48,7 +48,7 @@ namespace engine {
             auto triangles = model->getTriangles();
             transparentTriangles.insert(transparentTriangles.end(), triangles.begin(), triangles.end());
         }
-        auto cameraPos = state->camera->position;
+        auto cameraPos = state->camera->getPosition();
         // std::cout << glm::to_string(cameraPos) << std::endl;
         for (auto triangle: transparentTriangles) {
             triangle.get().updateCentroid();

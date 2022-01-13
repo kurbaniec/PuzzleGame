@@ -349,16 +349,16 @@ void processInput(GLFWwindow* window) {
         }
         auto wPress = glfwGetKey(window, GLFW_KEY_W);
         if (wPress == GLFW_PRESS)
-            camera->ProcessKeyboard(engine::FORWARD, deltaTime);
+            camera->processKeyboard(engine::FORWARD, deltaTime);
         auto sPress = glfwGetKey(window, GLFW_KEY_S);
         if (sPress == GLFW_PRESS)
-            camera->ProcessKeyboard(engine::BACKWARD, deltaTime);
+            camera->processKeyboard(engine::BACKWARD, deltaTime);
         auto aPress = glfwGetKey(window, GLFW_KEY_A);
         if (aPress == GLFW_PRESS)
-            camera->ProcessKeyboard(engine::LEFT, deltaTime);
+            camera->processKeyboard(engine::LEFT, deltaTime);
         auto dPress = glfwGetKey(window, GLFW_KEY_D);
         if (dPress == GLFW_PRESS)
-            camera->ProcessKeyboard(engine::RIGHT, deltaTime);
+            camera->processKeyboard(engine::RIGHT, deltaTime);
         auto spacePress = glfwGetKey(window, GLFW_KEY_SPACE);
         if (!keys->contains(GLFW_KEY_SPACE))
             keys->insert({GLFW_KEY_SPACE, GLFW_RELEASE});
@@ -429,7 +429,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
         lastX = xpos;
         lastY = ypos;
 
-        camera->ProcessMouseMovement(xoffset, yoffset);
+        camera->processMouseMovement(xoffset, yoffset);
     }
 }
 
@@ -438,7 +438,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
     auto state = *static_cast<std::shared_ptr<engine::State>*>(glfwGetWindowUserPointer(window));
     auto camera = state->getCamera();
-    camera->ProcessMouseScroll(yoffset);
+    camera->processMouseScroll(yoffset);
 }
 
 // See: https://www.glfw.org/docs/3.3/input_guide.html#cursor_enter
