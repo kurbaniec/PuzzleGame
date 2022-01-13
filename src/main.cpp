@@ -292,13 +292,16 @@ int main() {
     //auto game = DemoGame(window, state);
     auto game = PuzzleGame(window, state);
     try {
+        // Setup level
         game.setup();
+        // Compute model matrices
+        for (auto& instance: state->instances) {
+            instance.second->updateModelMatrix();
+        }
     } catch (const runtime_error& error) {
         std::cerr << error.what() << std::endl;
         exit(EXIT_FAILURE);
     }
-
-    renderer->draw();
 
     // render loop
     // -----------

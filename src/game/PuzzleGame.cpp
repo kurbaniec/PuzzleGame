@@ -18,7 +18,6 @@ PuzzleGame::PuzzleGame(
 
 void PuzzleGame::setup() {
     setupLevel();
-    player->position.z = 1;
     glfwSetScrollCallback(window, scrollCallback);
 }
 
@@ -144,6 +143,25 @@ void PuzzleGame::setupLevel() {
         )
     );
 
+    factory->registerModel(
+        "fire_corner",
+        std::make_shared<engine::LodModel>(
+            "fire_corner",
+            std::vector<std::string>{
+                "resources/objects/blocks/fire_corner/lod_1/fire_corner.obj",
+                "resources/objects/blocks/fire_corner/lod_2/fire_corner.obj"
+            },
+            std::vector<float>{14, 25},
+            std::vector<std::shared_ptr<engine::Shader>>{shader, shader},
+            [](const std::string& id,
+               glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
+               glm::vec3 boundsMin, glm::vec3 boundsMax) -> std::shared_ptr<engine::Instance> {
+                return std::make_shared<BlockInstance>(id, pos, rot, scale, origin, boundsMin, boundsMax);
+            },
+            camera
+        )
+    );
+
     int cornerId = -1;
     auto cornerMap = std::vector<LevelPart>{
         {
@@ -184,20 +202,38 @@ void PuzzleGame::setupLevel() {
 
     player = std::dynamic_pointer_cast<Player>(
         factory->createInstance("player_model", "player"));
+    player->position.z = 1;
+
+
+    auto fireCube1 = factory->createInstance("fire_corner", "fire_corner_1");
+    //auto fireCube2 = factory->createInstance("fire_corner", "fire_corner_2");
+    //auto fireCube3 = factory->createInstance("fire_corner", "fire_corner_3");
+    //auto fireCube4 = factory->createInstance("fire_corner", "fire_corner_4");
+
+
 
     auto cubeCrassCenterBlocks = mapLevel(
         factory, "cube_grass_center", "cube_grass_center_",
-        glm::ivec3(-4, -1, -4), 5*2, 5*2, 2,
-            std::vector<glm::ivec3>{ glm::ivec3(0, -1, 0) });
+        glm::ivec3(-4, -1, -6), 5*2, 5*2, 2,
+            std::vector<glm::ivec3>{
+            glm::ivec3(0, -1, 0) , glm::ivec3(2, -1, 0),
+            glm::ivec3(2, -1, -2) , glm::ivec3(0, -1, -2)
+        });
 
-    auto b = factory->createInstance("cube_grass_center", "c");
-    b->position.y = -2;
+
+
+    // auto b = factory->createInstance("cube_grass_center", "c");
+    // b->position.y = -2;
+    // auto b2 = factory->createInstance("cube_grass_corner", "c2");
+    // b2->position.z = -1;
+    // blocks.push_back(b);
+    // blocks.push_back(b2);
 
     blocks.insert(
         blocks.begin(), cubeCrassCenterBlocks.begin(), cubeCrassCenterBlocks.end()
     );
 
-    blocks.push_back(b);
+
 
     /*factory->createInstance("player_model", "player");
     corner1 = std::dynamic_pointer_cast<BlockInstance>(
