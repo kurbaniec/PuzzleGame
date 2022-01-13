@@ -83,80 +83,66 @@ namespace engine {
         auto distIndex = 0;
         auto distMax = distances.size() - 1;
 
-        try {
+        for (auto& distance: distances) {
+            // SimpleModel has no default constructor
+            // So one must use `at` instead of `[]` operator.
+            // See: https://stackoverflow.com/a/12124339/12347616
+            auto& model = models.at(distance);
+            auto instances = model.getInstances();
 
-            for (auto& distance: distances) {
-                // SimpleModel has no default constructor
-                // So one must use `at` instead of `[]` operator.
-                // See: https://stackoverflow.com/a/12124339/12347616
-                auto& model = models.at(distance);
-                auto instances = model.getInstances();
-
-                auto instanceIndex = 0;
-                for (auto& instance: instances) {
-                    auto instanceDistance = getCameraDistance(instance->position);
-                    //std::cout << instanceDistance << std::endl;
-                    if (instanceDistance <= distance) {
-                        if (distIndex > 0) {
-                            //auto currentDist = distance;
-                            //auto newDist = distance;
-                            auto newDistIndex = distIndex;
-
-                            for (auto i = distIndex; i >= 0; --i) {
-                                auto distanceCheck = distances[i];
-                                if (instanceDistance <= distanceCheck) {
-                                    //newDist = distanceCheck;
-                                    newDistIndex = i;
-                                } else {
-                                    break;
-                                }
+            auto instanceIndex = 0;
+            for (auto& instance: instances) {
+                // Get current distance to camera
+                auto instanceDistance = getCameraDistance(instance->position);
+                //std::cout << instanceDistance << std::endl;
+                if (instanceDistance <= distance) {
+                    // If bound to the model with the lowest distance skip
+                    if (distIndex > 0) {
+                        // Find model with lower distance
+                        auto newDistIndex = distIndex;
+                        for (auto i = distIndex; i >= 0; --i) {
+                            auto distanceCheck = distances[i];
+                            if (instanceDistance <= distanceCheck) {
+                                newDistIndex = i;
+                            } else {
+                                break;
                             }
-
-                            // for (auto distanceCheck = distances.begin() + distCounter - 1;
-                            //      distanceCheck != distances.begin(); --distanceCheck) {
-                            //     if (*distanceCheck < instanceDistance) {
-                            //         newDistance = *distanceCheck;
-                            //         break;
-                            //     }
-                            // }
-
-                            if (distIndex != newDistIndex) {
-                                std::cout << "A " << distIndex << " " << newDistIndex << std::endl;
-                                toRemove[distIndex].push_back(instanceIndex);
-                                toAdd[newDistIndex].push_back(instance);
-                            }
-
                         }
-                    } else {
-                        if (distIndex < distMax) {
-                            //auto currentDist = distance;
-                            //auto newDist = distance;
-                            auto newDistIndex = distIndex;
+                        // Store model addition/removal
+                        if (distIndex != newDistIndex) {
+                            // std::cout << "A " << distIndex << " " << newDistIndex << std::endl;
+                            toRemove[distIndex].push_back(instanceIndex);
+                            toAdd[newDistIndex].push_back(instance);
+                        }
 
-                            for (auto i = distIndex; i <= distMax; ++i) {
-                                auto distanceCheck = distances[i];
-                                if (instanceDistance <= distanceCheck) {
-                                    //newDist = distanceCheck;
-                                    newDistIndex = i;
-                                    break;
-                                }
+                    }
+                } else {
+                    // If bound to the model with the highest distance skip
+                    if (distIndex < distMax) {
+                        // Find model with higher distance
+                        auto newDistIndex = distIndex;
+                        for (auto i = distIndex; i <= distMax; ++i) {
+                            auto distanceCheck = distances[i];
+                            if (instanceDistance <= distanceCheck) {
+                                //newDist = distanceCheck;
+                                newDistIndex = i;
+                                break;
                             }
-
-                            if (distIndex != newDistIndex) {
-                                std::cout << "B " << distIndex << " " << newDistIndex << std::endl;
-                                toRemove[distIndex].push_back(instanceIndex);
-                                toAdd[newDistIndex].push_back(instance);
-                            }
+                        }
+                        // Store model addition/removal
+                        if (distIndex != newDistIndex) {
+                            // std::cout << "B " << distIndex << " " << newDistIndex << std::endl;
+                            toRemove[distIndex].push_back(instanceIndex);
+                            toAdd[newDistIndex].push_back(instance);
                         }
                     }
-                    ++instanceIndex;
                 }
-                ++distIndex;
+                ++instanceIndex;
             }
-        } catch (std::exception& e) {
-            std::cerr << e.what() << std::endl;
+            ++distIndex;
         }
 
+        // Apply addition/removal of distances
         distIndex = 0;
         for (auto& distance: distances) {
             auto& model = models.at(distance);

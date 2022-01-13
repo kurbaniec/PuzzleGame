@@ -14,6 +14,8 @@
 
 class PuzzleGame : public GameBasis {
 public:
+    friend class PuzzleGameLevel;
+
     PuzzleGame(
         GLFWwindow* window,
         const std::shared_ptr<engine::State>& state

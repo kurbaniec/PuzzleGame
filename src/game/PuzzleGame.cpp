@@ -9,6 +9,7 @@
 #include "../engine/factory/InstanceFactory.h"
 #include "BlockInstance.h"
 #include "Player.h"
+#include "level/PuzzleGameLevel.h"
 
 PuzzleGame::PuzzleGame(
     GLFWwindow* window,
@@ -17,7 +18,8 @@ PuzzleGame::PuzzleGame(
 
 
 void PuzzleGame::setup() {
-    setupLevel();
+    //setupLevel();
+    PuzzleGameLevel::setupLevel(*this);
     glfwSetScrollCallback(window, scrollCallback);
 }
 

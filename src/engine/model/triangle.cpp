@@ -15,14 +15,14 @@ namespace engine {
         std::vector<std::reference_wrapper<Vertex>> vertices,
         unsigned int offset,
         std::shared_ptr<Shader>& shader
-    ) : instance(instance), mesh(mesh), vertices(std::move(vertices)), offset(offset), shader(shader) {}
+    ) : instance(std::move(instance)), mesh(mesh), vertices(std::move(vertices)), offset(offset), shader(shader) {}
 
     glm::vec3& Triangle::updateCentroid() {
         auto modelMatrix = instance->modelMatrix;
         // Calculate centroid
         // See: https://brilliant.org/wiki/triangles-centroid/
         auto localCentroid
-            = (vertices[0].get().Position + vertices[1].get().Position + vertices[1].get().Position) * 1.0f / 3.0f;
+            = (vertices[0].get().Position + vertices[1].get().Position + vertices[2].get().Position) * 1.0f / 3.0f;
         // Calculate centroid "vertex" with model (composition) matrix
         // Note: Order is important p' = Mp
         // -----------------------------------------------------------

@@ -10,14 +10,14 @@ namespace engine {
 
     void State::addModel(const std::string& modelName, std::shared_ptr<Model> model) {
         if (models.contains(modelName)) {
-            throw std::runtime_error("Model with same name is already defined");
+            throw std::runtime_error("Model with name " + modelName + " is already defined");
         }
         models[modelName] = std::move(model);
     }
 
     void State::addInstance(const std::string& id, std::shared_ptr<Instance> instance) {
         if (instances.contains(id)) {
-            throw std::runtime_error("Instance with same name is already defined");
+            throw std::runtime_error("Instance with name " + id + " is already defined");
         }
         instances[id] = std::move(instance);
     }

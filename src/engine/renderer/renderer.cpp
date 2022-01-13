@@ -63,6 +63,7 @@ namespace engine {
         );
 
         //std::cout << "==========" << std::endl;
+        int i = 0;
         for (auto triangle: transparentTriangles) {
             // std::cout << "Distance" << triangle.get().cameraDistance << std::endl;
             // std::cout << "Centroid" << glm::to_string(triangle.get().centroid) << std::endl;
@@ -71,7 +72,9 @@ namespace engine {
             //     triangle.get().vertices[0].get().Position + triangle.get().vertices[1].get().Position +
             //     triangle.get().vertices[1].get().Position) << std::endl;
             // std::cout << "Instance Pos" << glm::to_string(triangle.get().instance.lock()->position) << std::endl;
-            triangle.get().draw(viewMatrix, projectionMatrix);
+            //if (i != 2)
+                triangle.get().draw(viewMatrix, projectionMatrix);
+            ++i;
             //std::cout << "^^^^" << std::endl;
         }
         //std::cout << "==========" << std::endl;
