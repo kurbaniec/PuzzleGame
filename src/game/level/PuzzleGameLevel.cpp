@@ -37,6 +37,25 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
     );
 
     factory->registerModel(
+        "enemy_model",
+        std::make_shared<engine::LodModel>(
+            "enemy_model",
+            std::vector<std::string>{
+                "resources/objects/enemy/lod_1/enemy.obj",
+                "resources/objects/enemy/lod_2/enemy.obj"},
+            std::vector<float>{14, 25},
+            std::vector<std::shared_ptr<engine::Shader>>{shader, shader},
+            [](const std::string& id,
+               glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
+               glm::vec3 boundsMin, glm::vec3 boundsMax) -> std::shared_ptr<engine::Instance> {
+                //scale = scale * 0.4f;
+                return std::make_shared<BlockInstance>(id, pos, rot, scale, origin, boundsMin, boundsMax);
+            },
+            camera
+        )
+    );
+
+    factory->registerModel(
         "cube_grass_center",
         std::make_shared<engine::SimpleModel>(
             "cube_grass_center",
@@ -216,11 +235,19 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
     );
 
     // Instances
-    // ---------
+    // =========
 
+    // Player
+    // ------
     game.player = std::dynamic_pointer_cast<Player>(
         factory->createInstance("player_model", "player"));
-    game.player->position.z = 1;
+    game.player->position.z = 1.5f;
+    game.player->position.y += 0.5f;
+
+    // Enemies
+    // -------
+    auto enemy = factory->createInstance("enemy_model", "enemy_0");
+    enemy->position = glm::vec3(2, 2, 5);
 
 
     //auto fireCube1 = factory->createInstance("fire_corner", "fire_corner_1");
