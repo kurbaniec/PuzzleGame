@@ -55,10 +55,12 @@ void Player::solveCollision(const std::shared_ptr<engine::Instance>& collider) {
 
     auto playerHeight = this->bounds().aabb().height();
 
-    if (playerMin.y < colliderMax.y && (colliderMax.y - playerMin.y) < playerHeight / 2) {
+    if (playerMin.y < colliderMax.y && (colliderMax.y - playerMin.y) < playerHeight * 3/4) {
         // Ground collision
-        velocity.y = 0;
-        position.y = colliderMax.y;
+        if (collider->tags.contains("jump")) {
+            velocity.y = 0;
+            position.y = colliderMax.y;
+        }
     } else {
         // Side collision
         auto playerMax = this->bounds().aabb().max();

@@ -17,16 +17,17 @@ namespace engine {
         glm::vec3 origin,
         glm::vec3 boundsMin,
         glm::vec3 boundsMax,
+        std::set<std::string> tags,
+        bool enabled,
         glm::vec3 localForward,
         glm::vec3 localUp,
-        glm::vec3 localRight,
-        bool enabled
+        glm::vec3 localRight
     ) : id(std::move(id)), position(position), rotation(rotation), scale(scale), origin(origin),
         localForward(glm::vec4(localForward, 1.0f)), forward(glm::vec3{}),
         localUp(glm::vec4(localUp, 1.0f)), up(glm::vec3{}),
         localRight(glm::vec4(localRight, 1.0f)), right(glm::vec3{}),
         enabled(enabled), modelMatrix(glm::mat4(1.0f)),
-        boundsVal(Bounds(boundsMin, boundsMax)) {
+        boundsVal(Bounds(boundsMin, boundsMax)), tags(std::move(tags)) {
     }
 
     void Instance::updateModelMatrix() {

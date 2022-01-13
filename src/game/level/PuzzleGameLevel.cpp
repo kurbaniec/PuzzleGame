@@ -45,7 +45,8 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
             [](const std::string& id,
                glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
                glm::vec3 boundsMin, glm::vec3 boundsMax) -> std::shared_ptr<engine::Instance> {
-                return std::make_shared<BlockInstance>(id, pos, rot, scale, origin, boundsMin, boundsMax);
+                return std::make_shared<BlockInstance>(
+                    id, pos, rot, scale, origin, boundsMin, boundsMax, std::set<std::string>({"jump"}));
             }
         )
     );
@@ -59,7 +60,8 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
             [](const std::string& id,
                glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
                glm::vec3 boundsMin, glm::vec3 boundsMax) -> std::shared_ptr<engine::Instance> {
-                return std::make_shared<BlockInstance>(id, pos, rot, scale, origin, boundsMin, boundsMax);
+                return std::make_shared<BlockInstance>(
+                    id, pos, rot, scale, origin, boundsMin, boundsMax, std::set<std::string>({"jump"}));
             }
         )
     );
@@ -78,6 +80,27 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
                glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
                glm::vec3 boundsMin, glm::vec3 boundsMax) -> std::shared_ptr<engine::Instance> {
                 return std::make_shared<BlockInstance>(id, pos, rot, scale, origin, boundsMin, boundsMax);
+            },
+            camera
+        )
+    );
+
+    factory->registerModel(
+        "bridge",
+        std::make_shared<engine::LodModel>(
+            "bridge",
+            std::vector<std::string>{
+                "resources/objects/blocks/bridge/lod_1/bridge.obj",
+                "resources/objects/blocks/bridge/lod_2/bridge.obj"
+            },
+            std::vector<float>{25, 26},
+            std::vector<std::shared_ptr<engine::Shader>>{shader, shader},
+            [](const std::string& id,
+               glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
+               glm::vec3 boundsMin, glm::vec3 boundsMax) -> std::shared_ptr<engine::Instance> {
+                return std::make_shared<BlockInstance>(
+                    id, pos, rot, scale, origin, boundsMin, boundsMax, std::set<std::string>({"jump"})
+                );
             },
             camera
         )
@@ -144,6 +167,12 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
     game.blocks.insert(
         game.blocks.begin(), cubeCrassCenterBlocks.begin(), cubeCrassCenterBlocks.end()
     );
+
+    auto bridge = factory->createInstance("bridge", "bridge_1");
+    bridge->position = glm::vec3(2, 0, 2);
+    game.blocks.push_back(bridge);
+
+
 }
 
 std::vector<std::shared_ptr<engine::Instance>>

@@ -10,7 +10,7 @@
 BlockInstance::BlockInstance(
     std::string id,
     glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, glm::vec3 origin,
-    glm::vec3 boundsMin, glm::vec3 boundsMax
-) : Instance(std::move(id), position, rotation, scale, origin, boundsMin, boundsMax) {
+    glm::vec3 boundsMin, glm::vec3 boundsMax, std::set<std::string> tags
+) : Instance(std::move(id), position, rotation, scale, origin, boundsMin, boundsMax, std::move(tags)) {
 
 }

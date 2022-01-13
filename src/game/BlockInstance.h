@@ -16,7 +16,8 @@ public:
         glm::vec3 rotation,
         glm::vec3 scale,
         glm::vec3 origin,
-        glm::vec3 boundsMin, glm::vec3 boundsMax
+        glm::vec3 boundsMin, glm::vec3 boundsMax,
+        std::set<std::string> tags = {}
     );
 };
 

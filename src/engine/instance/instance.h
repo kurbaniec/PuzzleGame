@@ -10,6 +10,7 @@
 #include <memory>
 #include "../collision/boundingbox.h"
 //#include "../model/model.h"
+#include <set>
 
 namespace engine {
     class Model;
@@ -29,6 +30,7 @@ namespace engine {
         const glm::vec3 up;
         const glm::vec3 right;
         bool enabled;
+        std::set<std::string> tags;
 
         Instance(
             std::string id,
@@ -38,10 +40,11 @@ namespace engine {
             glm::vec3 origin,
             glm::vec3 boundsMin,
             glm::vec3 boundsMax,
+            std::set<std::string> tags = {},
+            bool enabled = true,
             glm::vec3 localForward = glm::vec3(0.0f, 0.0f, 1.0f),
             glm::vec3 localUp = glm::vec3(0.0f, 1.0f, 0.0f),
-            glm::vec3 localRight = glm::vec3(1.0f, 0.0f, 0.0f),
-            bool enabled = true
+            glm::vec3 localRight = glm::vec3(1.0f, 0.0f, 0.0f)
         );
 
         const Bounds& bounds();
