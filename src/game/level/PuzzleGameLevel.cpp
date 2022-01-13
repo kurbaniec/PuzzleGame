@@ -131,6 +131,25 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
     );
 
     factory->registerModel(
+        "water_center",
+        std::make_shared<engine::LodModel>(
+            "water_center",
+            std::vector<std::string>{
+                "resources/objects/blocks/water_center/lod_1/water_center.obj",
+                "resources/objects/blocks/water_center/lod_2/water_center.obj"
+            },
+            std::vector<float>{25, 26},
+            std::vector<std::shared_ptr<engine::Shader>>{shader, shader},
+            [](const std::string& id,
+               glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
+               glm::vec3 boundsMin, glm::vec3 boundsMax) -> std::shared_ptr<engine::Instance> {
+                return std::make_shared<BlockInstance>(id, pos, rot, scale, origin, boundsMin, boundsMax);
+            },
+            camera
+        )
+    );
+
+    factory->registerModel(
         "bridge",
         std::make_shared<engine::LodModel>(
             "bridge",
@@ -264,7 +283,7 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
         glm::vec3(-2, 2, -2), glm::vec3(-2, 2, 0), glm::vec3(-2, 2, 2),
         glm::vec3(0, 3, 2), glm::vec3(2, 3, 2), glm::vec3(4, 3, 2),
         glm::vec3(4, 4, 0), glm::vec3(4, 4, -2), glm::vec3(4, 4, -4),
-        glm::vec3(2, 5, -4), glm::vec3(0, 5, -4),
+        glm::vec3(2, 5, -4), glm::vec3(0, 5, -4), glm::vec3(-10+9*2, -2, 10)
     };
     std::vector<glm::vec3> bridgeRotations = {
         glm::vec3(0, 90, 0), glm::vec3(0, 90, 0), glm::vec3(0, 90, 0),
@@ -272,7 +291,7 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
         glm::vec3(0, 270, 0), glm::vec3(0, 270, 0), glm::vec3(0, 270, 0),
         glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(0, 0, 0),
         glm::vec3(0, 90, 0), glm::vec3(0, 90, 0), glm::vec3(0, 90, 0),
-        glm::vec3(0, 180, 0), glm::vec3(0, 180, 0),
+        glm::vec3(0, 180, 0), glm::vec3(0, 180, 0), glm::vec3(0, 0, 0)
     };
     std::vector<std::shared_ptr<engine::Instance>> bridges;
 
@@ -334,7 +353,44 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
     // bridge->position = glm::vec3(2, 0, 2);
     // game.blocks.push_back(bridge);
 
+    // Water Center
+    // ------------
+    auto wc1 = mapGround(
+        factory, "water_center", "water_center_",
+        glm::ivec3(-10, -1, 10), 11 * 2, 1 * 2, 2,
+        std::vector<glm::ivec3>{}, glm::vec3(0, 0, 0)
+    );
+    auto wc2 = mapGround(
+        factory, "water_center", "water_center_",
+        glm::ivec3(-10, -1, 10), 11 * 2, 1 * 2, 2,
+        std::vector<glm::ivec3>{}, glm::vec3(90, 0, 0), 20
+    );
+    auto wc3 = mapGround(
+        factory, "water_center", "water_center_",
+        glm::ivec3(-10, -1, -8), 1 * 2, 9 * 2, 2,
+        std::vector<glm::ivec3>{}, glm::vec3(0, 0, 0), 40
+    );
+    auto wc4 = mapGround(
+        factory, "water_center", "water_center_",
+        glm::ivec3(-10, -1, -8), 1 * 2, 10 * 2, 2,
+        std::vector<glm::ivec3>{}, glm::vec3(0, 0, 90), 60
+    );
+    auto wcId = 80;
+    std::vector<glm::vec3> wcPositions = {
+        glm::vec3(-10+11*2, -1, 10), glm::vec3(-10, -1, -8),
 
+    };
+    std::vector<glm::vec3> wcRotations = {
+        glm::vec3(90, 0, 90), glm::vec3(270, 0, 0),
+    };
+    std::vector<std::shared_ptr<engine::Instance>> wc5;
+    for (int i = 0; i < wcPositions.size(); ++i) {
+        auto instanceId = "water_center_" + std::to_string(++wcId);
+        auto instance = factory->createInstance("water_center", instanceId);
+        instance->position = wcPositions[i];
+        instance->rotation = wcRotations[i];
+        wc5.push_back(std::move(instance));
+    }
 }
 
 std::vector<std::shared_ptr<engine::Instance>>

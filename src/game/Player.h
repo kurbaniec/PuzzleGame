@@ -20,8 +20,8 @@ public:
         glm::vec3 origin,
         glm::vec3 boundsMin, glm::vec3 boundsMax,
         glm::vec3 gravity = glm::vec3(0, -4, 0),
-        float slowdown = 0.7f, float movementSpeed = 0.8f, float maxMovementSpeed = 1.8f,
-        float rotationSpeed = 90.0f
+        float slowdown = 0.9f, float movementSpeed = 1.1f, float maxMovementSpeed = 2.4f,
+        float rotationSpeed = 110.0f
     );
 
     void update(float deltaTime);
