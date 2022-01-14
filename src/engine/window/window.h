@@ -6,6 +6,7 @@
 #define PUZZLE_GAME_ENGINE_WINDOW_H
 
 #include <memory>
+#include "glm/fwd.hpp"
 #include "../state/state.h"
 
 namespace engine {

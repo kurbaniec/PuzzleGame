@@ -50,6 +50,8 @@ void PuzzleGame::update() {
     // std::cout << player->bounds().aabb().height() << std::endl;
 }
 
+// Process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+// ---------------------------------------------------------------------------------------------------------
 void PuzzleGame::processInput(float deltaTime) {
     // Workaround to check if window is "focused"
     if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED) {
@@ -96,7 +98,7 @@ void PuzzleGame::processInput(float deltaTime) {
 void PuzzleGame::setupLevel() {
     auto factory = std::make_shared<engine::InstanceFactory>(state);
     auto shader = std::make_shared<engine::Shader>(
-        "shader/backpack/vertex.glsl", "shader/backpack/fragment.glsl");
+        "shader/model/vertex.glsl", "shader/model/fragment.glsl");
     auto camera = state->getCamera();
 
     factory->registerModel(

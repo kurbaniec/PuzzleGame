@@ -7,6 +7,7 @@
 
 #include "../model/model.h"
 #include "../camera/camera.h"
+#include "mouse.h"
 #include "../window/window.h"
 
 namespace engine {
@@ -19,20 +20,23 @@ namespace engine {
         std::shared_ptr<Camera> camera;
         std::shared_ptr<Window> window;
         std::shared_ptr<std::map<int, int>> keys;
+        std::shared_ptr<MouseMovement> mouse;
 
         void addModel(const std::string& modelName, std::shared_ptr<Model> model);
         void addInstance(const std::string& id, std::shared_ptr<Instance> instance);
         void setCamera(std::shared_ptr<Camera> camera);
         void setWindow(std::shared_ptr<Window> window);
         void setKeys(std::shared_ptr<std::map<int, int>> keys);
+        void setMouseMovement(std::shared_ptr<MouseMovement> mouse);
         void setCurrentFrame(float currentFrame);
 
-        std::shared_ptr<Model> getModel(const std::string& modelName);
-        std::shared_ptr<Instance> getInstance(const std::string& id);
-        std::shared_ptr<Camera> getCamera() const;
-        std::shared_ptr<Window> getWindow() const;
-        std::shared_ptr<std::map<int, int>> getKeys() const;
-        float getDeltaTime();
+        [[nodiscard]] std::shared_ptr<Model> getModel(const std::string& modelName);
+        [[nodiscard]] std::shared_ptr<Instance> getInstance(const std::string& id);
+        [[nodiscard]] std::shared_ptr<Camera> getCamera() const;
+        [[nodiscard]] std::shared_ptr<Window> getWindow() const;
+        [[nodiscard]] std::shared_ptr<std::map<int, int>> getKeys() const;
+        [[nodiscard]] float getDeltaTime() const;
+        [[nodiscard]] std::shared_ptr<MouseMovement> getMouseMovement() const;
 
     private:
         class DeltaTime {

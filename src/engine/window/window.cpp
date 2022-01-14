@@ -3,6 +3,8 @@
 //
 
 #include "window.h"
+#include "glm/trigonometric.hpp"
+#include "glm/ext/matrix_clip_space.hpp"
 
 namespace engine {
 
@@ -14,7 +16,7 @@ namespace engine {
 
     glm::mat4 Window::getProjectionMatrix() {
         return glm::perspective(
-            glm::radians(state.lock()->camera->getZoom()),
+            glm::radians(state.lock()->getCamera()->getZoom()),
             (float) width / (float) height, 0.1f, 100.0f
         );
     }

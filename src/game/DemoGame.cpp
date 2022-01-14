@@ -17,7 +17,8 @@ DemoGame::DemoGame(
 
 void DemoGame::setup() {
     auto factory = std::make_shared<engine::InstanceFactory>(state);
-    auto shader = std::make_shared<engine::Shader>("shader/backpack/vertex.glsl", "shader/backpack/fragment.glsl");
+    // build and compile shaders
+    auto shader = std::make_shared<engine::Shader>("shader/model/vertex.glsl", "shader/model/fragment.glsl");
     auto camera = state->getCamera();
 
     factory->registerModel(
@@ -127,6 +128,8 @@ void DemoGame::update() {
     std::cout << glm::to_string(block3->forward) << std::endl;
 }
 
+// Process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+// ---------------------------------------------------------------------------------------------------------
 void DemoGame::processInput(float deltaTime) {
     // Workaround to check if window is "focused"
     if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED) {

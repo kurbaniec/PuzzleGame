@@ -39,6 +39,10 @@ namespace engine {
         delta.lastFrame = currentFrame;
     }
 
+    void State::setMouseMovement(std::shared_ptr<MouseMovement> mouseMovement) {
+        mouse = std::move(mouseMovement);
+    }
+
     std::shared_ptr<Model> State::getModel(const std::string& modelName) {
         if (models.contains(modelName)) {
             return models[modelName];
@@ -65,7 +69,11 @@ namespace engine {
         return keys;
     }
 
-    float State::getDeltaTime() {
+    float State::getDeltaTime() const {
         return delta.deltaTime;
+    }
+
+    std::shared_ptr<MouseMovement> State::getMouseMovement() const {
+        return mouse;
     }
 }

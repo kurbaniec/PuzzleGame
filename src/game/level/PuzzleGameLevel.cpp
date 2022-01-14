@@ -9,8 +9,10 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
     // Required modules
     // ---------------
     auto factory = std::make_shared<engine::InstanceFactory>(game.state);
+    // Build and compile shaders
     auto shader = std::make_shared<engine::Shader>(
-        "shader/backpack/vertex.glsl", "shader/backpack/fragment.glsl");
+        "shader/model/vertex.glsl", "shader/model/fragment.glsl"
+    );
     auto camera = game.state->getCamera();
 
     // Factories
