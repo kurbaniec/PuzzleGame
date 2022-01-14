@@ -32,6 +32,11 @@ void PuzzleGame::update() {
 
     // Update instance positions
     // -------------------------
+    // Player falling detection
+    if (player->position.y < -15) {
+        reset();
+    }
+    // Update player & enemy positions
     player->update(deltaTime);
     for (auto& enemy: enemies) {
         enemy->update(deltaTime);
@@ -45,6 +50,7 @@ void PuzzleGame::update() {
     // Enemy collision
     for (auto& enemy: enemies) {
         if (player->intersectsAabb(enemy)) {
+            // Enemy hit, reset game
             reset();
         }
     }
@@ -54,11 +60,11 @@ void PuzzleGame::update() {
             if (player->intersectsAabb(star)) {
                 star->enabled = false;
                 ++starsCollected;
+                // All stars collected, reset game
                 if (starsCollected == stars.size()) reset();
             }
         }
     }
-
     // Match camera target with player height
     camera->setTarget(glm::vec3(0.0f, player->position.y, 0.0f));
 }
