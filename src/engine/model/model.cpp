@@ -190,6 +190,7 @@ namespace engine {
             for (unsigned int j = 0; j < textures_loaded.size(); j++) {
                 if (std::strcmp(textures_loaded[j].path.data(), str.C_Str()) == 0) {
                     textures.push_back(textures_loaded[j]);
+                    transparent = textures_loaded[j].transparent;
                     skip = true; // a texture with the same filepath has already been loaded, continue to next one. (optimization)
                     break;
                 }
@@ -266,10 +267,10 @@ namespace engine {
             auto size = texDims[0] * texDims[1] * 4;
             auto* pixels = new float[size];
             glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, pixels);
-            // auto r = pixels[0];
-            // auto g = pixels[0 + 0 + 1];
-            // auto b = pixels[0 + 0 + 2];
-            // auto a = pixels[0 + 0 + 3];
+            auto r = pixels[0];
+            auto g = pixels[0 + 0 + 1];
+            auto b = pixels[0 + 0 + 2];
+            auto a = pixels[0 + 0 + 3];
             //bool isTransparent = false;
             for (auto i = 3; i < size; i += 4) {
                 auto r = pixels[i-3];

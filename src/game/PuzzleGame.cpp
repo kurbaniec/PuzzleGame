@@ -31,6 +31,7 @@ void PuzzleGame::update() {
     // per-frame time logic
     // --------------------
     auto deltaTime = state->getDeltaTime();
+    std::cout << deltaTime << std::endl;
     // Process user input (camera controls)
     // ------------------------------------
     processInput(deltaTime);
@@ -339,13 +340,26 @@ PuzzleGame::mapWallZ(std::shared_ptr<engine::InstanceFactory> factory, std::stri
 }
 
 void PuzzleGame::scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
-    auto state = *static_cast<std::shared_ptr<engine::State>*>(glfwGetWindowUserPointer(window));
-    auto camera = state->getCamera();
-    auto deltaTime = state->getDeltaTime();
+    std::cout << "a" << std::endl;
+    auto& state = *static_cast<engine::State*>(glfwGetWindowUserPointer(window));
+    std::cout << "a2" << std::endl;
+
+    std::cout << state.instances.size() << std::endl;
+    std::cout << state.camera->getZoom() << std::endl;
+
+    auto camera = state.getCamera();
+    std::cout << "a3" << std::endl;
+    auto deltaTime = state.getDeltaTime();
+    std::cout << "a4" << std::endl;
     auto offset = static_cast<float>(yOffset);
+    std::cout << "a4.2" << std::endl;
+    std::cout << camera->getZoom() << std::endl;
+    std::cout << "a4.2" << std::endl;
     if (camera->getMode() == engine::FREE) {
+        std::cout << "a5" << std::endl;
         camera->processMouseScroll(offset);
     } else {
+        std::cout << "a6" << std::endl;
         const int factor = 5;
         if (yOffset > 0) {
             camera->processKeyboard(engine::FORWARD, deltaTime * offset * factor);
@@ -354,7 +368,7 @@ void PuzzleGame::scrollCallback(GLFWwindow* window, double xOffset, double yOffs
         }
 
     }
-
+    std::cout << "a3" << std::endl;
 }
 
 

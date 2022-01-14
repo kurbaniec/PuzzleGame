@@ -43,7 +43,7 @@ namespace engine {
         return instance;
     }
 
-    std::vector<std::reference_wrapper<Triangle>> SimpleModel::getTriangles() {
+    std::vector<std::reference_wrapper<Triangle>>& SimpleModel::getTriangles() {
         transparentTrianglesRef.clear();
         for (auto& triangle: transparentTriangles) {
             transparentTrianglesRef.emplace_back(std::ref(triangle));

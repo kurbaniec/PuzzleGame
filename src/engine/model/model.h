@@ -47,7 +47,7 @@ namespace engine {
 
         virtual void drawInstances(glm::mat4 view, glm::mat4 projection) = 0;
 
-        virtual std::vector<std::reference_wrapper<Triangle>> getTriangles() = 0;
+        virtual std::vector<std::reference_wrapper<Triangle>>& getTriangles() = 0;
 
         virtual std::shared_ptr<Instance> create(
             std::string instanceId,

@@ -46,3 +46,4 @@ CMakeSettings.json
 # Blender
 *.blend1
 *.blend2
+/cmake-build-release-visual-studio/

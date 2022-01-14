@@ -45,12 +45,12 @@ namespace engine {
         for (auto&[modelName, model]: state->models) {
             // Combine vectors
             // See: std::vector<std::reference_wrapper<Triangle>>
-            auto triangles = model->getTriangles();
+            auto& triangles = model->getTriangles();
             transparentTriangles.insert(transparentTriangles.end(), triangles.begin(), triangles.end());
         }
         auto cameraPos = state->camera->getPosition();
         // std::cout << glm::to_string(cameraPos) << std::endl;
-        for (auto triangle: transparentTriangles) {
+        for (auto& triangle: transparentTriangles) {
             triangle.get().updateCentroid();
             triangle.get().updateCameraDistance(cameraPos);
         }
@@ -62,21 +62,8 @@ namespace engine {
             }
         );
 
-        //std::cout << "==========" << std::endl;
-        int i = 0;
-        for (auto triangle: transparentTriangles) {
-            // std::cout << "Distance" << triangle.get().cameraDistance << std::endl;
-            // std::cout << "Centroid" << glm::to_string(triangle.get().centroid) << std::endl;
-            // std::cout << "Instance" << triangle.get().instance.lock()->id << std::endl;
-            // std::cout << "Triangle Pos" << glm::to_string(
-            //     triangle.get().vertices[0].get().Position + triangle.get().vertices[1].get().Position +
-            //     triangle.get().vertices[1].get().Position) << std::endl;
-            // std::cout << "Instance Pos" << glm::to_string(triangle.get().instance.lock()->position) << std::endl;
-            //if (i != 2)
-                triangle.get().draw(viewMatrix, projectionMatrix);
-            ++i;
-            //std::cout << "^^^^" << std::endl;
+        for (auto& triangle: transparentTriangles) {
+            triangle.get().draw(viewMatrix, projectionMatrix);
         }
-        //std::cout << "==========" << std::endl;
     }
 }

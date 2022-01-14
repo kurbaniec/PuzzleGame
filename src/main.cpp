@@ -217,10 +217,12 @@ int main() {
     state->setKeys(keys);
 
     glfwMakeContextCurrent(window);
-    // See: https://stackoverflow.com/a/61336206/12347616
+    // Pass state to glfw
+    // Node: Do not create void* from shared_ptr, leads to crash in release mode (msvc)
+    // See: https://stackoverflow.com/questions/15578935/proper-way-of-casting-pointer-types
+    // And: https://stackoverflow.com/a/61336206/12347616
     // And: https://www.reddit.com/r/cpp_questions/comments/d2owlo/comment/ezw398b/?utm_source=share&utm_medium=web2x&context=3
-    auto glfwState = state;
-    glfwSetWindowUserPointer(window, *reinterpret_pointer_cast<void*>(glfwState));
+    glfwSetWindowUserPointer(window, static_cast<void*>(state.get()));
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
@@ -337,10 +339,10 @@ int main() {
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow* window) {
     // See: https://stackoverflow.com/a/23204968/12347616
-    auto state = *static_cast<std::shared_ptr<engine::State>*>(glfwGetWindowUserPointer(window));
-    auto camera = state->getCamera();
-    auto keys = state->getKeys();
-    auto deltaTime = state->getDeltaTime();
+    auto& state = *static_cast<engine::State*>(glfwGetWindowUserPointer(window));
+    auto camera = state.getCamera();
+    auto keys = state.getKeys();
+    auto deltaTime = state.getDeltaTime();
     if (focus) {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             // glfwSetWindowShouldClose(window, true);
@@ -401,8 +403,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
-    auto* state = static_cast<std::shared_ptr<engine::State>*>(glfwGetWindowUserPointer(window));
-    auto projection = (*state)->getWindow();
+    auto& state = *static_cast<engine::State*>(glfwGetWindowUserPointer(window));
+    auto projection = state.getWindow();
     // Check when minimizing window
     if (height == 0) height = 1;
     projection->width = width;
@@ -413,32 +415,31 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-    auto state = *static_cast<std::shared_ptr<engine::State>*>(glfwGetWindowUserPointer(window));
-    auto camera = state->getCamera();
-
+    auto& state = *static_cast<engine::State*>(glfwGetWindowUserPointer(window));
+    auto camera = state.getCamera();
+    auto xPos = static_cast<float>(xpos);
+    auto yPos = static_cast<float>(ypos);
     if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED) {
         if (firstMouse) {
-            lastX = xpos;
-            lastY = ypos;
+            lastX = xPos;
+            lastY = yPos;
             firstMouse = false;
         }
-
-        float xoffset = xpos - lastX;
-        float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-
-        lastX = xpos;
-        lastY = ypos;
-
-        camera->processMouseMovement(xoffset, yoffset);
+        float xOffset = xPos - lastX;
+        float yOffset = lastY - yPos; // reversed since y-coordinates go from bottom to top
+        lastX = xPos;
+        lastY = yPos;
+        camera->processMouseMovement(xOffset, yOffset);
     }
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    auto state = *static_cast<std::shared_ptr<engine::State>*>(glfwGetWindowUserPointer(window));
-    auto camera = state->getCamera();
-    camera->processMouseScroll(yoffset);
+    auto& state = *static_cast<engine::State*>(glfwGetWindowUserPointer(window));
+    auto camera = state.getCamera();
+    auto offset = static_cast<float>(yoffset);
+    camera->processMouseScroll(offset);
 }
 
 // See: https://www.glfw.org/docs/3.3/input_guide.html#cursor_enter
@@ -446,12 +447,7 @@ void cursor_enter_callback(GLFWwindow* window, int entered) {
     if (entered) {
         // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         // The cursor entered the content area of the window
-
     }
-    // else
-    // {
-    //     // The cursor left the content area of the window
-    // }
 }
 
 // See: https://www.glfw.org/docs/latest/window_guide.html#window_focus
@@ -461,13 +457,7 @@ void window_focus_callback(GLFWwindow* window, int focused) {
         if (glfwGetInputMode(window, GLFW_CURSOR) != GLFW_CURSOR_DISABLED) {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
-        //focus = true;
-        //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
-    // else {
-    //     // The window lost input focus
-    //     focus = false;
-    // }
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
@@ -475,10 +465,5 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
         if (glfwGetInputMode(window, GLFW_CURSOR) != GLFW_CURSOR_DISABLED) {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
-        //focus = true;
-        // int width, height;
-        // glfwGetWindowSize(window, &width, &height);
-        // glfwSetCursorPos(window, width/2.0, height/2.0);
-        // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
 }

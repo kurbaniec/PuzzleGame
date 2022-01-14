@@ -25,7 +25,7 @@ namespace engine {
 
         void drawInstances(glm::mat4 view, glm::mat4 projection) override;
 
-        std::vector<std::reference_wrapper<Triangle>> getTriangles() override;
+        std::vector<std::reference_wrapper<Triangle>>& getTriangles() override;
 
     private:
         std::map<float, SimpleModel> models;

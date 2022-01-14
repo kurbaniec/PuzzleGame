@@ -248,6 +248,8 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
     // -------
     auto enemy = factory->createInstance("enemy_model", "enemy_0");
     enemy->position = glm::vec3(2, 2, 5);
+    auto enemy21 = factory->createInstance("enemy_model", "enemy_1");
+    enemy->position = glm::vec3(2, 2, -5);
 
 
     //auto fireCube1 = factory->createInstance("fire_corner", "fire_corner_1");

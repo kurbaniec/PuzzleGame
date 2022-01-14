@@ -31,7 +31,7 @@ namespace engine {
             glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, glm::vec3 origin
         ) override;
 
-        std::vector<std::reference_wrapper<Triangle>> getTriangles() override;
+        std::vector<std::reference_wrapper<Triangle>>& getTriangles() override;
 
         const std::vector<std::shared_ptr<Instance>>& getInstances();
 

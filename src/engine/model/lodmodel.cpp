@@ -167,7 +167,7 @@ namespace engine {
         }
     }
 
-    std::vector<std::reference_wrapper<Triangle>> LodModel::getTriangles() {
+    std::vector<std::reference_wrapper<Triangle>>& LodModel::getTriangles() {
         transparentTrianglesRef.clear();
         for (auto&[_, model]: models) {
             auto triangles = model.getTriangles();
