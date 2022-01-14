@@ -357,7 +357,6 @@ void PuzzleGame::scrollCallback(GLFWwindow* window, double xOffset, double yOffs
     auto camera = state.getCamera();
     auto deltaTime = state.getDeltaTime();
     auto offset = static_cast<float>(yOffset);
-    std::cout << camera->getZoom() << std::endl;
     if (camera->getMode() == engine::FREE) {
         camera->processMouseScroll(offset);
     } else {

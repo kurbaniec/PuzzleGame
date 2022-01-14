@@ -27,7 +27,7 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
                 "resources/objects/player/lod_2/player.obj",
                 "resources/objects/player/lod_3/player.obj",
                 "resources/objects/player/lod_4/player.obj"},
-            std::vector<float>{5, 8, 14, 25},
+            std::vector<float>{8, 14, 25, 50},
             std::vector<std::shared_ptr<engine::Shader>>{shader, shader, shader, shader},
             [](const std::string& id,
                glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
@@ -46,13 +46,32 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
             std::vector<std::string>{
                 "resources/objects/enemy/lod_1/enemy.obj",
                 "resources/objects/enemy/lod_2/enemy.obj"},
-            std::vector<float>{14, 25},
+            std::vector<float>{50, 55},
             std::vector<std::shared_ptr<engine::Shader>>{shader, shader},
             [](const std::string& id,
                glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
                glm::vec3 boundsMin, glm::vec3 boundsMax) -> std::shared_ptr<engine::Instance> {
                 scale = scale * 0.7f;
                 return std::make_shared<Enemy>(id, pos, rot, scale, origin, boundsMin, boundsMax);
+            },
+            camera
+        )
+    );
+
+    factory->registerModel(
+        "star_model",
+        std::make_shared<engine::LodModel>(
+            "star_model",
+            std::vector<std::string>{
+                "resources/objects/star/lod_1/star.obj",
+                "resources/objects/star/lod_2/star.obj"},
+            std::vector<float>{50, 55},
+            std::vector<std::shared_ptr<engine::Shader>>{shader, shader},
+            [](const std::string& id,
+               glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
+               glm::vec3 boundsMin, glm::vec3 boundsMax) -> std::shared_ptr<engine::Instance> {
+                scale = scale * 0.5f;
+                return std::make_shared<BlockInstance>(id, pos, rot, scale, origin, boundsMin, boundsMax);
             },
             camera
         )
@@ -186,7 +205,7 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
                 "resources/objects/blocks/fire_corner/lod_1/fire_corner.obj",
                 "resources/objects/blocks/fire_corner/lod_2/fire_corner.obj"
             },
-            std::vector<float>{25, 26},
+            std::vector<float>{50, 55},
             std::vector<std::shared_ptr<engine::Shader>>{shader, shader},
             [](const std::string& id,
                glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
@@ -205,7 +224,7 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
                 "resources/objects/blocks/water_center/lod_1/water_center.obj",
                 "resources/objects/blocks/water_center/lod_2/water_center.obj"
             },
-            std::vector<float>{25, 26},
+            std::vector<float>{50, 55},
             std::vector<std::shared_ptr<engine::Shader>>{shader, shader},
             [](const std::string& id,
                glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
@@ -224,7 +243,7 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
                 "resources/objects/blocks/bridge/lod_1/bridge.obj",
                 "resources/objects/blocks/bridge/lod_2/bridge.obj"
             },
-            std::vector<float>{25, 26},
+            std::vector<float>{25, 50},
             std::vector<std::shared_ptr<engine::Shader>>{shader, shader},
             [](const std::string& id,
                glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
@@ -267,6 +286,10 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
     enemy2->setStartPosition(glm::vec3(-10, -2, -2));
     enemy2->setEndPosition(glm::vec3(-10, 2, -2));
     game.enemies.push_back(enemy2);
+
+    // Stars
+    // -----
+    auto star0 = factory->createInstance("star_model", "star_0");
 
 
     //auto fireCube1 = factory->createInstance("fire_corner", "fire_corner_1");

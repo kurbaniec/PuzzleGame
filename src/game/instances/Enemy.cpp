@@ -19,7 +19,8 @@ Enemy::Enemy(
 
 void Enemy::update(float deltaTime) {
     // For now supports only check on y axis
-    if (position.y > endPosition.y || position.y < startPostion.y) {
+    if ((position.y > endPosition.y && movementSpeed > 0) || (
+        position.y < startPostion.y && movementSpeed < 0)) {
         movementSpeed *= -1;
     }
     position += up * movementSpeed * deltaTime;
