@@ -3,10 +3,10 @@
 //
 
 #include "DemoGame.h"
-#include "../engine/factory/InstanceFactory.h"
-#include "../engine/model/simplemodel.h"
-#include "BlockInstance.h"
-#include "../engine/model/lodmodel.h"
+#include "../../engine/factory/InstanceFactory.h"
+#include "../../engine/model/simplemodel.h"
+#include "../instances/BlockInstance.h"
+#include "../../engine/model/lodmodel.h"
 #include "glm/gtx/string_cast.hpp"
 
 DemoGame::DemoGame(

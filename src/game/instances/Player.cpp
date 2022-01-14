@@ -9,11 +9,12 @@ Player::Player(
     std::string id,
     glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, glm::vec3 origin,
     glm::vec3 boundsMin, glm::vec3 boundsMax,
-    glm::vec3 gravity, float slowdown, float movementSpeed, float maxMovementSpeed, float rotationSpeed
+    glm::vec3 gravity, float slowdown, float movementSpeed, float maxMovementSpeed, float rotationSpeed,
+    glm::vec3 resetPosition
 ) : Instance(std::move(id), position, rotation, scale, origin, boundsMin, boundsMax),
     gravity(gravity), velocity(0), slowdown(slowdown),
     movementSpeed(movementSpeed), maxMovementSpeed(maxMovementSpeed),
-    rotationSpeed(rotationSpeed), input(glm::vec2(0.0f)) {
+    rotationSpeed(rotationSpeed), input(glm::vec2(0.0f)), resetPostion(resetPosition) {
 
 }
 
@@ -106,4 +107,10 @@ void Player::solveCollision(const std::shared_ptr<engine::Instance>& collider) {
             offset += 0.002f;
         } while (intersectsAabb(collider));
     }
+}
+
+void Player::reset() {
+    position = resetPostion;
+    velocity = glm::vec3(0);
+    updateModelMatrix();
 }

@@ -6,7 +6,7 @@
 #define PUZZLE_GAME_BLOCKINSTANCE_H
 
 
-#include "../engine/instance/instance.h"
+#include "../../engine/instance/instance.h"
 
 class BlockInstance : public engine::Instance {
 public:

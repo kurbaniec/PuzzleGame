@@ -6,8 +6,8 @@
 #define PUZZLE_GAME_DEMOGAME_H
 
 
-#include "GameBasis.h"
-#include "BlockInstance.h"
+#include "../GameBasis.h"
+#include "../instances/BlockInstance.h"
 
 class DemoGame : public GameBasis {
 public:

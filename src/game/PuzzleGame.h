@@ -7,9 +7,10 @@
 
 
 #include "GameBasis.h"
-#include "BlockInstance.h"
+#include "instances/BlockInstance.h"
 #include "../engine/factory/InstanceFactory.h"
-#include "Player.h"
+#include "instances/Player.h"
+#include "instances/Enemy.h"
 #include <set>
 
 class PuzzleGame : public GameBasis {
@@ -36,14 +37,11 @@ private:
             id(std::move(id)), model(std::move(model)), position(position), rotation(rotation) {}
     };
 
-    std::shared_ptr<Player> player;
     std::shared_ptr<engine::Camera> camera;
+    std::shared_ptr<Player> player;
+    std::vector<std::shared_ptr<Enemy>> enemies;
     std::vector<std::shared_ptr<engine::Instance>> blocks;
 
-    std::shared_ptr<BlockInstance> corner1;
-    std::shared_ptr<BlockInstance> corner2;
-    std::shared_ptr<BlockInstance> corner3;
-    std::shared_ptr<BlockInstance> corner4;
 
     void processInput(float deltaTime);
 

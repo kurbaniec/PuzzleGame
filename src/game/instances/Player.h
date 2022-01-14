@@ -6,7 +6,7 @@
 #define PUZZLE_GAME_PLAYER_H
 
 
-#include "../engine/instance/instance.h"
+#include "../../engine/instance/instance.h"
 
 class Player : public engine::Instance {
 public:
@@ -21,12 +21,14 @@ public:
         glm::vec3 boundsMin, glm::vec3 boundsMax,
         glm::vec3 gravity = glm::vec3(0, -4, 0),
         float slowdown = 0.9f, float movementSpeed = 1.1f, float maxMovementSpeed = 2.4f,
-        float rotationSpeed = 110.0f
+        float rotationSpeed = 110.0f, glm::vec3 resetPosition = glm::vec3(5.5f, 0.4f, 5.5f)
     );
 
     void update(float deltaTime);
 
     void solveCollision(const std::shared_ptr<engine::Instance>& collider);
+
+    void reset();
 
 private:
     glm::vec3 velocity;
@@ -35,6 +37,7 @@ private:
     float movementSpeed;
     float maxMovementSpeed;
     float rotationSpeed;
+    glm::vec3 resetPostion;
 };
 
 

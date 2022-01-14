@@ -4,6 +4,7 @@
 
 #include "PuzzleGameLevel.h"
 #include "../../engine/model/lodmodel.h"
+#include "../instances/Enemy.h"
 
 void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
     // Required modules
@@ -50,8 +51,8 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
             [](const std::string& id,
                glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
                glm::vec3 boundsMin, glm::vec3 boundsMax) -> std::shared_ptr<engine::Instance> {
-                //scale = scale * 0.4f;
-                return std::make_shared<BlockInstance>(id, pos, rot, scale, origin, boundsMin, boundsMax);
+                scale = scale * 0.7f;
+                return std::make_shared<Enemy>(id, pos, rot, scale, origin, boundsMin, boundsMax);
             },
             camera
         )
@@ -243,15 +244,29 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
     // ------
     game.player = std::dynamic_pointer_cast<Player>(
         factory->createInstance("player_model", "player"));
-    game.player->position.z = 1.5f;
-    game.player->position.y += 0.5f;
+    game.player->reset();
 
     // Enemies
     // -------
-    auto enemy = factory->createInstance("enemy_model", "enemy_0");
-    enemy->position = glm::vec3(2, 2, 5);
-    auto enemy21 = factory->createInstance("enemy_model", "enemy_1");
-    enemy->position = glm::vec3(2, 2, -5);
+    auto enemy0 = std::dynamic_pointer_cast<Enemy>(
+        factory->createInstance("enemy_model", "enemy_0"));
+    enemy0->position = glm::vec3(4, 2, 2);
+    enemy0->setStartPosition(glm::vec3(4, 1, 2));
+    enemy0->setEndPosition(glm::vec3(4, 6, 2));
+    enemy0->setRotationSpeed(130);
+    game.enemies.push_back(enemy0);
+    auto enemy1 = std::dynamic_pointer_cast<Enemy>(
+        factory->createInstance("enemy_model", "enemy_1"));
+    enemy1->position = glm::vec3(7, 1.2f, -5);
+    enemy1->setStartPosition(glm::vec3(7, 1, -5));
+    enemy1->setEndPosition(glm::vec3(7, 4, -5));
+    game.enemies.push_back(enemy1);
+    auto enemy2 = std::dynamic_pointer_cast<Enemy>(
+        factory->createInstance("enemy_model", "enemy_2"));
+    enemy2->position = glm::vec3(-10, -2, -2);
+    enemy2->setStartPosition(glm::vec3(-10, -2, -2));
+    enemy2->setEndPosition(glm::vec3(-10, 2, -2));
+    game.enemies.push_back(enemy2);
 
 
     //auto fireCube1 = factory->createInstance("fire_corner", "fire_corner_1");

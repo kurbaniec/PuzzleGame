@@ -9,7 +9,7 @@
 #include "engine/factory/InstanceFactory.h"
 #include "engine/camera/camera.h"
 #include "engine/renderer/renderer.h"
-#include "game/DemoGame.h"
+#include "game/demo/DemoGame.h"
 #include "game/PuzzleGame.h"
 
 
@@ -21,7 +21,7 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
 void cursor_enter_callback(GLFWwindow* window, int entered);
 // void processInput(GLFWwindow* window);
 // void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -29,7 +29,7 @@ void window_focus_callback(GLFWwindow* window, int focused);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
 
-int main() {
+int main(int argc, char** argv) {
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
@@ -72,8 +72,6 @@ int main() {
         return -1;
     }
 
-
-
     glfwMakeContextCurrent(window);
     // Pass state to glfw
     // Node: Do not create void* from shared_ptr, leads to crash in release mode (msvc)
@@ -112,12 +110,29 @@ int main() {
 
     // Set Game
     // --------
-    //auto game = DemoGame(window, state);
-    auto game = PuzzleGame(window, state);
+    // Check for demo flag
+    // See: https://stackoverflow.com/a/19989185/12347616
+    // And: https://stackoverflow.com/a/31016372/12347616
+    bool isDemo = false;
+    for (char **arg = argv; *arg; ++arg) {
+        if (strcmp(*arg, "demo") == 0) {
+            isDemo = true;
+        }
+    }
+
+    // Create right level
+    std::unique_ptr<GameBasis> game;
+    if (isDemo) {
+        auto demoGame = std::unique_ptr<GameBasis>(new DemoGame(window, state));
+        game.swap(demoGame);
+    } else {
+        auto demoGame = std::unique_ptr<GameBasis>(new PuzzleGame(window, state));
+        game.swap(demoGame);
+    }
 
     try {
         // Setup level
-        game.setup();
+        game->setup();
         // Compute model matrices
         for (auto& instance: state->instances) {
             instance.second->updateModelMatrix();
@@ -137,7 +152,7 @@ int main() {
         renderer->clear();
         try {
             // Process input & game logic
-            game.update();
+            game->update();
             // Render
             renderer->draw();
         } catch (const runtime_error& error) {
@@ -198,10 +213,10 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+void scroll_callback(GLFWwindow* window, double xOffset, double yOffset) {
     auto& state = *static_cast<engine::State*>(glfwGetWindowUserPointer(window));
     auto camera = state.getCamera();
-    auto offset = static_cast<float>(yoffset);
+    auto offset = static_cast<float>(yOffset);
     camera->processMouseScroll(offset);
 }
 
