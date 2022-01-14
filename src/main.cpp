@@ -148,7 +148,7 @@ int main(int argc, char** argv) {
 
         // Update delta time
         state->setCurrentFrame(static_cast<float>(glfwGetTime()));
-        // Clear screent
+        // Clear screen
         renderer->clear();
         try {
             // Process input & game logic

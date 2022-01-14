@@ -25,7 +25,6 @@ void PuzzleGame::update() {
     // per-frame time logic
     // --------------------
     auto deltaTime = state->getDeltaTime();
-    // std::cout << deltaTime << std::endl;
 
     // Process user input (camera controls)
     // ------------------------------------

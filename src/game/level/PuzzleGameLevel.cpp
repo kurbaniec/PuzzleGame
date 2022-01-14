@@ -78,6 +78,21 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
     );
 
     factory->registerModel(
+        "skybox_model",
+        std::make_shared<engine::SimpleModel>(
+            "skybox_model",
+            "resources/objects/skybox/skybox.obj",
+            shader,
+            [](const std::string& id,
+               glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
+               glm::vec3 boundsMin, glm::vec3 boundsMax) -> std::shared_ptr<engine::Instance> {
+                return std::make_shared<BlockInstance>(
+                    id, pos, rot, scale, origin, boundsMin, boundsMax);
+            }
+        )
+    );
+
+    factory->registerModel(
         "cube_grass_center",
         std::make_shared<engine::SimpleModel>(
             "cube_grass_center",
@@ -301,6 +316,11 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
     star2->position = glm::vec3(1, 8, -1);
     star2->rotation = glm::vec3(0, 0, 0);
     game.stars.push_back(star2);
+
+    // Skybox
+    // ------
+    auto skybox = factory->createInstance("skybox_model", "skybox");
+    skybox->scale = glm::vec3(60);
 
     // Fire Corner
     // -----------
