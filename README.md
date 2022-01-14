@@ -85,6 +85,18 @@ git log
   }
   ```
 
+* Large File Size
+
+  One can shrink the resources folder and remove some development related files:
+
+  ```bash
+  find . -iregex '.*\.\(jpg\|png\|blend\)$' -type f -delete
+  rm -r .cmake/
+  rm -r CMakeFiles/
+  rm -r Testing/
+  rm -r resources/objects/backpack/
+  ```
+
 ## 👍Special Thanks
 
 * [Learn OpenGL - Joey de Vries](https://learnopengl.com/)
