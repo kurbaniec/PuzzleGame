@@ -4,23 +4,17 @@
 
 #include "PuzzleGame.h"
 
-#include <utility>
-#include "../engine/model/lodmodel.h"
-#include "../engine/factory/InstanceFactory.h"
-#include "instances/BlockInstance.h"
-#include "instances/Player.h"
 #include "level/PuzzleGameLevel.h"
 
 PuzzleGame::PuzzleGame(
     GLFWwindow* window,
     const std::shared_ptr<engine::State>& state
-) : GameBasis(window, state), blocks() {
+) : GameBasis(window, state), blocks(), stars() {
     camera = state->getCamera();
 }
 
 
 void PuzzleGame::setup() {
-    //setupLevel();
     PuzzleGameLevel::setupLevel(*this);
     // camera->setSensitivity(0.5);
     camera->setSpeed(5);
@@ -52,13 +46,22 @@ void PuzzleGame::update() {
     // Enemy collision
     for (auto& enemy: enemies) {
         if (player->intersectsAabb(enemy)) {
-            player->reset();
+            reset();
+        }
+    }
+    // Star collection
+    for (auto& star: stars) {
+        if (star->enabled) {
+            if (player->intersectsAabb(star)) {
+                star->enabled = false;
+                ++starsCollected;
+                if (starsCollected == stars.size()) reset();
+            }
         }
     }
 
+    // Match camera target with player height
     camera->setTarget(glm::vec3(0.0f, player->position.y, 0.0f));
-    //camera->setTarget(player->position);
-
 }
 
 // Process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
@@ -105,251 +108,12 @@ void PuzzleGame::processInput(float deltaTime) {
     }
 }
 
-
-void PuzzleGame::setupLevel() {
-    auto factory = std::make_shared<engine::InstanceFactory>(state);
-    auto shader = std::make_shared<engine::Shader>(
-        "shader/model/vertex.glsl", "shader/model/fragment.glsl");
-    auto camera = state->getCamera();
-
-    factory->registerModel(
-        "player_model",
-        std::make_shared<engine::LodModel>(
-            "player_model",
-            std::vector<std::string>{
-                "resources/objects/player/lod_1/player.obj",
-                "resources/objects/player/lod_2/player.obj",
-                "resources/objects/player/lod_3/player.obj",
-                "resources/objects/player/lod_4/player.obj"},
-            std::vector<float>{5, 8, 14, 25},
-            std::vector<std::shared_ptr<engine::Shader>>{shader, shader, shader, shader},
-            [](const std::string& id,
-               glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
-               glm::vec3 boundsMin, glm::vec3 boundsMax) -> std::shared_ptr<engine::Instance> {
-                scale = scale * 0.4f;
-                return std::make_shared<Player>(id, pos, rot, scale, origin, boundsMin, boundsMax);
-            },
-            camera
-        )
-    );
-
-    factory->registerModel(
-        "cube_grass_center",
-        std::make_shared<engine::SimpleModel>(
-            "cube_grass_center",
-            "resources/objects/blocks/cube_grass_center/cube_grass_center.obj",
-            shader,
-            [](const std::string& id,
-               glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
-               glm::vec3 boundsMin, glm::vec3 boundsMax) -> std::shared_ptr<engine::Instance> {
-                return std::make_shared<BlockInstance>(id, pos, rot, scale, origin, boundsMin, boundsMax);
-            }
-        )
-    );
-
-    factory->registerModel(
-        "cube_grass_corner",
-        std::make_shared<engine::SimpleModel>(
-            "cube_grass_corner",
-            "resources/objects/blocks/cube_grass_corner/cube_grass_corner.obj",
-            shader,
-            [](const std::string& id,
-               glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
-               glm::vec3 boundsMin, glm::vec3 boundsMax) -> std::shared_ptr<engine::Instance> {
-                return std::make_shared<BlockInstance>(id, pos, rot, scale, origin, boundsMin, boundsMax);
-            }
-        )
-    );
-
-    factory->registerModel(
-        "fire_corner",
-        std::make_shared<engine::LodModel>(
-            "fire_corner",
-            std::vector<std::string>{
-                "resources/objects/blocks/fire_corner/lod_1/fire_corner.obj",
-                "resources/objects/blocks/fire_corner/lod_2/fire_corner.obj"
-            },
-            std::vector<float>{14, 15},
-            std::vector<std::shared_ptr<engine::Shader>>{shader, shader},
-            [](const std::string& id,
-               glm::vec3 pos, glm::vec3 rot, glm::vec3 scale, glm::vec3 origin,
-               glm::vec3 boundsMin, glm::vec3 boundsMax) -> std::shared_ptr<engine::Instance> {
-                return std::make_shared<BlockInstance>(id, pos, rot, scale, origin, boundsMin, boundsMax);
-            },
-            camera
-        )
-    );
-
-    int cornerId = -1;
-    auto cornerMap = std::vector<LevelPart>{
-        {
-            std::string("cube_grass_corner_") + std::to_string(++cornerId),
-            std::string("cube_grass_corner"),
-            glm::vec3(0.0f, 0.0f, 0.0f),
-            glm::vec3(0, 270, 0)
-        },
-        {
-            std::string("cube_grass_corner_") + std::to_string(++cornerId),
-            std::string("cube_grass_corner"),
-            glm::vec3(2.0f, 0.0f, 0.0f),
-            glm::vec3(0, 180, 0)
-        },
-        {
-            std::string("cube_grass_corner_") + std::to_string(++cornerId),
-            std::string("cube_grass_corner"),
-            glm::vec3(2.0f, 0.0f, 2.0f),
-            glm::vec3(0, 90, 0)
-        },
-        {
-            std::string("cube_grass_corner_") + std::to_string(++cornerId),
-            std::string("cube_grass_corner"),
-            glm::vec3(0.0f, 0.0f, 2.0f),
-            glm::vec3(0, 0, 0)
-        },
-    };
-
-
-    // std::vector<std::shared_ptr<engine::Instance>> corners;
-    //
-    // for (auto& part: cornerMap) {
-    //     auto instance = factory->createInstance(part.model, part.id);
-    //     instance->position = part.position;
-    //     instance->rotation = part.rotation;
-    //     corners.push_back(std::move(instance));
-    // }
-
-    player = std::dynamic_pointer_cast<Player>(
-        factory->createInstance("player_model", "player"));
-    player->position.z = 1;
-
-
-    //auto fireCube1 = factory->createInstance("fire_corner", "fire_corner_1");
-    //auto fireCube2 = factory->createInstance("fire_corner", "fire_corner_2");
-    //auto fireCube3 = factory->createInstance("fire_corner", "fire_corner_3");
-    //auto fireCube4 = factory->createInstance("fire_corner", "fire_corner_4");
-
-    auto fireCubes1 = mapWallX(
-        factory, "fire_corner", "fire_corner_",
-        glm::ivec3(-2, -4, 0), 1 * 2, 5 * 2, 2,
-        std::vector<glm::ivec3>{});
-
-
-    auto cubeCrassCenterBlocks = mapGround(
-        factory, "cube_grass_center", "cube_grass_center_",
-        glm::ivec3(-4, -1, -6), 5 * 2, 5 * 2, 2,
-        std::vector<glm::ivec3>{
-            glm::ivec3(0, -1, 0), glm::ivec3(2, -1, 0),
-            glm::ivec3(2, -1, -2), glm::ivec3(0, -1, -2)
-        });
-
-
-
-    // auto b = factory->createInstance("cube_grass_center", "c");
-    // b->position.y = -2;
-    // auto b2 = factory->createInstance("cube_grass_corner", "c2");
-    // b2->position.z = -1;
-    // blocks.push_back(b);
-    // blocks.push_back(b2);
-
-    blocks.insert(
-        blocks.begin(), cubeCrassCenterBlocks.begin(), cubeCrassCenterBlocks.end()
-    );
-
-
-
-    /*factory->createInstance("player_model", "player");
-    corner1 = std::dynamic_pointer_cast<BlockInstance>(
-        factory->createInstance("cube_grass_corner", "cb_1"));
-    corner2 = std::dynamic_pointer_cast<BlockInstance>(
-        factory->createInstance("cube_grass_corner", "cb_2"));
-    corner3 = std::dynamic_pointer_cast<BlockInstance>(
-        factory->createInstance("cube_grass_corner", "cb_3"));
-    corner4 = std::dynamic_pointer_cast<BlockInstance>(
-        factory->createInstance("cube_grass_corner", "cb_4"));
-
-
-    corner1->rotation.y = 270;
-
-    corner2->rotation.y = 180;
-    corner2->position.x = 2;
-
-
-    corner3->rotation.y = 90;
-    corner3->position.x = 2;
-    corner3->position.z = 2;
-
-    corner4->rotation.y = 0;
-    corner4->position.z = 2;*/
-}
-
-std::vector<std::shared_ptr<engine::Instance>>
-PuzzleGame::mapGround(
-    std::shared_ptr<engine::InstanceFactory> factory, std::string model, std::string idPrefix,
-    glm::ivec3 start, int xSize, int zSize, int stepSize, std::vector<glm::ivec3> omit, glm::vec3 rotation, int id
-) {
-    std::vector<std::shared_ptr<engine::Instance>> instances;
-    for (int x = 0; x < xSize; x += stepSize) {
-        for (int z = 0; z < zSize; z += stepSize) {
-            auto position = start;
-            position.x += x;
-            position.z += z;
-            if (omit.empty() || std::find(omit.begin(), omit.end(), position) == omit.end()) {
-                auto instanceId = idPrefix + std::to_string(++id);
-                auto instance = factory->createInstance(model, instanceId);
-                instance->position = position;
-                instance->rotation = rotation;
-                instances.push_back(std::move(instance));
-            }
-        }
+void PuzzleGame::reset() {
+    player->reset();
+    for (auto& star: stars) {
+        star->enabled = true;
     }
-
-    return instances;
-}
-
-std::vector<std::shared_ptr<engine::Instance>>
-PuzzleGame::mapWallX(std::shared_ptr<engine::InstanceFactory> factory, std::string model, std::string idPrefix,
-                     glm::ivec3 start, int xSize, int ySize, int stepSize, std::vector<glm::ivec3> omit,
-                     glm::vec3 rotation, int id) {
-    std::vector<std::shared_ptr<engine::Instance>> instances;
-    for (int x = 0; x < xSize; x += stepSize) {
-        for (int y = 0; y < ySize; y += stepSize) {
-            auto position = start;
-            position.x += x;
-            position.y += y;
-            if (omit.empty() || std::find(omit.begin(), omit.end(), position) == omit.end()) {
-                auto instanceId = idPrefix + std::to_string(++id);
-                auto instance = factory->createInstance(model, instanceId);
-                instance->position = position;
-                instance->rotation = rotation;
-                instances.push_back(std::move(instance));
-            }
-        }
-    }
-
-    return instances;
-}
-
-std::vector<std::shared_ptr<engine::Instance>>
-PuzzleGame::mapWallZ(std::shared_ptr<engine::InstanceFactory> factory, std::string model, std::string idPrefix,
-                     glm::ivec3 start, int zSize, int ySize, int stepSize, std::vector<glm::ivec3> omit,
-                     glm::vec3 rotation, int id) {
-    std::vector<std::shared_ptr<engine::Instance>> instances;
-    for (int z = 0; z < zSize; z += stepSize) {
-        for (int y = 0; y < ySize; y += stepSize) {
-            auto position = start;
-            position.z += z;
-            position.y += y;
-            if (omit.empty() || std::find(omit.begin(), omit.end(), position) == omit.end()) {
-                auto instanceId = idPrefix + std::to_string(++id);
-                auto instance = factory->createInstance(model, instanceId);
-                instance->position = position;
-                instance->rotation = rotation;
-                instances.push_back(std::move(instance));
-            }
-        }
-    }
-
-    return instances;
+    starsCollected = 0;
 }
 
 void PuzzleGame::scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {

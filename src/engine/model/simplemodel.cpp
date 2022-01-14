@@ -26,9 +26,11 @@ namespace engine {
         shader->setMat4("projection", projection);
         shader->setMat4("view", view);
         for (auto& instance: instances) {
-            shader->setMat4("model", instance->modelMatrix);
-            for (auto& mesh: meshes)
-                mesh.draw(shader);
+            if (instance->enabled) {
+                shader->setMat4("model", instance->modelMatrix);
+                for (auto& mesh: meshes)
+                    mesh.draw(shader);
+            }
         }
     }
 

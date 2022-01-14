@@ -71,6 +71,7 @@ void Player::solveCollision(const std::shared_ptr<engine::Instance>& collider) {
 
         velocity.z = 0;
         float offset = 0.0f;
+        int check = 0;
         do {
             // Required to trigger correct collision test (when on corner)
             auto test = collider->position - position;
@@ -102,6 +103,10 @@ void Player::solveCollision(const std::shared_ptr<engine::Instance>& collider) {
                 // Back
                 position.z = colliderMax.z + playerDepth / 2 + offset;
                 // std::cout << "Back" << std::endl;
+            } else {
+                ++check;
+                if (check == 10) reset();
+                break;
             }
             updateModelMatrix();
             offset += 0.002f;

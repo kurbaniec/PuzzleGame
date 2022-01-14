@@ -41,11 +41,13 @@ namespace engine {
     }
 
     void Triangle::draw(glm::mat4 view, glm::mat4 projection) {
-        shader->use();
-        shader->setMat4("projection", projection);
-        shader->setMat4("view", view);
-        shader->setMat4("model", instance->modelMatrix);
-        const_cast<Mesh&>(mesh).drawTriangle(shader, offset);
+        if (instance->enabled) {
+            shader->use();
+            shader->setMat4("projection", projection);
+            shader->setMat4("view", view);
+            shader->setMat4("model", instance->modelMatrix);
+            const_cast<Mesh&>(mesh).drawTriangle(shader, offset);
+        }
     }
 
     Triangle::Triangle(Triangle&& source) noexcept
