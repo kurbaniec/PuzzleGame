@@ -320,7 +320,7 @@ void PuzzleGameLevel::setupLevel(PuzzleGame& game) {
     // Skybox
     // ------
     auto skybox = factory->createInstance("skybox_model", "skybox");
-    skybox->scale = glm::vec3(60);
+    skybox->scale = glm::vec3(80);
 
     // Fire Corner
     // -----------
